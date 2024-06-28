@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.StudentAcademicHistoryMapper">
+
+	<select id="retrieveStudentAcademicHistoryList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveStudentAcademicHistoryList */
+		       STD_ID                        AS "studentID"
+		     , SEQNO                         AS "seqNo"
+		     , ACD_NM                        AS "academicName"
+		     , ACD_DESC                      AS "academicDesc"
+		     , STRT_DT                       AS "startDate"
+		     , END_DT                        AS "endDate"
+		     , CERT_DT                       AS "certificatedDate"
+		  FROM FRST.STD_ACD_HIS
+		 WHERE STD_ID = #{studentID}
+		   AND STCD <> '09'
+		 ORDER BY SEQNO
+		]]>
+	</select>
+	
+	<insert id="registerStudentAcademicHistory">
+		<![CDATA[
+		INSERT /* RegisterStudentAcademicHistory */
+		  INTO FRST.STD_ACD_HIS 
+		     ( STD_ID 
+		     , SEQNO 
+		     , ACD_NM 
+		     , ACD_DESC 
+		     , STRT_DT 
+		     , END_DT 
+		     , CERT_DT 
+		     , STCD 
+		     , FRST_REG_DT
+		     , FRST_REG_TIME 
+		     , LAST_CHNG_DT 
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{studentID}
+		     , #{seqNo}
+		     , COALESCE(#{academicName}, '')
+		     , COALESCE(#{academicDesc}, '')
+		     , COALESCE(#{startDate}, '')
+		     , COALESCE(#{endDate}, '')
+		     , COALESCE(#{certificatedDate}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateNewsEventaa">
+		<![CDATA[
+		UPDATE /* UpdateNewsEvent */
+		       FRST.NEWS_EVENT 
+		   SET TITLE = COALESCE(#{title}, TITLE)
+		     , CONTENT_HTML = COALESCE(#{contentHtml}, CONTENT_HTML)
+		     , CONTENT_DESC = COALESCE(#{contentDesc}, CONTENT_DESC)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		 WHERE NEVNT_ID = #{newsEventID}
+		]]>
+	</update>
+
+</mapper>

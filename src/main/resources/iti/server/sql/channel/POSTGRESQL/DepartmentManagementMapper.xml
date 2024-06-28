@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.DepartmentManagementMapper">
+	
+	<select id="retrieveDepartmentManagementList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveDepartmentManagementList */
+		       A.TCH_ID                     AS "teacherID"
+		     , A.DEPT_ID                    AS "departmentID"
+		     , A.DEPT_ROLE_CD               AS "departmentRoelCode"
+		     , C.DEPT_ROLE_NM               AS "departmentRoelName"
+		     , C.DEPT_ROLE_DESC             AS "departmentRoelDesc"
+		     , B.DEPT_NM                    AS "departmentName"
+		     , B.DEPT_DESC                  AS "departmentDesc"
+		  FROM FRST.DEPT_MNGT A
+		  JOIN FRST.DEPT_INFO B
+		    ON A.DEPT_ID = B.DEPT_ID
+		   AND B.STCD <> '09'
+		  JOIN FRST.DEPT_ROLE_MNGT C
+		    ON A.DEPT_ROLE_CD = C.DEPT_ROLE_CD
+		   AND C.STCD <> '09'
+		 WHERE ('' = COALESCE(#{teacherID}, '') OR A.TCH_ID = #{teacherID})
+		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
+		   AND A.STCD <> '09'
+		 ORDER BY B.DEPT_ID
+		 LIMIT #{limit}
+		OFFSET #{offset}
+		]]>
+	</select>
+	
+	<select id="retrieveDepartmentManagementTotalCount" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveDepartmentManagementTotalCount */
+		       COUNT(*)                   AS "totalCount"
+		  FROM FRST.DEPT_MNGT A
+		  JOIN FRST.DEPT_INFO B
+		    ON A.DEPT_ID = B.DEPT_ID
+		   AND B.STCD <> '09'
+		  JOIN FRST.DEPT_ROLE_MNGT C
+		    ON A.DEPT_ROLE_CD = C.DEPT_ROLE_CD
+		   AND C.STCD <> '09'
+		 WHERE ('' = COALESCE(#{teacherID}, '') OR A.TCH_ID = #{teacherID})
+		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
+		   AND A.STCD <> '09'
+		]]>
+	</select>
+	
+	<select id="retrieveDepartmentManagementDetail" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveDepartmentManagementList */
+		       A.TCH_ID                     AS "teacherID"
+		     , A.DEPT_ID                    AS "departmentID"
+		     , A.DEPT_ROLE_CD               AS "departmentRoelCode"
+		     , C.DEPT_ROLE_NM               AS "departmentRoelName"
+		     , C.DEPT_ROLE_DESC             AS "departmentRoelDesc"
+		     , B.DEPT_NM                    AS "departmentName"
+		     , B.DEPT_DESC                  AS "departmentDesc"
+		     , A.STCD                       as "statusCode"
+		  FROM FRST.DEPT_MNGT A
+		  JOIN FRST.DEPT_INFO B
+		    ON A.DEPT_ID = B.DEPT_ID
+		   AND B.STCD <> '09'
+		  JOIN FRST.DEPT_ROLE_MNGT C
+		    ON A.DEPT_ROLE_CD = C.DEPT_ROLE_CD
+		   AND C.STCD <> '09'
+		 WHERE A.TCH_ID = #{teacherID}
+		   AND A.DEPT_ID = #{departmentID}
+		   AND A.STCD <> '09'
+		]]>
+	</select>
+	
+	<insert id="registerDepartmentManagement">
+		<![CDATA[
+		INSERT /* RegisterDepartmentManagement */
+		  INTO FRST.DEPT_MNGT
+		     ( TCH_ID
+		     , DEPT_ID 
+		     , DEPT_ROLE_CD
+		     , STCD
+		     , FRST_REG_DT
+		     , FRST_REG_TIME
+		     , LAST_CHNG_DT
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{teacherID}
+		     , #{departmentID}
+		     , COALESCE(#{departmentRoleCode}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateDepartmentManagement">
+		<![CDATA[
+		UPDATE /* RpdateDepartmentManagement */
+		       FRST.DEPT_MNGT 
+		   SET TCH_ID = COALESCE(#{teacherID}, TCH_ID)
+		     , DEPT_ROLE_CD = COALESCE(#{departmentRoelCode}, DEPT_ROLE_CD)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE TCH_ID = #{teacherID}
+		   AND DEPT_ID = #{departmentID}
+		]]>
+	</update>
+
+</mapper>

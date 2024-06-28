@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.ClassInformationMapper">
+	
+	<select id="retrieveClassInformationList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveClassInformationList */
+		       CLS_ID                     AS "classID"
+		     , DEPT_ID                    AS "departmentID"
+		     , CLS_NM                     AS "className"
+		     , CLS_DESC                   AS "classDesc"
+		     , YEAR_LV                    AS "yearLevel"
+		     , STCD                       AS "statusCode"
+		  FROM FRST.CLS_INFO
+		 WHERE ('' = COALESCE(#{classID}, '') OR CLS_ID = #{classID})
+		   AND ('' = COALESCE(#{departmentID}, '') OR DEPT_ID = #{departmentID})
+		   AND STCD <> '09'
+		 ORDER BY LAST_CHNG_DT DESC 
+		        , LAST_CHNG_TIME DESC 
+		 LIMIT #{limit}
+		OFFSET #{offset}
+		]]>
+	</select>
+	
+	<select id="retrieveClassInformationTotalCount" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveClassInformationTotalCount */
+		       COUNT(*)                   AS "totalCount"
+		  FROM FRST.CLS_INFO
+		 WHERE ('' = COALESCE(#{classID}, '') OR CLS_ID = #{classID})
+		   AND ('' = COALESCE(#{departmentID}, '') OR DEPT_ID = #{departmentID})
+		   AND STCD <> '09'
+		]]>
+	</select>
+	
+	<select id="retrieveClassInformationDetail" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveClassInformationDetail */
+		       A.CLS_ID                     AS "classID"
+		     , A.DEPT_ID                    AS "departmentID"
+		     , A.CLS_NM                     AS "className"
+		     , A.CLS_DESC                   AS "classDesc"
+		     , A.YEAR_LV                    AS "yearLevel"
+		     , A.STCD                       AS "statusCode"
+		  FROM FRST.CLS_INFO A
+		 WHERE A.CLS_ID = #{classID}
+		   AND A.DEPT_ID = #{departmentID}
+		   AND A.STCD <> '09'
+		]]>
+	</select>
+	
+	<insert id="registerClassInformation">
+		<![CDATA[
+		INSERT /* RegisterClassInformation */
+		  INTO FRST.CLS_INFO
+		     ( CLS_ID
+		     , DEPT_ID 
+		     , CLS_NM 
+		     , CLS_DESC 
+		     , YEAR_LV 
+		     , STCD
+		     , FRST_REG_DT
+		     , FRST_REG_TIME
+		     , LAST_CHNG_DT
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{classID}
+		     , #{departmentID}
+		     , COALESCE(#{className}, '')
+		     , COALESCE(#{classDesc}, '')
+		     , COALESCE(#{yearLevel}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateClassInformation">
+		<![CDATA[
+		UPDATE /* UpdateClassInformation */
+		       FRST.CLS_INFO 
+		   SET CLS_ID = COALESCE(#{classID}, CLS_ID)
+		     , DEPT_ID = COALESCE(#{departmentID}, DEPT_ID)
+		     , CLS_NM = COALESCE(#{className}, CLS_NM)
+		     , CLS_DESC = COALESCE(#{classDesc}, CLS_DESC)
+		     , YEAR_LV = COALESCE(#{yearLevel}, YEAR_LV)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE CLS_ID = #{classID}
+		   AND DEPT_ID = #{departmentID}
+		]]>
+	</update>
+
+</mapper>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.StudentDetailMapper">
+	
+	<select id="retrieveStudentDetailList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveStudentDetailList */
+		       STD_ID                      AS "studentID"
+		     , FRST_NM                     AS "firstName"
+		     , LAST_NM                     AS "lastName"
+		     , NICK_NM                     AS "nickName"
+		     , GENDER                      AS "gender"
+		     , DOB                         AS "dateOfBirth"
+		     , POB                         AS "placeOfBirth"
+		     , ADDR                        AS "address"
+		     , PHONE                       AS "phone"
+		     , EMAIL                       AS "email"
+		     , PASSWD                      AS "passwd"
+		     , IMG_URL                     AS "imageUrl"
+		  FROM FRST.STD_DETAIL
+		 WHERE STCD <> '09'
+		 LIMIT #{limit}
+		OFFSET #{offset}
+		]]>
+	</select>
+
+	<select id="retrieveTotalCountStudentDetailList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveTotalCountStudentDetailList */
+		       COUNT(*)                   AS "totalCount"
+		  FROM FRST.STD_DETAIL
+		 WHERE STCD <> '09'
+		]]>
+	</select>
+	
+	<select id="retrieveStudentDetail" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveStudentDetail */
+		       STD_ID                      AS "studentID"
+		     , FRST_NM                     AS "firstName"
+		     , LAST_NM                     AS "lastName"
+		     , NICK_NM                     AS "nickName"
+		     , GENDER                      AS "gender"
+		     , DOB                         AS "dateOfBirth"
+		     , POB                         AS "placeOfBirth"
+		     , ADDR                        AS "address"
+		     , PHONE                       AS "phone"
+		     , EMAIL                       AS "email"
+		     , PASSWD                      AS "passwd"
+		     , IMG_URL                     AS "imageUrl"
+		  FROM FRST.STD_DETAIL
+		 WHERE STD_ID = #{studentID}
+		   AND STCD <> '09'
+		]]>
+	</select>
+
+	<select id="getLastStudentID" resultType="MData">
+		<![CDATA[
+		SELECT /* GetLastStudentID */
+		       STD_ID                      AS "studentID"
+		  FROM FRST.STD_DETAIL
+		 WHERE STCD <> '09'
+		 ORDER BY STD_ID DESC
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<insert id="registerStudentDetail">
+		<![CDATA[
+		INSERT /* RegisterStudentDetail */
+		  INTO FRST.STD_DETAIL
+		     ( STD_ID 
+		     , FRST_NM 
+		     , LAST_NM 
+		     , NICK_NM 
+		     , GENDER 
+		     , DOB 
+		     , POB 
+		     , ADDR 
+		     , PHONE 
+		     , EMAIL 
+		     , PASSWD 
+		     , IMG_URL 
+		     , STCD 
+		     , FRST_REG_DT
+		     , FRST_REG_TIME 
+		     , LAST_CHNG_DT 
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{studentID}
+		     , COALESCE(#{firstName}, '')
+		     , COALESCE(#{lastName}, '')
+		     , COALESCE(#{nickname}, '')
+		     , COALESCE(#{gender}, '')
+		     , COALESCE(#{dateOfBirth}, '')
+		     , COALESCE(#{placeOfBirth}, '')
+		     , COALESCE(#{address}, '')
+		     , COALESCE(#{phone}, '')
+		     , COALESCE(#{email}, '')
+		     , COALESCE(#{passwd}, '')
+		     , COALESCE(#{imageUrl}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateNewsEventss">
+		<![CDATA[
+		UPDATE /* UpdateNewsEvent */
+		       FRST.NEWS_EVENT 
+		   SET TITLE = COALESCE(#{title}, TITLE)
+		     , CONTENT_HTML = COALESCE(#{contentHtml}, CONTENT_HTML)
+		     , CONTENT_DESC = COALESCE(#{contentDesc}, CONTENT_DESC)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		 WHERE NEVNT_ID = #{newsEventID}
+		]]>
+	</update>
+
+</mapper>

@@ -1,0 +1,12 @@
+{
+  "groups": [
+    {
+      "name": "spring.datasource.hikari",
+      "type": "javax.sql.DataSource",
+      "sourceType": "com.iti.thesis.helicopter.thesis.db.dao.ChannelDBConfig",
+      "sourceMethod": "public javax.sql.DataSource channelDBDataSource() throws java.lang.Exception"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}
