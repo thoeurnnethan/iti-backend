@@ -10,5 +10,6 @@ public interface UserInfoService {
 	public int updateUserInfoDetail(MData param) throws MException;
 	public MData registerUserInfoDetail(MData param) throws MException;
 	public MMultiData retrieveUserInfoList(MData param) throws MException;
+	public MData retrieveUserInfoTotalCount(MData param) throws MException;
 	
 }

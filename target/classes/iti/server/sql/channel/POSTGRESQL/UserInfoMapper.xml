@@ -26,14 +26,28 @@
 		     , SEC_KEY                     AS "secretKey"
 		     , STCD                        AS "statusCode"
 		  FROM FRST.USER_INFO 
-		 WHERE FRST_NM ILIKE '%' || COALESCE(#{firstName}, '') || '%'
-		   AND LAST_NM ILIKE '%' || COALESCE(#{lastName}, '') || '%'
-		   AND NICK_NM ILIKE '%' || COALESCE(#{nickName}, '') || '%'
-		   AND PHONE ILIKE '%' || COALESCE(#{phone}, '') || '%'
-		   AND STCD <> '09'
+		 WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR LAST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR NICK_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
+		   AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
 		 ORDER BY (FRST_NM,LAST_NM) ASC
 		 LIMIT #{limit}
 		OFFSET #{offset}
+		]]>
+	</select>
+	<select id="retrieveUserInfoTotalCount" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveUserInfoTotalCount */
+			   COUNT(*)                     AS "totalCount"
+		  FROM FRST.USER_INFO 
+		 WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR LAST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR NICK_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
+		   AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
 		]]>
 	</select>
 	

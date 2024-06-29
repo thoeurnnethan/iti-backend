@@ -39,8 +39,9 @@ public class UserInfoInquiryList extends BaseTemplate {
 	@Override
 	public MData onExecute(MData param) throws MException {
 		try {
-			MMultiData userList = userInfoService.retrieveUserInfoList(param);
-			return prepareResponse(userList);
+			MMultiData	userList	= userInfoService.retrieveUserInfoList(param);
+			MData		userCount	= userInfoService.retrieveUserInfoTotalCount(param);
+			return prepareResponse(userList,userCount);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -50,8 +51,9 @@ public class UserInfoInquiryList extends BaseTemplate {
 		
 	}
 	
-	private MData prepareResponse(MMultiData userList) {
+	private MData prepareResponse(MMultiData userList, MData userCount) {
 		MData response = new MData();
+		response.setInt("totalCount", userCount.getInt("totalCount"));
 		response.setMMultiData("userList", userList);
 		return response;
 	}

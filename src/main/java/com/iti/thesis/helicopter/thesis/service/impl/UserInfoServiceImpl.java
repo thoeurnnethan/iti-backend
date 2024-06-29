@@ -195,5 +195,17 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 		return result;
 	}
+
+	@Override
+	public MData retrieveUserInfoTotalCount(MData param) throws MException {
+		try {
+			return userInfoMapper.retrieveUserInfoTotalCount(param);
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
+		}
+	}
 	
 }

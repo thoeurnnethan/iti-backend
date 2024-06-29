@@ -39,5 +39,10 @@ public class UserInfoMapperImpl implements UserInfoMapper {
 	public MData retrieveUserInfoDetailByUserIDAndRoleID(MData param) throws MException {
 		return channelDBDao.selectOne("retrieveUserInfoDetailByUserIDAndRoleID", param);
 	}
+
+	@Override
+	public MData retrieveUserInfoTotalCount(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveUserInfoTotalCount", param);
+	}
 	
 }

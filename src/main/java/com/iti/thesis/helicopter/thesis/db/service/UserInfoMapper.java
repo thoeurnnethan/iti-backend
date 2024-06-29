@@ -11,5 +11,6 @@ public interface UserInfoMapper {
 	public int registerUserInfoDetail(MData param) throws MException;
 	public MData retrieveUserInfoDetailByUserIDAndRoleID(MData param) throws MException;
 	public MMultiData registerUserInfoList(MData param) throws MException;
+	public MData retrieveUserInfoTotalCount(MData param) throws MException;
 	
 }
