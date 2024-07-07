@@ -7,10 +7,10 @@ import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
-import com.iti.thesis.helicopter.thesis.core.exception.MDuplicateException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
 import com.iti.thesis.helicopter.thesis.db.service.ClassInformationMapper;
+import com.iti.thesis.helicopter.thesis.db.service.DepartmentInformationMapper;
 import com.iti.thesis.helicopter.thesis.service.ClassInformationService;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
@@ -22,6 +22,8 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 	
 	@Autowired
 	private ClassInformationMapper		classInformationMapper;
+	@Autowired
+	private DepartmentInformationMapper	departmentInformationMapper;
 	
 	@Override
 	public MMultiData retrieveClassInformationList(MData param) throws MException {
@@ -51,18 +53,32 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 	@Override
 	public MData registerClassInformation(MData param) {
 		try {
+			MValidatorUtil.validate(param, "departmentID", "className","cyear","generation","semester");
+			
 			MData	outputData		= param;
-			MData	classInfo		= this.retrieveAndValidateClassInfo(param);
-			if(!classInfo.isEmpty()) {
-				throw new MDuplicateException(CommonErrorCode.DUPLICATED_DATA.getCode(), "Already register");
+			MData	departmentInfo	= departmentInformationMapper.retrieveDepartmentInformationDetail(param);
+			if(!departmentInfo.isEmpty()) {
+				int classID = this.retrieveLastClassID(param);
+				param.setInt("classID", classID);
+				classInformationMapper.registerClassInformation(param);
 			}
-			classInformationMapper.registerClassInformation(param);
 			return outputData;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
 			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+	
+	private int retrieveLastClassID(MData param) {
+		try {
+			MData classInfo = classInformationMapper.retrieveLastClassID(param);
+			int classID = classInfo.getInt("classID");
+			classID++;
+			return classID;
+		} catch (MNotFoundException e) {
+			return 1001;
 		}
 	}
 	

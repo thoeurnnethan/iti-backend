@@ -3,6 +3,8 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.iti.thesis.helicopter.thesis.constant.DepartmentRoleCode;
+import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
@@ -10,7 +12,9 @@ import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
 import com.iti.thesis.helicopter.thesis.db.service.DepartmentInformationMapper;
+import com.iti.thesis.helicopter.thesis.db.service.DepartmentManagementMapper;
 import com.iti.thesis.helicopter.thesis.service.DepartmentInformationService;
+import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,8 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 	
 	@Autowired
 	private DepartmentInformationMapper		departmentInformationMapper;
+	@Autowired
+	private DepartmentManagementMapper		departmentManagementMapper;
 	
 	@Override
 	public MData registerDepartmentInformation(MData param) {
@@ -77,9 +83,25 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 	public MData updateDepartmentInformation(MData param) throws MException {
 		try {
 			MValidatorUtil.validate(param, "departmentID");
-			MData depDetail = this.retrieveAndValidateDepartmentInfo(param);
-			if(!depDetail.isEmpty()) {
+			String departmentID	= param.getString("departmentID");
+			String teacherID	= param.getString("teacherID");
+			
+			MData departmentInfo = this.retrieveDepartmentInformationDetail(param);
+			if(!departmentInfo.isEmpty()) {
 				departmentInformationMapper.updateDepartmentInformation(param);
+				if (!MStringUtil.isEmpty(teacherID)) {
+					MData department = new MData();
+					department.setString("departmentID", departmentID);
+					department.setString("teacherID", teacherID);
+					department.setString("departmentRoleCode", DepartmentRoleCode.MANAGER.getValue());
+					department.setString("statusCode", StatusCode.ACTIVE.getValue());
+					boolean isExist = this.retrieveAndValidateDepartmentMgt(department);
+					if(isExist) {
+						departmentManagementMapper.updateDepartmentManagement(department);
+					}else {
+						departmentManagementMapper.registerDepartmentManagement(department);
+					}
+				}
 			}
 			return param;
 		} catch (MException e) {
@@ -89,13 +111,13 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 		}
 	}
 	
-	private MData retrieveAndValidateDepartmentInfo(MData param) {
+	private boolean retrieveAndValidateDepartmentMgt(MData param) {
 		try {
 			MValidatorUtil.validate(param, "departmentID");
-			MData depDetail = this.retrieveDepartmentInformationDetail(param);
-			return depDetail;
+			departmentManagementMapper.retrieveDepartmentManagementDetail(param);
+			return true;
 		} catch (MNotFoundException e) {
-			return new MData();
+			return false;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

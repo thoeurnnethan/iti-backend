@@ -10,7 +10,6 @@
 		SELECT /* RetrieveDepartmentManagementList */
 		       A.TCH_ID                     AS "teacherID"
 		     , A.DEPT_ID                    AS "departmentID"
-		     , A.DEPT_ROLE_CD               AS "departmentRoelCode"
 		     , C.DEPT_ROLE_NM               AS "departmentRoelName"
 		     , C.DEPT_ROLE_DESC             AS "departmentRoelDesc"
 		     , B.DEPT_NM                    AS "departmentName"
@@ -53,9 +52,6 @@
 		SELECT /* RetrieveDepartmentManagementList */
 		       A.TCH_ID                     AS "teacherID"
 		     , A.DEPT_ID                    AS "departmentID"
-		     , A.DEPT_ROLE_CD               AS "departmentRoelCode"
-		     , C.DEPT_ROLE_NM               AS "departmentRoelName"
-		     , C.DEPT_ROLE_DESC             AS "departmentRoelDesc"
 		     , B.DEPT_NM                    AS "departmentName"
 		     , B.DEPT_DESC                  AS "departmentDesc"
 		     , A.STCD                       as "statusCode"
@@ -63,9 +59,6 @@
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID
 		   AND B.STCD <> '09'
-		  JOIN FRST.DEPT_ROLE_MNGT C
-		    ON A.DEPT_ROLE_CD = C.DEPT_ROLE_CD
-		   AND C.STCD <> '09'
 		 WHERE A.TCH_ID = #{teacherID}
 		   AND A.DEPT_ID = #{departmentID}
 		   AND A.STCD <> '09'
@@ -98,11 +91,11 @@
 
 	<update id="updateDepartmentManagement">
 		<![CDATA[
-		UPDATE /* RpdateDepartmentManagement */
+		UPDATE /* UpdateDepartmentManagement */
 		       FRST.DEPT_MNGT 
 		   SET TCH_ID = COALESCE(#{teacherID}, TCH_ID)
-		     , DEPT_ROLE_CD = COALESCE(#{departmentRoelCode}, DEPT_ROLE_CD)
 		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , DEPT_ROLE_CD = COALESCE(#{departmentRoleCode}, DEPT_ROLE_CD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE TCH_ID = #{teacherID}

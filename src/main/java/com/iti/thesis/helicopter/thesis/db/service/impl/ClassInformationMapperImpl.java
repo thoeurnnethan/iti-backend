@@ -36,8 +36,8 @@ public class ClassInformationMapperImpl implements ClassInformationMapper {
 	}
 
 	@Override
-	public MData retrieveLastNewsEventID(MData param) throws MException {
-		return channelDBDao.selectOne("retrieveLastNewsEventID", param);
+	public MData retrieveLastClassID(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveLastClassID", param);
 	}
 
 	@Override

@@ -10,6 +10,7 @@
 		SELECT /* RegisterUserInfoList */
 		       USER_ID                     AS "userID"
 		     , ROLE_ID                     AS "roleID"
+		     , SPEC_ID                     AS "specificID"
 		     , FRST_NM                     AS "firstName"
 		     , LAST_NM                     AS "lastName"
 		     , NICK_NM                     AS "nickName"

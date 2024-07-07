@@ -13,7 +13,10 @@
 		     , B.DEPT_NM                    AS "departentName"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
-		     , A.YEAR_LV                    AS "yearLevel"
+		     , C_YEAR                       AS "year"
+		     , C_TIME                       AS "time"
+		     , GENR                         AS "generation"
+		     , SEMESTER                     AS "semester"
 		     , A.STCD                       AS "statusCode"
 		  FROM FRST.CLS_INFO A
 		  JOIN FRST.DEPT_INFO B
@@ -32,7 +35,7 @@
 	
 	<select id="retrieveClassInformationTotalCount" resultType="MData">
 		<![CDATA[
-		SELECT /* RetrieveClassInformationList */
+		SELECT /* RetrieveClassInformationTotalCount */
 		       COUNT(*)                      AS "totalCount"
 		  FROM FRST.CLS_INFO A
 		  JOIN FRST.DEPT_INFO B
@@ -45,6 +48,18 @@
 		]]>
 	</select>
 	
+	<select id="retrieveLastClassID" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveLastClassID */
+		       CLS_ID                AS "classID"
+		  FROM FRST.CLS_INFO A
+		 WHERE DEPT_ID = #{departmentID}
+		   AND A.STCD <> '09'
+		 ORDER BY CLS_ID DESC
+		 LIMIT 1
+		]]>
+	</select>
+	
 	<select id="retrieveClassInformationDetail" resultType="MData">
 		<![CDATA[
 		SELECT /* RetrieveClassInformationDetail */
@@ -52,7 +67,6 @@
 		     , A.DEPT_ID                    AS "departmentID"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
-		     , A.YEAR_LV                    AS "yearLevel"
 		     , A.STCD                       AS "statusCode"
 		  FROM FRST.CLS_INFO A
 		 WHERE A.CLS_ID = #{classID}
@@ -69,8 +83,11 @@
 		     , DEPT_ID 
 		     , CLS_NM 
 		     , CLS_DESC 
-		     , YEAR_LV 
 		     , STCD
+		     , C_YEAR
+		     , GENR
+		     , C_TIME
+		     , SEMESTER
 		     , FRST_REG_DT
 		     , FRST_REG_TIME
 		     , LAST_CHNG_DT
@@ -80,8 +97,11 @@
 		     , #{departmentID}
 		     , COALESCE(#{className}, '')
 		     , COALESCE(#{classDesc}, '')
-		     , COALESCE(#{yearLevel}, '')
 		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{cyear}, '')
+		     , COALESCE(#{generation}, '')
+		     , COALESCE(#{ctime}, '')
+		     , COALESCE(#{semester}, 0)
 		     , COALESCE(#{firstRegisterDate}, '')
 		     , COALESCE(#{firstRegisterTime}, '')
 		     , COALESCE(#{lastChangeDate}, '')
@@ -97,7 +117,6 @@
 		     , DEPT_ID = COALESCE(#{departmentID}, DEPT_ID)
 		     , CLS_NM = COALESCE(#{className}, CLS_NM)
 		     , CLS_DESC = COALESCE(#{classDesc}, CLS_DESC)
-		     , YEAR_LV = COALESCE(#{yearLevel}, YEAR_LV)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)

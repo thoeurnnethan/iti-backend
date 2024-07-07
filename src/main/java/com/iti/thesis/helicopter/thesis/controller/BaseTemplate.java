@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iti.thesis.helicopter.thesis.common.SessionUtil;
 import com.iti.thesis.helicopter.thesis.context.MContextHolder;
 import com.iti.thesis.helicopter.thesis.context.parameter.MContextParameter;
-import com.iti.thesis.helicopter.thesis.context.util.MContextUtil;
 import com.iti.thesis.helicopter.thesis.context.util.MHttpRequestUtil;
 import com.iti.thesis.helicopter.thesis.core.Json.JsonAdaptorObject;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
@@ -66,15 +65,15 @@ public abstract class BaseTemplate {
 		//======================================================
 		// keep request object
 		MContextParameter.setContext(obj);
-		log.error(MContextParameter.getContext()+"");
+//		log.error(MContextParameter.getContext()+"");
 		// keep header into context 
 		MContextParameter.setRequestHeader(requestHeader);
 		// init session context
-		log.error(SessionUtil.getSessionId());
+//		log.error(SessionUtil.getSessionId());
 		if (!"Unknown".equals(SessionUtil.getSessionId())) {
 			MContextParameter.setSessionContext(convertPojoToMData(metaNode));
-			log.error(MContextParameter.getSessionContext()+"");
-			log.error(MContextUtil.getLoginUserId()+"");
+//			log.error(MContextParameter.getSessionContext()+"");
+//			log.error(MContextUtil.getLoginUserId()+"");
 		}
 		try {
 			responseBody = onExecute(requestBody);
@@ -153,18 +152,5 @@ public abstract class BaseTemplate {
 		JsonNode	rootNode	= obj.get(JsonAdaptorObject.TYPE.REQUEST);
 		return new MData(convertPojoToMData(rootNode));
 	}
-	
-//	private boolean getListAllowUrl(String url) {
-//		return ListAllowUrlConst.getListAllowUrl().contains(url) ? true : false;
-//	}
-//	
-//	private String getUrlPath(JsonAdaptorObject obj) {
-//		try {
-//			String urlPath = obj.get(JsonAdaptorObject.TYPE.META).get("urlPath").textValue();
-//			return urlPath;
-//		} catch (Exception e) {
-//			return MStringUtil.EMPTY;
-//		}
-//	}
 	
 }

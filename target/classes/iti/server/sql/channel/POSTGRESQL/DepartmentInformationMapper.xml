@@ -15,24 +15,18 @@
 		     , A.FRST_REG_DT                AS "firstRegisterDate"
 		     , A.LAST_CHNG_DT               AS "lastChangeDate"
 		     , B.TCH_ID                     AS "teacherID"
-		     , B.DEPT_ROLE_CD               AS "departmentRoleCode" 
-		     , C.DEPT_ROLE_NM               AS "departmentRoleName"
-		     , C.DEPT_ROLE_DESC             AS "departmentRoleDesc"
 		     , D.FRST_NM                    AS "firstName"
 		     , D.LAST_NM                    AS "lastName"
-		     , D.NICK_NM                    AS "nickName"
 		  FROM FRST.DEPT_INFO A
 		  LEFT JOIN FRST.DEPT_MNGT B
 		    ON A.DEPT_ID = B.DEPT_ID 
-		   AND B.DEPT_ROLE_CD = '101' --Manager
+		   AND B.DEPT_ROLE_CD = '01' --Manager
 		   AND B.STCD <> '09'
-		  LEFT JOIN FRST.DEPT_ROLE_MNGT C
-		    ON B.DEPT_ROLE_CD = C.DEPT_ROLE_CD
-		   AND C.STCD <> '09'
 		  LEFT JOIN FRST.TCH_DETAIL D 
 		    ON B.TCH_ID = D.TCH_ID 
 		   AND D.STCD <> '09'
-		 WHERE A.DEPT_NM ILIKE '%' || COALESCE(#{departmentName}, '') || '%'
+		 WHERE (A.DEPT_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR A.DEPT_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		 ORDER BY A.DEPT_ID ASC
 		 LIMIT #{limit}
 		OFFSET #{offset}
@@ -46,15 +40,13 @@
 		  FROM FRST.DEPT_INFO A
 		  LEFT JOIN FRST.DEPT_MNGT B
 		    ON A.DEPT_ID = B.DEPT_ID 
-		   AND B.DEPT_ROLE_CD = '101' --Manager
+		   AND B.DEPT_ROLE_CD = '01' --Manager
 		   AND B.STCD <> '09'
-		  LEFT JOIN FRST.DEPT_ROLE_MNGT C
-		    ON B.DEPT_ROLE_CD = C.DEPT_ROLE_CD
-		   AND C.STCD <> '09'
 		  LEFT JOIN FRST.TCH_DETAIL D 
 		    ON B.TCH_ID = D.TCH_ID 
 		   AND D.STCD <> '09'
-		 WHERE A.DEPT_NM ILIKE '%' ||  COALESCE(#{departmentName},'') || '%'
+		 WHERE (A.DEPT_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR A.DEPT_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		]]>
 	</select>
 	
