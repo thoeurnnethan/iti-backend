@@ -71,7 +71,6 @@
 		  FROM FRST.CLS_INFO A
 		 WHERE A.CLS_ID = #{classID}
 		   AND A.DEPT_ID = #{departmentID}
-		   AND A.STCD <> '09'
 		]]>
 	</select>
 	
@@ -113,12 +112,13 @@
 		<![CDATA[
 		UPDATE /* UpdateClassInformation */
 		       FRST.CLS_INFO 
-		   SET CLS_ID = COALESCE(#{classID}, CLS_ID)
-		     , DEPT_ID = COALESCE(#{departmentID}, DEPT_ID)
+		   SET DEPT_ID = COALESCE(#{departmentID}, DEPT_ID)
 		     , CLS_NM = COALESCE(#{className}, CLS_NM)
 		     , CLS_DESC = COALESCE(#{classDesc}, CLS_DESC)
-		     , STCD = COALESCE(#{statusCode}, STCD)
-		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , C_YEAR = COALESCE(#{cyear}, C_YEAR)
+		     , GENR = COALESCE(#{generation}, GENR)
+		     , C_TIME = COALESCE(#{ctime}, C_TIME)
+		     , SEMESTER = COALESCE(#{semester}, SEMESTER)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE CLS_ID = #{classID}
 		   AND DEPT_ID = #{departmentID}

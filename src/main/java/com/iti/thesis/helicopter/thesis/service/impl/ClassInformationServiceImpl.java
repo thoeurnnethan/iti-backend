@@ -108,7 +108,7 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 	public MData updateClassInformation(MData param) throws MException {
 		try {
 			MValidatorUtil.validate(param, "classID","departmentID");
-			MData classInfo = this.retrieveAndValidateClassInfo(param);
+			MData classInfo = classInformationMapper.retrieveClassInformationDetail(param);
 			if(!classInfo.isEmpty()) {
 				classInformationMapper.updateClassInformation(param);
 			}

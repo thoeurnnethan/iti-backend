@@ -60,18 +60,21 @@ public class UserInfoServiceImpl implements UserInfoService {
 			
 			/* Retrieve Valid User for Login */
 			MData	userInfo = userInfoMapper.retrieveUserInfoDetail(param);
+			response = userInfo;
 			
 			String userRoleCode = userInfo.getString("roleID");
 			if (UserRoleCode.ADMIN.getValue().equals(userRoleCode)) {
 				//
+			} else if (UserRoleCode.DEP_MANAGER.getValue().equals(userRoleCode)) {
+				
 			} else if (UserRoleCode.TEACHER.getValue().equals(userRoleCode)) {
 				//
 			} else if (UserRoleCode.STUDENT.getValue().equals(userRoleCode)) {
 				MData studentParm = new MData();
 				studentParm.setString("studentID", userInfo.getString("specificID"));
-				response = studentDetailService.retrieveStudentDetail(studentParm);
+				studentParm.setString("roleID", userInfo.getString("roleID"));
+				response.appendFrom(studentDetailService.retrieveStudentDetailSummary(studentParm));
 			}
-			response.appendFrom(userInfo);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -80,7 +83,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 		return response;
 	}
-
+	
 	@Override
 	public MData registerUserInfoDetail(MData param) throws MException {
 		try {

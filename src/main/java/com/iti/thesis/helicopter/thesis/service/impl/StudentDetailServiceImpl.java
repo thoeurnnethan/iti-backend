@@ -69,10 +69,10 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 		MData outputData = new MData();
 		try {
 			MValidatorUtil.validate(param, "studentID");
-			MData		studentDetail				= studentDetailMapper.retrieveStudentDetail(param);
+//			MData		studentDetail				= studentDetailMapper.retrieveStudentDetail(param);
 			MMultiData	studentParentDetailList		= parentDetailService.retrieveStudentParentDetailList(param);
 			MMultiData	studentAcademicHistoryList	= studentAcademicHistoryService.retrieveStudentAcademicHistoryList(param);
-			outputData = studentDetail;
+//			outputData = studentDetail;
 			outputData.setMMultiData("parentList", studentParentDetailList);
 			outputData.setMMultiData("academicList", studentAcademicHistoryList);
 		} catch (MException e) {
