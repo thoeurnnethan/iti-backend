@@ -1,5 +1,14 @@
 *.class
 .classpath
 .factorypath
-./target/*
+target/
 .vscode
+
+#common ignores
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+.idea/
+*.iml
