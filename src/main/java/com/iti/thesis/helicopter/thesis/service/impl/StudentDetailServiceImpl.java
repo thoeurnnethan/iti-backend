@@ -52,7 +52,7 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 		try {
 			MData	latestStudentInfo	= studentDetailMapper.getLastStudentID(param);
 			String	lastStudentID		= latestStudentInfo.getString("studentID");
-			int		studentID			 = Integer.parseInt(lastStudentID) + 1;
+			int		studentID			= Integer.parseInt(lastStudentID) + 1;
 			return	String.valueOf(studentID);
 		} catch(MNotFoundException e1) {
 			return "1001";

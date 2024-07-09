@@ -28,7 +28,7 @@ public class UserInfoLogin extends BaseTemplate {
 	@Autowired
 	private UserAuthenticationService userAuthenticationService;
 	
-	private final String[] removeKey = {"passwd","secretKey","studentID","firstLoginDate", "parentID"
+	private final String[] removeKey = {"secretKey","studentID","firstLoginDate", "parentID"
 			,"lastLoginDate","lastChangeDate","lastChangeTime","statusCode","userPasswordErrorCount","academicList","parentList"};
 	
 	

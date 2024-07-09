@@ -49,7 +49,7 @@ public class DepartmentInformationInquiryList extends BaseTemplate {
 	
 	private MData prepareResponse(MMultiData depList, MData resCount) {
 		MData		response	= new MData();
-		String[]	keyList		= {"teacherID","firstName","lastName","nickName","departmentRoleCode","departmentRoleName","departmentRoleDesc"};
+		String[]	keyList		= {"teacherID","firstName","lastName","nickName"};
 		depList = MResponseUtil.responseEmptyKey(depList, keyList);
 		response.setInt("totalCount", resCount.getInt("totalCount"));
 		response.setMMultiData("departmentList", depList);

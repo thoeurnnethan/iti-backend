@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
-import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
 import com.iti.thesis.helicopter.thesis.db.service.TeacherDetailMapper;
+import com.iti.thesis.helicopter.thesis.db.service.TeacherQualificationHistoryMapper;
 import com.iti.thesis.helicopter.thesis.service.TeacherDetailService;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
@@ -20,40 +20,27 @@ import lombok.extern.slf4j.Slf4j;
 public class TeacherDetailServiceImpl implements TeacherDetailService {
 	
 	@Autowired
-	private TeacherDetailMapper			teacherDetailMapper;
-	
-	@Override
-	public MMultiData retrieveEmployeeList(MData param) throws MException {
-		MMultiData outputData = new MMultiData();
-		try {
-			outputData = teacherDetailMapper.retrieveEmployeeList(param);
-		} catch (MException e) {
-			log.error(e.getMessage(), e);
-			throw e;
-		} catch (Exception e){
-			throw e;
-		}
-		return outputData;
-	}
-
-	@Override
-	public MData retrieveEmployeeTotalCount(MData param) throws MException {
-		try {
-			return teacherDetailMapper.retrieveEmployeeTotalCount(param);
-		} catch (MException e) {
-			log.error(e.getMessage(), e);
-			throw e;
-		} catch (Exception e){
-			throw e;
-		}
-	}
+	private TeacherDetailMapper					teacherDetailMapper;
+	@Autowired
+	private TeacherQualificationHistoryMapper	teacherQualificationHistoryMapper;
 	
 	@Override
 	public MData registerTeacherDetail(MData param) {
 		try {
-			int lastTeacherID = this.setTeacherID(param);
-			param.setInt("teacherID", lastTeacherID);
+			String lastTeacherID = this.setTeacherID(param);
+			param.setString("teacherID", lastTeacherID);
+			
+			// Register Teacher Detail
 			teacherDetailMapper.registerTeacherDetail(param);
+			
+			// Register Teacher Detail
+			int qualSeqNo = 0;
+			for(MData qual : param.getMMultiData("qualificationList").toListMData()) {
+				qualSeqNo ++;
+				qual.setString("teacherID", lastTeacherID);
+				qual.setInt("seqNo", qualSeqNo);
+				teacherQualificationHistoryMapper.registerTeacherQualificationHistory(qual);
+			}
 			return param;
 		} catch (MException e) {
 			throw e;
@@ -63,7 +50,7 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 		}
 	}
 	
-	private int setTeacherID(MData param) {
+	private String setTeacherID(MData param) {
 		int result = 0;
 		try {
 			MData lastTeacherID	= teacherDetailMapper.retrieveLastTeacherID(param);
@@ -77,7 +64,7 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
-		return result;
+		return String.valueOf(result);
 	}
 
 	@Override

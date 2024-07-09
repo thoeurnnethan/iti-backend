@@ -12,6 +12,7 @@ import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.service.UserInfoService;
+import com.iti.thesis.helicopter.thesis.util.MResponseUtil;
 
 import lombok.extern.slf4j.Slf4j;;
 
@@ -22,6 +23,8 @@ public class UserInfoInquiryDetail extends BaseTemplate {
 	
 	@Autowired
 	private UserInfoService		userInfoService;
+	private final String[] removeKey = {"secretKey","parentID","firstLoginDate", "parentID"
+			,"lastLoginDate","statusCode","userPasswordErrorCount"};
 	
 	@Override
 	@PostMapping("/detail")
@@ -38,7 +41,7 @@ public class UserInfoInquiryDetail extends BaseTemplate {
 	@Override
 	public MData onExecute(MData param) throws MException {
 		try {
-			return userInfoService.retrieveUserInfoDetail(param);
+			return MResponseUtil.removeKey(userInfoService.retrieveUserInfoDetail(param), removeKey);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

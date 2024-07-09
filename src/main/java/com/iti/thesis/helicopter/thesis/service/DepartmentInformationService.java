@@ -9,7 +9,6 @@ public interface DepartmentInformationService {
 	public MMultiData retrieveDepartmentInformationList(MData param) throws MException;
 	public MData registerDepartmentInformation(MData param) throws MException;
 	public MData retrieveDepartmentInformationDetail(MData param) throws MException;
-	public MData retrieveLastNewsEventID(MData param) throws MException;
 	public MData retrieveDepartmentInformationTotalCount(MData param) throws MException;
 	public MData updateDepartmentInformation(MData param) throws MException;
 

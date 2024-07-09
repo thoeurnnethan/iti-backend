@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.TeacherQualificationHistoryMapper">
+
+	<select id="retrieveEmployeeListss" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveEmployeeList */
+		       STD_ID                AS "studentID"
+		     , STD_NM                AS "studentName"
+		     , GENDER                AS "gender"
+		     , DOB                   AS "dateOfBirth"
+		     , POB                   AS "placeOfBirth"
+		     , POS_DESC              AS "positionDesc"
+		     , BANK_ACC_NO           AS "bankAccountNo"
+		  FROM FRST.TBL_EMPLOYEE
+		 ORDER BY STD_ID DESC
+		 LIMIT #{limit}
+		OFFSET #{offset}
+		]]>
+	</select>
+
+	<insert id="registerTeacherQualificationHistory">
+		<![CDATA[
+		INSERT /* RegisterTeacherQualificationHistory */
+		  INTO FRST.TCH_QUF_HIS 
+		     ( TCH_ID
+		     , SEQNO 
+		     , QUAL_NM
+		     , QUAL_DESC 
+		     , STRT_DT
+		     , END_DT 
+		     , CERT_DT
+		     , STCD 
+		     , FRST_REG_DT
+		     , FRST_REG_TIME 
+		     , LAST_CHNG_DT 
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{teacherID}
+		     , #{seqNo}
+		     , COALESCE(#{qualificationName}, '')
+		     , COALESCE(#{qualificationDesc}, '')
+		     , COALESCE(#{startDate}, '')
+		     , COALESCE(#{endDate}, '')
+		     , COALESCE(#{certificatedDate}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateEmployeess">
+		<![CDATA[
+		UPDATE /* UpdateEmployee */
+		       FRST.TBL_EMPLOYEE
+		   SET STD_NM = COALESCE(#{studentName}, STD_NM)
+		     , GENDER = COALESCE(#{gender}, GENDER)
+		     , DOB = COALESCE(#{dateOfBirth}, DOB)
+		     , POB = COALESCE(#{placeOfBirth}, POB)
+		     , ADDRESS = COALESCE(#{address}, ADDRESS)
+		     , POS_DESC = COALESCE(#{positionDesc}, POS_DESC)
+		     , BANK_ACC_NO = COALESCE(#{bankAccountNo}, BANK_ACC_NO)
+		 WHERE STD_ID = #{studentID}
+		]]>
+	</update>
+
+</mapper>

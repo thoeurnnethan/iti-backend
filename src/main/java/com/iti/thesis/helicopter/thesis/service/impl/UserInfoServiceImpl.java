@@ -89,8 +89,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 		try {
 			MValidatorUtil.validate(param, "userList");
 			MData		outputData	= new MData();
+			
 			MMultiData	userList	= param.getMMultiData("userList");
-			for(MData userInfo : userList.toListMData()) {
+			for(MData userInfo		: userList.toListMData()) {
 				String	roleID		= userInfo.getString("roleID");
 				String	userID		= this.generateUserID(userInfo);
 				String	passwd		= MGenerateIDUtil.generateUserPassword();
@@ -103,21 +104,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 				userInfoMapper.registerUserInfoDetail(userInfo);
 				
 				String specificID = MStringUtil.EMPTY;
-				// Register Admin Information
-				if (UserRoleCode.ADMIN.getValue().equals(roleID)) {
-					// MData	adminInfo		= userInfo.getMData("adminInfo");
-				} 
-				// Register Teacher Information
-				else if (UserRoleCode.TEACHER.getValue().equals(roleID)) {
+				// Register Admin, Department Manager, Teacher Information
+				if (UserRoleCode.ADMIN.getValue().equals(roleID) ||
+						UserRoleCode.DEP_MANAGER.getValue().equals(roleID) ||
+						UserRoleCode.TEACHER.getValue().equals(roleID)) {
 					MData	teacherInfo		= userInfo.getMData("teacherInfo");
-					teacherInfo.setString("statusCode", StatusCode.ACTIVE.getValue());
-					MData response = teacherDetailService.registerTeacherDetail(teacherInfo);
+					MData	response		= teacherDetailService.registerTeacherDetail(teacherInfo);
 					specificID = response.getString("teacherID");
 				} 
 				// Register Student Information 
 				else if (UserRoleCode.STUDENT.getValue().equals(roleID)) {
 					MData	studentInfo		= userInfo.getMData("studentInfo");
-					MData response = studentDetailService.registerStudentDetail(studentInfo);
+					MData	response		= studentDetailService.registerStudentDetail(studentInfo);
 					specificID = response.getString("studentID");
 				}
 				// Update Specific Identifier (StudentID or TeacherID or AdminID)

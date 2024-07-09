@@ -36,13 +36,13 @@ public class DepartmentInformationMapperImpl implements DepartmentInformationMap
 	}
 
 	@Override
-	public MData retrieveLastNewsEventID(MData param) throws MException {
-		return channelDBDao.selectOne("retrieveLastNewsEventID", param);
+	public int updateDepartmentInformation(MData param) throws MException {
+		return channelDBDao.update("updateDepartmentInformation", param);
 	}
 
 	@Override
-	public int updateDepartmentInformation(MData param) throws MException {
-		return channelDBDao.update("updateDepartmentInformation", param);
+	public MData retrieveLastDepartmentID(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveLastDepartmentID", param);
 	}
 	
 }

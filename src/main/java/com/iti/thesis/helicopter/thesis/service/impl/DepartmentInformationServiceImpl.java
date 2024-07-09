@@ -3,6 +3,7 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
 import com.iti.thesis.helicopter.thesis.constant.DepartmentRoleCode;
 import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
@@ -31,7 +32,10 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 	@Override
 	public MData registerDepartmentInformation(MData param) {
 		try {
+			MValidatorUtil.validate(param, "departmentName", "departmentDesc");
 			MData	outputData	= param;
+			String lastDeptID = this.retrieveLastDepartmentID(param);
+			param.setString("departmentID", lastDeptID);
 			departmentInformationMapper.registerDepartmentInformation(param);
 			return outputData;
 		} catch (MException e) {
@@ -41,18 +45,16 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 	}
-
+	
 	@Override
 	public MMultiData retrieveDepartmentInformationList(MData param) throws MException {
-		MMultiData outputData = new MMultiData();
 		try {
-			outputData = departmentInformationMapper.retrieveDepartmentInformationList(param);
+			return departmentInformationMapper.retrieveDepartmentInformationList(param);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
-		return outputData;
 	}
 
 	@Override
@@ -126,9 +128,23 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 		}
 	}
 
-	@Override
-	public MData retrieveLastNewsEventID(MData param) throws MException {
-		return null;
+	private String retrieveLastDepartmentID(MData param) throws MException {
+		int result = 0;
+		try {
+			MData departmentInfo = departmentInformationMapper.retrieveLastDepartmentID(param);
+			String resultStr = departmentInfo.getString("departmentID");
+			resultStr = resultStr.substring(ConstantCodePrefix.DEPARTMENT.getValue().length(), resultStr.length());
+			result = Integer.valueOf(resultStr);
+			result ++;
+		} catch (MNotFoundException e) {
+			result = 1001;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+		return ConstantCodePrefix.DEPARTMENT.getValue() + String.valueOf(String.format("%04d", result));
 	}
 
 }

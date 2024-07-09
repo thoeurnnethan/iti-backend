@@ -1,4 +1,4 @@
 .classpath
 .factorypath
-./target
+/target
 .vscode

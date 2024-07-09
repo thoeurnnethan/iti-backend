@@ -89,7 +89,6 @@
 		     , ROLE_ID                     AS "roleID"
 		  FROM FRST.USER_INFO 
 		 WHERE USER_ID = #{userID}
-		   AND ROLE_ID = #{roleID}
 		]]>
 	</select>
 	
