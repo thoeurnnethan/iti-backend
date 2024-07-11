@@ -8,10 +8,14 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ConstantCodePrefix {
 
+	// Value must be 3 digits
 	DEPARTMENT("DEP", "Department"),
 	CLASS("CLS", "Class"),
-	ROOM("RM", "Class"),
-	USER("US", "Class");
+	ROOM("ROM", "Room"),
+	ADMIN("ADM", "Admin"),
+	DEPARTENT_MGT("DMG", "Admin"),
+	TEACHER("TCH", "Admin"),
+	STUDNET("STD", "Student");
 	
 	private String value;
 	private String description;

@@ -3,6 +3,8 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
+import com.iti.thesis.helicopter.thesis.constant.UserRoleCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
@@ -11,6 +13,7 @@ import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
 import com.iti.thesis.helicopter.thesis.db.service.TeacherDetailMapper;
 import com.iti.thesis.helicopter.thesis.db.service.TeacherQualificationHistoryMapper;
 import com.iti.thesis.helicopter.thesis.service.TeacherDetailService;
+import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,17 +30,15 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 	@Override
 	public MData registerTeacherDetail(MData param) {
 		try {
-			String lastTeacherID = this.setTeacherID(param);
-			param.setString("teacherID", lastTeacherID);
-			
+			String tacherID = this.getLastTeacherID(param);
+			param.setString("teacherID", tacherID);
 			// Register Teacher Detail
 			teacherDetailMapper.registerTeacherDetail(param);
-			
 			// Register Teacher Detail
 			int qualSeqNo = 0;
 			for(MData qual : param.getMMultiData("qualificationList").toListMData()) {
 				qualSeqNo ++;
-				qual.setString("teacherID", lastTeacherID);
+				qual.setString("teacherID", tacherID);
 				qual.setInt("seqNo", qualSeqNo);
 				teacherQualificationHistoryMapper.registerTeacherQualificationHistory(qual);
 			}
@@ -50,12 +51,24 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 		}
 	}
 	
-	private String setTeacherID(MData param) {
-		int result = 0;
+	private String getLastTeacherID(MData param) {
+		String	prefix = MStringUtil.EMPTY;
+		int		result = 0;
 		try {
-			MData lastTeacherID	= teacherDetailMapper.retrieveLastTeacherID(param);
-			result				= lastTeacherID.getInt("lastTeacherID");
-			result++;
+			String userRole = param.getString("roleID");
+			if(UserRoleCode.ADMIN.getValue().equals(userRole)) {
+				prefix = ConstantCodePrefix.ADMIN.getValue();
+			}else if(UserRoleCode.DEP_MANAGER.getValue().equals(userRole)) {
+				prefix = ConstantCodePrefix.DEPARTENT_MGT.getValue();
+			}else {
+				prefix = ConstantCodePrefix.TEACHER.getValue();
+			}
+			param.setString("prefix", prefix);
+			MData	lastTeacherID	= teacherDetailMapper.retrieveLastTeacherID(param);
+			String	teacherID		= lastTeacherID.getString("teacherID");
+			teacherID = teacherID.substring(prefix.length(), teacherID.length());
+			result			= Integer.valueOf(teacherID);
+			result ++;
 		} catch (MNotFoundException e) {
 			result = 1001;
 		} catch (MException e) {
@@ -64,7 +77,7 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
-		return String.valueOf(result);
+		return prefix + String.valueOf(String.format("%04d", result));
 	}
 
 	@Override

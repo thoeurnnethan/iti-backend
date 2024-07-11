@@ -10,7 +10,7 @@
 		SELECT /* RetrieveClassInformationList */
 		       A.CLS_ID                     AS "classID"
 		     , A.DEPT_ID                    AS "departmentID"
-		     , B.DEPT_NM                    AS "departentName"
+		     , B.DEPT_NM                    AS "departmentName"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
 		     , C_YEAR                       AS "year"
@@ -53,8 +53,6 @@
 		SELECT /* RetrieveLastClassID */
 		       CLS_ID                AS "classID"
 		  FROM FRST.CLS_INFO A
-		 WHERE DEPT_ID = #{departmentID}
-		   AND A.STCD <> '09'
 		 ORDER BY CLS_ID DESC
 		 LIMIT 1
 		]]>

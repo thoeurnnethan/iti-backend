@@ -3,6 +3,7 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
@@ -52,14 +53,14 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 
 	@Override
 	public MData registerClassInformation(MData param) {
+		MData	outputData		= param;
 		try {
 			MValidatorUtil.validate(param, "departmentID", "className","cyear","generation","semester");
 			
-			MData	outputData		= param;
 			MData	departmentInfo	= departmentInformationMapper.retrieveDepartmentInformationDetail(param);
 			if(!departmentInfo.isEmpty()) {
-				int classID = this.retrieveLastClassID(param);
-				param.setInt("classID", classID);
+				String classID = this.retrieveLastClassID(param);
+				param.setString("classID", classID);
 				classInformationMapper.registerClassInformation(param);
 			}
 			return outputData;
@@ -71,23 +72,23 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 		}
 	}
 	
-	private int retrieveLastClassID(MData param) {
+	private String retrieveLastClassID(MData param) {
+		int result = 0 ;
 		try {
-			MData classInfo = classInformationMapper.retrieveLastClassID(param);
-			int classID = classInfo.getInt("classID");
-			classID++;
-			return classID;
+			MData	classInfo	= classInformationMapper.retrieveLastClassID(param);
+			String	resultStr	= classInfo.getString("classID");
+			resultStr	= resultStr.substring(ConstantCodePrefix.CLASS.getValue().length(), resultStr.length());
+			result		= Integer.valueOf(resultStr);
+			result ++;
 		} catch (MNotFoundException e) {
-			return 1001;
+			result = 1001;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
-	}
-	
-	private MData retrieveAndValidateClassInfo(MData param) {
-		try {
-			return this.retrieveClassInformationDetail(param);
-		} catch (MNotFoundException e) {
-			return new MData();
-		}
+		return ConstantCodePrefix.CLASS.getValue() + String.valueOf(String.format("%04d", result));
 	}
 	
 	@Override
@@ -119,11 +120,6 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
-	}
-
-	@Override
-	public MData retrieveLastNewsEventID(MData param) throws MException {
-		return null;
 	}
 
 }

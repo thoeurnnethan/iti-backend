@@ -109,6 +109,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 						UserRoleCode.DEP_MANAGER.getValue().equals(roleID) ||
 						UserRoleCode.TEACHER.getValue().equals(roleID)) {
 					MData	teacherInfo		= userInfo.getMData("teacherInfo");
+					teacherInfo.setString("roleID", roleID);
 					MData	response		= teacherDetailService.registerTeacherDetail(teacherInfo);
 					specificID = response.getString("teacherID");
 				} 
@@ -117,6 +118,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 					MData	studentInfo		= userInfo.getMData("studentInfo");
 					MData	response		= studentDetailService.registerStudentDetail(studentInfo);
 					specificID = response.getString("studentID");
+				}else {
+					throw new MNotFoundException("User role not match !");
 				}
 				// Update Specific Identifier (StudentID or TeacherID or AdminID)
 				userInfo.setString("specificID", specificID);

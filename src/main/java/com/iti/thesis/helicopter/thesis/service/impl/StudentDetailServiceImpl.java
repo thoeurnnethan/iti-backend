@@ -3,6 +3,7 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
@@ -49,19 +50,22 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 	}
 	
 	private String getLastStudentID(MData param) {
+		int result = 0;
 		try {
 			MData	latestStudentInfo	= studentDetailMapper.getLastStudentID(param);
 			String	lastStudentID		= latestStudentInfo.getString("studentID");
-			int		studentID			= Integer.parseInt(lastStudentID) + 1;
-			return	String.valueOf(studentID);
-		} catch(MNotFoundException e1) {
-			return "1001";
+			lastStudentID	= lastStudentID.substring(ConstantCodePrefix.STUDNET.getValue().length(), lastStudentID.length());
+			result			= Integer.valueOf(lastStudentID);
+			result ++;
+		} catch(MNotFoundException e) {
+			result = 1001;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
 			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
+		return ConstantCodePrefix.STUDNET.getValue() + String.valueOf(String.format("%04d", result));
 	}
 	
 	@Override

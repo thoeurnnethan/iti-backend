@@ -31,10 +31,10 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 	
 	@Override
 	public MData registerDepartmentInformation(MData param) {
+		MData	outputData	= param;
 		try {
 			MValidatorUtil.validate(param, "departmentName", "departmentDesc");
-			MData	outputData	= param;
-			String lastDeptID = this.retrieveLastDepartmentID(param);
+			String	lastDeptID = this.retrieveLastDepartmentID(param);
 			param.setString("departmentID", lastDeptID);
 			departmentInformationMapper.registerDepartmentInformation(param);
 			return outputData;
@@ -131,10 +131,10 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 	private String retrieveLastDepartmentID(MData param) throws MException {
 		int result = 0;
 		try {
-			MData departmentInfo = departmentInformationMapper.retrieveLastDepartmentID(param);
-			String resultStr = departmentInfo.getString("departmentID");
-			resultStr = resultStr.substring(ConstantCodePrefix.DEPARTMENT.getValue().length(), resultStr.length());
-			result = Integer.valueOf(resultStr);
+			MData	departmentInfo	= departmentInformationMapper.retrieveLastDepartmentID(param);
+			String	resultStr		= departmentInfo.getString("departmentID");
+			resultStr	= resultStr.substring(ConstantCodePrefix.DEPARTMENT.getValue().length(), resultStr.length());
+			result		= Integer.valueOf(resultStr);
 			result ++;
 		} catch (MNotFoundException e) {
 			result = 1001;

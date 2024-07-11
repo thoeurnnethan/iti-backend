@@ -9,7 +9,6 @@ public interface ClassInformationService {
 	public MMultiData retrieveClassInformationList(MData param) throws MException;
 	public MData registerClassInformation(MData param) throws MException;
 	public MData retrieveClassInformationDetail(MData param) throws MException;
-	public MData retrieveLastNewsEventID(MData param) throws MException;
 	public MData retrieveClassInformationTotalCount(MData param) throws MException;
 	public MData updateClassInformation(MData param) throws MException;
 

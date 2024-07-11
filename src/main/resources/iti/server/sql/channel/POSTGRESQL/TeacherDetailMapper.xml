@@ -48,8 +48,9 @@
 	<select id="retrieveLastTeacherID" resultType="MData">
 		<![CDATA[
 		SELECT /* RetrieveLastTeacherID */
-		       TCH_ID                  AS "lastTeacherID"
+		       TCH_ID                  AS "teacherID"
 		  FROM FRST.TCH_DETAIL
+		 WHERE TCH_ID LIKE #{prefix} || '%'
 		 ORDER BY TCH_ID DESC 
 		 LIMIT 1
 		]]>
