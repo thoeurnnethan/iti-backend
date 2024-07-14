@@ -18,6 +18,10 @@
 		     , GENR                         AS "generation"
 		     , SEMESTER                     AS "semester"
 		     , A.STCD                       AS "statusCode"
+		     , A.FRST_REG_DT                AS "firstRegisterDate"
+		     , A.FRST_REG_TIME              AS "firstRegisterTime"
+		     , A.LAST_CHNG_DT               AS "lastChangeDate"
+		     , A.LAST_CHNG_TIME             AS "lastChangeTime"
 		  FROM FRST.CLS_INFO A
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID 
@@ -25,8 +29,8 @@
 		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%'
 		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%')
 		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
-		 ORDER BY A.LAST_CHNG_DT DESC 
-		        , A.LAST_CHNG_TIME DESC 
+		 ORDER BY A.STCD
+		        , A.CLS_ID DESC
 		 LIMIT #{limit}
 		OFFSET #{offset}
 		]]>
