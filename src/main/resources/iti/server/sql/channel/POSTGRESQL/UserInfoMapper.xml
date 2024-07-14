@@ -142,7 +142,7 @@
 		     , COALESCE(#{specificID}, '')
 		     , COALESCE(#{firstName}, '')
 		     , COALESCE(#{lastName}, '')
-		     , COALESCE(#{nickname}, '')
+		     , COALESCE(#{nickName}, '')
 		     , COALESCE(#{gender}, '')
 		     , COALESCE(#{dateOfBirth}, '')
 		     , COALESCE(#{placeOfBirth}, '')

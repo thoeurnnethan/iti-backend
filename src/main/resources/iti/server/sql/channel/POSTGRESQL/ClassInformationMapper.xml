@@ -25,7 +25,6 @@
 		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%'
 		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%')
 		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
-		   AND A.STCD <> '09'
 		 ORDER BY A.LAST_CHNG_DT DESC 
 		        , A.LAST_CHNG_TIME DESC 
 		 LIMIT #{limit}
