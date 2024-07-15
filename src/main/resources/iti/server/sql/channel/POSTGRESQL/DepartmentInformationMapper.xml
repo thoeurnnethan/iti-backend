@@ -28,7 +28,8 @@
 		   AND D.ROLE_ID = '02'  -- Department Manager
 		 WHERE (A.DEPT_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR A.DEPT_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
-		 ORDER BY A.DEPT_ID ASC
+		 ORDER BY A.STCD 
+		        , A.DEPT_ID DESC 
 		 LIMIT #{limit}
 		OFFSET #{offset}
 		]]>
