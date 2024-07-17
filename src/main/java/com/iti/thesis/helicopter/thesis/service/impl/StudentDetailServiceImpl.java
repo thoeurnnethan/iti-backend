@@ -43,7 +43,6 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 		return param;
@@ -62,7 +61,6 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 		return ConstantCodePrefix.STUDNET.getValue() + String.valueOf(String.format("%04d", result));
@@ -72,7 +70,7 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 	public MData retrieveStudentDetailSummary(MData param) throws MException {
 		MData outputData = new MData();
 		try {
-			MValidatorUtil.validate(param, "studentID");
+			MValidatorUtil.validate(param, "studentID","roleID");
 //			MData		studentDetail				= studentDetailMapper.retrieveStudentDetail(param);
 			MMultiData	studentParentDetailList		= parentDetailService.retrieveStudentParentDetailList(param);
 			MMultiData	studentAcademicHistoryList	= studentAcademicHistoryService.retrieveStudentAcademicHistoryList(param);
@@ -82,7 +80,6 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 		return outputData;
@@ -95,7 +92,6 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 	}
@@ -107,7 +103,6 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 	}
@@ -119,7 +114,17 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+
+	@Override
+	public void updateStudentDetail(MData param) throws MException {
+		try {
+			studentDetailMapper.retrieveTotalCountStudentDetailList(param);
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 	}

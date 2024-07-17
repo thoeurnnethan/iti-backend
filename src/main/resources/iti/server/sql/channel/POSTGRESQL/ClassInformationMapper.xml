@@ -126,6 +126,7 @@
 		     , C_TIME = COALESCE(#{ctime}, C_TIME)
 		     , SEMESTER = COALESCE(#{semester}, SEMESTER)
 		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE CLS_ID = #{classID}
 		   AND DEPT_ID = #{departmentID}

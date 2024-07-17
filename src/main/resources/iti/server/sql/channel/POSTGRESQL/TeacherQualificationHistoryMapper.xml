@@ -1,24 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.iti.thesis.helicopter.thesis.db.service.TeacherQualificationHistoryMapper">
 
-	<select id="retrieveEmployeeListss" resultType="MData">
+	<select id="retrieveListTeacherQualificationHistory" resultType="MData">
 		<![CDATA[
-		SELECT /* RetrieveEmployeeList */
-		       STD_ID                AS "studentID"
-		     , STD_NM                AS "studentName"
-		     , GENDER                AS "gender"
-		     , DOB                   AS "dateOfBirth"
-		     , POB                   AS "placeOfBirth"
-		     , POS_DESC              AS "positionDesc"
-		     , BANK_ACC_NO           AS "bankAccountNo"
-		  FROM FRST.TBL_EMPLOYEE
-		 ORDER BY STD_ID DESC
-		 LIMIT #{limit}
-		OFFSET #{offset}
+		SELECT /* RetrieveListTeacherQualificationHistory */
+		       TCH_ID                AS "teacherID"
+		     , SEQNO                 AS "seqNo"
+		     , QUAL_NM               AS "qualificationName"
+		     , QUAL_DESC             AS "qualificationDesc"
+		     , STRT_DT               AS "startDate"
+		     , END_DT                AS "endDate"
+		  FROM FRST.TCH_QUF_HIS
+		 WHERE TCH_ID = #{teacherID}
+		   AND STRT_DT <> '09'
+		 ORDER BY SEQNO 
+		]]>
+	</select>
+
+	<select id="retrieveTeacherQualificationHistoryDetail" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveTeacherQualificationHistoryDetail */
+		       TCH_ID                AS "teacherID"
+		     , SEQNO                 AS "seqNo"
+		     , QUAL_NM               AS "qualificationName"
+		     , QUAL_DESC             AS "qualificationDesc"
+		     , STRT_DT               AS "startDate"
+		     , END_DT                AS "endDate"
+		  FROM FRST.TCH_QUF_HIS
+		 WHERE TCH_ID = #{teacherID}
+		   AND SEQNO = #{seqNo}
+		   AND STRT_DT <> '09'
+		 LIMIT 1
+		]]>
+	</select>
+
+	<select id="retrieveLatestSeqNo" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveLatestSeqNo */
+		      SEQNO                 AS "seqNo"
+		  FROM FRST.TCH_QUF_HIS
+		 WHERE TCH_ID = #{teacherID}
+		   AND STRT_DT <> '09'
+		 ORDER BY SEQNO DESC
+		 LIMIT 1
 		]]>
 	</select>
 
@@ -54,18 +81,19 @@
 		]]>
 	</insert>
 
-	<update id="updateEmployeess">
+	<update id="updateTeacherQualification">
 		<![CDATA[
-		UPDATE /* UpdateEmployee */
-		       FRST.TBL_EMPLOYEE
-		   SET STD_NM = COALESCE(#{studentName}, STD_NM)
-		     , GENDER = COALESCE(#{gender}, GENDER)
-		     , DOB = COALESCE(#{dateOfBirth}, DOB)
-		     , POB = COALESCE(#{placeOfBirth}, POB)
-		     , ADDRESS = COALESCE(#{address}, ADDRESS)
-		     , POS_DESC = COALESCE(#{positionDesc}, POS_DESC)
-		     , BANK_ACC_NO = COALESCE(#{bankAccountNo}, BANK_ACC_NO)
-		 WHERE STD_ID = #{studentID}
+		 UPDATE /* UpdateTeacherQualification */
+		       FRST.TCH_QUF_HIS
+		   SET QUAL_NM = COALESCE(#{qualificationName}, QUAL_NM)
+		     , QUAL_DESC = COALESCE(#{qualificationDesc}, QUAL_DESC)
+		     , STRT_DT = COALESCE(#{startDate}, STRT_DT)
+		     , END_DT = COALESCE(#{endDate}, END_DT)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE TCH_ID = #{teacherID}
+		   AND SEQNO = #{seqNo}
 		]]>
 	</update>
 

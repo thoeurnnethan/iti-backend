@@ -92,7 +92,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				}
 //				updateSessionInfoData(param);
 				userInfo.setString("lastLoginDate", MDateUtil.getCurrentDate());
-				userInfoService.updateUserInfoDetail(userInfo);
+				userInfoService.updateUserLoginInfo(userInfo);
 				response.appendFrom(userInfo);
 				// Change Context data
 				log.error(MContextParameter.getSessionContext().toString());
@@ -128,7 +128,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 					errorData.setString("statusCode", UserStatusCode.LOCK.getValue());
 				}
 			}
-			userInfoService.updateUserInfoDetail(errorData);
+			userInfoService.updateUserLoginInfo(errorData);
 		}
 		return response;
 	}

@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
+import com.iti.thesis.helicopter.thesis.common.ErrorCode.UserErrorCode;
 import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.constant.UserRoleCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
@@ -53,6 +54,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
+	public MData retrieveUserInfoTotalCount(MData param) throws MException {
+		try {
+			return userInfoMapper.retrieveUserInfoTotalCount(param);
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
+		}
+	}
+
+	@Override
 	public MData retrieveUserInfoDetail(MData param) throws MException {
 		MData	response	= new MData();
 		try {
@@ -63,17 +76,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 			response = userInfo;
 			
 			String userRoleCode = userInfo.getString("roleID");
-			if (UserRoleCode.ADMIN.getValue().equals(userRoleCode)) {
-				//
-			} else if (UserRoleCode.DEP_MANAGER.getValue().equals(userRoleCode)) {
-				
-			} else if (UserRoleCode.TEACHER.getValue().equals(userRoleCode)) {
-				//
+			if (UserRoleCode.ADMIN.getValue().equals(userRoleCode)
+					|| UserRoleCode.DEP_MANAGER.getValue().equals(userRoleCode)
+					|| UserRoleCode.TEACHER.getValue().equals(userRoleCode)) {
+				MData teacherParam = new MData();
+				teacherParam.setString("teacherID", userInfo.getString("specificID"));
+				teacherParam.setString("roleID", userInfo.getString("roleID"));
+				response.appendFrom(teacherDetailService.retrieveTeacherDetail(teacherParam));
 			} else if (UserRoleCode.STUDENT.getValue().equals(userRoleCode)) {
-				MData studentParm = new MData();
-				studentParm.setString("studentID", userInfo.getString("specificID"));
-				studentParm.setString("roleID", userInfo.getString("roleID"));
-				response.appendFrom(studentDetailService.retrieveStudentDetailSummary(studentParm));
+				MData studentParam = new MData();
+				studentParam.setString("studentID", userInfo.getString("specificID"));
+				studentParam.setString("roleID", userInfo.getString("roleID"));
+				response.appendFrom(studentDetailService.retrieveStudentDetailSummary(studentParam));
 			}
 		} catch (MException e) {
 			throw e;
@@ -109,7 +123,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 						UserRoleCode.DEP_MANAGER.getValue().equals(roleID) ||
 						UserRoleCode.TEACHER.getValue().equals(roleID)) {
 					MData	teacherInfo		= userInfo.getMData("teacherInfo");
-					teacherInfo.setString("roleID", roleID);
 					MData	response		= teacherDetailService.registerTeacherDetail(teacherInfo);
 					specificID = response.getString("teacherID");
 				} 
@@ -119,11 +132,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 					MData	response		= studentDetailService.registerStudentDetail(studentInfo);
 					specificID = response.getString("studentID");
 				}else {
-					throw new MNotFoundException("User role not match !");
+					throw new MException("User role not match !");
 				}
-				// Update Specific Identifier (StudentID or TeacherID or AdminID)
+				// Update Specific Identifier (StudentID or TeacherID)
 				userInfo.setString("specificID", specificID);
-				userInfoMapper.updateUserInfoDetail(userInfo);
+				userInfoMapper.updateUserLoginInfo(userInfo);
 				
 				outputData.setString("userID", userID);
 				outputData.setString("password", passwd);
@@ -170,7 +183,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	
 
 	@Override
-	public int updateUserInfoDetail(MData param) throws MException {
+	public int updateUserLoginInfo(MData param) throws MException {
 		String subTransactionName = "TX_SUB_updateLoginErr_"+ MGUIDUtil.generateGUID();
 		DefaultTransactionAttribute defaultTransactionAttribute = new DefaultTransactionAttribute();
 		defaultTransactionAttribute.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -181,7 +194,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		try {
 			txStatus	= txManager.getTransaction(defaultTransactionAttribute);
 			
-			result		= userInfoMapper.updateUserInfoDetail(param);
+			result		= userInfoMapper.updateUserLoginInfo(param);
 			
 			log.info("Commit Transaction : {}", subTransactionName);
 			txManager.commit(txStatus);
@@ -201,13 +214,41 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public MData retrieveUserInfoTotalCount(MData param) throws MException {
+	public MData updateUserInfo(MData param) throws MException {
 		try {
-			return userInfoMapper.retrieveUserInfoTotalCount(param);
+			MValidatorUtil.validate(param, "userID");
+			
+			// Retrieve User Info 
+			MData	userInfo	= userInfoMapper.retrieveUserInfoDetail(param);
+			String	roleID		= userInfo.getString("roleID");
+			
+			// Update User Info
+			param.setString("specificID", userInfo.getString("specificID"));
+			userInfoMapper.updateUserInfo(param);
+			
+			// Update Specific User Info
+			if(UserRoleCode.ADMIN.getValue().equals(roleID)
+					|| UserRoleCode.DEP_MANAGER.getValue().equals(roleID)
+					|| UserRoleCode.TEACHER.getValue().equals(roleID)) {
+				MValidatorUtil.validate(param, "teacherInfo");
+				
+				MData	teacherInfo		= param.getMData("teacherInfo");
+				teacherInfo.setString("teacherID", userInfo.getString("specificID"));
+				teacherDetailService.updateTeacherDetail(teacherInfo);
+			}else if(UserRoleCode.STUDENT.getValue().equals(roleID)) {
+				MValidatorUtil.validate(param, "studentInfo");
+
+				MData	studentInfo		= param.getMData("studentInfo");
+				studentInfo.setString("studentID", userInfo.getString("specificID"));
+				studentDetailService.updateStudentDetail(studentInfo);
+			}
+			
+			return null;
+		} catch (MNotFoundException e) {
+			throw new MException(UserErrorCode.USER_NOT_FOUND.getValue(), UserErrorCode.USER_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
 		}
 	}

@@ -18,13 +18,13 @@ import lombok.extern.slf4j.Slf4j;;
 @Slf4j
 @RestController
 @RequestMapping("/api/user")
-public class UserInfoRegister extends BaseTemplate {
+public class UserInfoUpdate extends BaseTemplate {
 	
 	@Autowired
 	private UserInfoService		userInfoService;
 	
 	@Override
-	@PostMapping("/register")
+	@PostMapping("/update")
 	public JsonNode onRequest(@RequestBody MData message) throws MException {
 		try {
 			return super.onProcess(message);
@@ -39,7 +39,7 @@ public class UserInfoRegister extends BaseTemplate {
 	public MData onExecute(MData param) throws MException {
 		MData response = new MData();
 		try {
-			response = userInfoService.registerUserInfoDetail(param);
+			response = userInfoService.updateUserInfo(param);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

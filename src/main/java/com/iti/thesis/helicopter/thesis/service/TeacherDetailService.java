@@ -6,7 +6,7 @@ import com.iti.thesis.helicopter.thesis.core.exception.MException;
 public interface TeacherDetailService {
 
 	public MData registerTeacherDetail(MData param) throws MException;
-	public int updateEmployee(MData param) throws MException;
-	public MData retrieveEmployeeDetail(MData reqParam) throws MException;
+	public void updateTeacherDetail(MData param) throws MException;
+	public MData retrieveTeacherDetail(MData reqParam) throws MException;
 
 }

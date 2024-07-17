@@ -26,8 +26,8 @@ public class UserInfoMapperImpl implements UserInfoMapper {
 	}
 	
 	@Override
-	public int updateUserInfoDetail(MData param) throws MException {
-		return channelDBDao.update("updateUserInfoDetail", param);
+	public int updateUserLoginInfo(MData param) throws MException {
+		return channelDBDao.update("updateUserLoginInfo", param);
 	}
 	
 	@Override
@@ -43,6 +43,11 @@ public class UserInfoMapperImpl implements UserInfoMapper {
 	@Override
 	public MData retrieveUserInfoTotalCount(MData param) throws MException {
 		return channelDBDao.selectOne("retrieveUserInfoTotalCount", param);
+	}
+
+	@Override
+	public int updateUserInfo(MData param) throws MException {
+		return channelDBDao.update("updateUserInfo", param);
 	}
 	
 }
