@@ -243,7 +243,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				studentDetailService.updateStudentDetail(studentInfo);
 			}
 			
-			return null;
+			return param;
 		} catch (MNotFoundException e) {
 			throw new MException(UserErrorCode.USER_NOT_FOUND.getValue(), UserErrorCode.USER_NOT_FOUND.getDescription());
 		} catch (MException e) {

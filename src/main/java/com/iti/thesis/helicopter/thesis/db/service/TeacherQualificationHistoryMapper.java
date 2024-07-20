@@ -14,6 +14,6 @@ public interface TeacherQualificationHistoryMapper {
 
 	public int updateTeacherQualification(MData param) throws MException;
 
-	public MData retrieveLatestSeqNo(MData param) throws MException;
+	public MData retrieveLatestQualifySeqNo(MData param) throws MException;
 	
 }

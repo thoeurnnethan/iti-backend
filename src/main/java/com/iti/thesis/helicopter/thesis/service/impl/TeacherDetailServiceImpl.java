@@ -27,7 +27,7 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 	@Override
 	public MData registerTeacherDetail(MData param) {
 		try {
-			MValidatorUtil.validate(param, "teacherInfo");
+			MValidatorUtil.validate(param, "qualificationList");
 			String tacherID = this.getLastTeacherID(param);
 			param.setString("teacherID", tacherID);
 			
@@ -97,7 +97,6 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 		try {
 			MValidatorUtil.validate(param, "teacherID");
 			for(MData qual : param.getMMultiData("qualificationList").toListMData()) {
-				
 				qual.setString("teacherID", param.getString("teacherID"));
 				boolean isExist = this.isQualificationExist(qual);
 				if(isExist) {
@@ -129,7 +128,7 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 	
 	private int retrieveLastedSeqNo(MData param) {
 		try {
-			MData	seqNo	= teacherQualificationHistoryMapper.retrieveLatestSeqNo(param);
+			MData	seqNo	= teacherQualificationHistoryMapper.retrieveLatestQualifySeqNo(param);
 			int		result	= seqNo.getInt("seqNo");
 			return ++result;
 		} catch (MNotFoundException e) {

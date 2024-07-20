@@ -8,5 +8,8 @@ public interface StudentAcademicHistoryMapper{
 	
 	public int registerStudentAcademicHistory(MData param) throws MException;
 	public MMultiData retrieveStudentAcademicHistoryList(MData param) throws MException;
+	public int updateStudentAcademicHistoryDetail(MData academic) throws MException;
+	public MData retrieveStudentAcademicHistoryDetail(MData param) throws MException;
+	public MData retrieveLatestAcademicSeqNo(MData param) throws MException;
 	
 }

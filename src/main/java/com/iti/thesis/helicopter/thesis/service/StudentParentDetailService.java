@@ -8,5 +8,6 @@ public interface StudentParentDetailService {
 	
 	public MData registerStudentParentDetail(MData param) throws MException;
 	public MMultiData retrieveStudentParentDetailList(MData param) throws MException;
+	public void updateStudentParentDetail(MData param) throws MException;
 	
 }

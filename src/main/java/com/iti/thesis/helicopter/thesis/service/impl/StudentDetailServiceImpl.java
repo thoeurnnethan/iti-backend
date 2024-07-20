@@ -16,9 +16,6 @@ import com.iti.thesis.helicopter.thesis.service.StudentDetailService;
 import com.iti.thesis.helicopter.thesis.service.StudentParentDetailService;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Service
 public class StudentDetailServiceImpl implements StudentDetailService {
 	
@@ -121,7 +118,11 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 	@Override
 	public void updateStudentDetail(MData param) throws MException {
 		try {
-			studentDetailMapper.retrieveTotalCountStudentDetailList(param);
+			MValidatorUtil.validate(param, "studentID");
+			
+			parentDetailService.updateStudentParentDetail(param);
+			studentAcademicHistoryService.updateStudentAcademicHistoryDetail(param);
+			
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

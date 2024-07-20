@@ -37,9 +37,9 @@
 		]]>
 	</select>
 
-	<select id="retrieveLatestSeqNo" resultType="MData">
+	<select id="retrieveLatestQualifySeqNo" resultType="MData">
 		<![CDATA[
-		SELECT /* RetrieveLatestSeqNo */
+		SELECT /* RetrieveLatestQualifySeqNo */
 		      SEQNO                 AS "seqNo"
 		  FROM FRST.TCH_QUF_HIS
 		 WHERE TCH_ID = #{teacherID}

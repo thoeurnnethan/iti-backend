@@ -24,5 +24,20 @@ public class StudentAcademicHistoryMapperImpl implements StudentAcademicHistoryM
 	public MMultiData retrieveStudentAcademicHistoryList(MData param) throws MException {
 		return channelDBDao.selectList("retrieveStudentAcademicHistoryList", param);
 	}
+
+	@Override
+	public int updateStudentAcademicHistoryDetail(MData academic) throws MException {
+		return channelDBDao.update("updateStudentAcademicHistoryDetail", academic);
+	}
+
+	@Override
+	public MData retrieveStudentAcademicHistoryDetail(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveStudentAcademicHistoryDetail", param);
+	}
+
+	@Override
+	public MData retrieveLatestAcademicSeqNo(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveLatestAcademicSeqNo", param);
+	}
 	
 }

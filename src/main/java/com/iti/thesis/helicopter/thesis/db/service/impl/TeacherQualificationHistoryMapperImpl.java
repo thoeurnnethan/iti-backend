@@ -36,8 +36,8 @@ public class TeacherQualificationHistoryMapperImpl implements TeacherQualificati
 	}
 
 	@Override
-	public MData retrieveLatestSeqNo(MData param) throws MException {
-		return channelDBDao.selectOne("retrieveLatestSeqNo", param);
+	public MData retrieveLatestQualifySeqNo(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveLatestQualifySeqNo", param);
 	}
 	
 }
