@@ -13,6 +13,7 @@
 		     , QUAL_DESC             AS "qualificationDesc"
 		     , STRT_DT               AS "startDate"
 		     , END_DT                AS "endDate"
+		     , CERT_DT               AS "certificatedDate"
 		  FROM FRST.TCH_QUF_HIS
 		 WHERE TCH_ID = #{teacherID}
 		   AND STRT_DT <> '09'
