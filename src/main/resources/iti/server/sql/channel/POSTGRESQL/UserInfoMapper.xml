@@ -5,9 +5,9 @@
 
 <mapper namespace="com.iti.thesis.helicopter.thesis.db.service.StudentDetailMapper">
 
-	<select id="registerUserInfoList" resultType="MData">
+	<select id="retrieveUserInfoList" resultType="MData">
 		<![CDATA[
-		SELECT /* RegisterUserInfoList */
+		SELECT /* RetrieveUserInfoList */
 		       USER_ID                     AS "userID"
 		     , ROLE_ID                     AS "roleID"
 		     , SPEC_ID                     AS "specificID"

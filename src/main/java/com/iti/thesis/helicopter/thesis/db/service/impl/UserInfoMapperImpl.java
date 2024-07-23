@@ -16,8 +16,8 @@ public class UserInfoMapperImpl implements UserInfoMapper {
 	private ChannelDBDao channelDBDao;
 	
 	@Override
-	public MMultiData registerUserInfoList(MData param) throws MException {
-		return channelDBDao.selectListForPage("registerUserInfoList", param);
+	public MMultiData retrieveUserInfoList(MData param) throws MException {
+		return channelDBDao.selectListForPage("retrieveUserInfoList", param);
 	}
 	
 	@Override

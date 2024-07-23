@@ -59,8 +59,7 @@
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID
 		   AND B.STCD <> '09'
-		 WHERE A.TCH_ID = #{teacherID}
-		   AND A.DEPT_ID = #{departmentID}
+		 WHERE A.DEPT_ID = #{departmentID}
 		   AND A.STCD <> '09'
 		]]>
 	</select>
@@ -98,8 +97,7 @@
 		     , DEPT_ROLE_CD = COALESCE(#{departmentRoleCode}, DEPT_ROLE_CD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
-		 WHERE TCH_ID = #{teacherID}
-		   AND DEPT_ID = #{departmentID}
+		 WHERE DEPT_ID = #{departmentID}
 		]]>
 	</update>
 

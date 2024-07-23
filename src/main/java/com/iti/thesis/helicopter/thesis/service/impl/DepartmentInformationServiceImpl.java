@@ -37,6 +37,12 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 			String	lastDeptID = this.retrieveLastDepartmentID(param);
 			param.setString("departmentID", lastDeptID);
 			departmentInformationMapper.registerDepartmentInformation(param);
+			if(!MStringUtil.isEmpty(param.getString("teacherID"))) {
+				param.setString("teacherID", param.getString("teacherID"));
+				param.setString("departmentRoleCode", DepartmentRoleCode.MANAGER.getValue());
+				param.setString("statusCode", StatusCode.ACTIVE.getValue());
+				departmentManagementMapper.registerDepartmentManagement(param);
+			}
 			return outputData;
 		} catch (MException e) {
 			throw e;

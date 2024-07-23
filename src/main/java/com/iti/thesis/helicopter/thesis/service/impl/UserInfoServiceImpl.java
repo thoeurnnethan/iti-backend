@@ -44,7 +44,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public MMultiData retrieveUserInfoList(MData param) throws MException {
 		try {
-			return userInfoMapper.registerUserInfoList(param);
+			return userInfoMapper.retrieveUserInfoList(param);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
