@@ -35,4 +35,14 @@ public class RoomInformationMapperImpl implements RoomInformationMapper {
 		return channelDBDao.selectOne("retrieveRoomInformationTotalCount", param);
 	}
 
+	@Override
+	public int updateRoomInformation(MData param) throws MException {
+		return channelDBDao.update("updateRoomInformation", param);
+	}
+
+	@Override
+	public MData retrieveRoomInformationDetail(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveRoomInformationDetail", param);
+	}
+
 }

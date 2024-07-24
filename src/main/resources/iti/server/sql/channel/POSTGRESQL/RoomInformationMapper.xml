@@ -20,6 +20,7 @@
 		     , LAST_CHNG_TIME           AS "lastChangeTime"
 		  FROM FRST.RM_INFO
 		 WHERE (RM_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR RM_ID ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR RM_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR BUILDING ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR FLOOR::TEXT ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
@@ -36,21 +37,24 @@
 		       COUNT(*)                   AS "totalCount"
 		 FROM FRST.RM_INFO
 		 WHERE (RM_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR RM_ID ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR RM_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR BUILDING ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR FLOOR::TEXT ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		]]>
 	</select>
 	
-	<select id="retrieveDepartmentInformationDetail" resultType="MData">
+	<select id="retrieveRoomInformationDetail" resultType="MData">
 		<![CDATA[
-		SELECT /* RetrieveDepartmentInformationDetail */
-		       DEPT_ID                    AS "departmentID"
-		     , DEPT_NM                    AS "departmentName"
-		     , DEPT_DESC                  AS "departmentDesc"
-		     , STCD                       AS "statusCode"
-		  FROM FRST.DEPT_INFO
-		 WHERE DEPT_ID = #{departmentID}
+		SELECT /* RetrieveRoomInformationDetail */
+		       RM_ID                         AS "roomID"
+		     , RM_NM                         AS "roomName"
+		     , RM_DESC                       AS "roomDesc"
+		     , BUILDING                      AS "building"
+		     , FLOOR                         AS "floor"
+		     , STCD                          AS "statusCode"
+		  FROM FRST.RM_INFO 
+		 WHERE RM_ID = #{roomID}
 		 LIMIT 1
 		]]>
 	</select>
@@ -93,16 +97,18 @@
 		]]>
 	</insert>
 
-	<update id="updateDepartmentInformation">
+	<update id="updateRoomInformation">
 		<![CDATA[
-		UPDATE /* UpdateDepartmentInformation */
-		       FRST.DEPT_INFO 
-		   SET DEPT_NM = COALESCE(#{departmentName}, DEPT_NM)
-		     , DEPT_DESC = COALESCE(#{departmentDesc}, DEPT_DESC)
+		UPDATE /* UpdateRoomInformation */
+		       FRST.RM_INFO 
+		   SET RM_NM = COALESCE(#{roomName}, RM_NM)
+		     , RM_DESC = COALESCE(#{roomDesc}, RM_DESC)
+		     , BUILDING = COALESCE(#{building}, BUILDING)
+		     , FLOOR = COALESCE(#{floor}, FLOOR)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
-		 WHERE DEPT_ID = #{departmentID}
+		 WHERE RM_ID = #{roomID}
 		]]>
 	</update>
 

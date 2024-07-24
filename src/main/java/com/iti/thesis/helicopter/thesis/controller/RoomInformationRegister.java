@@ -11,14 +11,14 @@ import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
-import com.iti.thesis.helicopter.thesis.service.RoomformationService;;
+import com.iti.thesis.helicopter.thesis.service.RoomInformationService;;
 
 @RestController
 @RequestMapping("/api/room")
 public class RoomInformationRegister extends BaseTemplate {
 	
 	@Autowired
-	private RoomformationService		roomformationService;
+	private RoomInformationService		roomInformationService;
 
 	@Override
 	@PostMapping("/register")
@@ -36,7 +36,7 @@ public class RoomInformationRegister extends BaseTemplate {
 	public MData onExecute(MData param) throws MException {
 		MData response = new MData();
 		try {
-			MData result = roomformationService.registerRoomInformation(param);
+			MData result = roomInformationService.registerRoomInformation(param);
 			response.appendFrom(result);
 		} catch (MException e) {
 			throw e;

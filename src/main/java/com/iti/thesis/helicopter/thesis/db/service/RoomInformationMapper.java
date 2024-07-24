@@ -10,4 +10,6 @@ public interface RoomInformationMapper {
 	public MData retrieveLastRoomID(MData param) throws MException;
 	public MMultiData retrieveRoomInformationList(MData param) throws MException;
 	public MData retrieveRoomInformationTotalCount(MData param) throws MException;
-	}
+	public int updateRoomInformation(MData param) throws MException;
+	public MData retrieveRoomInformationDetail(MData param) throws MException;
+}

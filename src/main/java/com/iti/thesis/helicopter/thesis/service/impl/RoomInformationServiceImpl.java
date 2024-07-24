@@ -3,6 +3,7 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.iti.thesis.helicopter.thesis.common.ErrorCode.ApplicationErrorCode;
 import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
 import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
@@ -12,10 +13,11 @@ import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
 import com.iti.thesis.helicopter.thesis.db.service.RoomInformationMapper;
-import com.iti.thesis.helicopter.thesis.service.RoomformationService;
+import com.iti.thesis.helicopter.thesis.service.RoomInformationService;
+import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 
 @Service
-public class RoomInformationServiceImpl implements RoomformationService {
+public class RoomInformationServiceImpl implements RoomInformationService {
 	
 	@Autowired
 	private RoomInformationMapper		roomInformationMapper;
@@ -69,6 +71,24 @@ public class RoomInformationServiceImpl implements RoomformationService {
 	public MData retrieveRoomInformationTotalCount(MData param) throws MException {
 		try {
 			return roomInformationMapper.retrieveRoomInformationTotalCount(param);
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+
+	@Override
+	public MData updateRoomInformation(MData param) throws MException {
+		try {
+			
+			MData roomInfo = roomInformationMapper.retrieveRoomInformationDetail(param);
+			if(!MStringUtil.isEmpty(roomInfo)) {
+				roomInformationMapper.updateRoomInformation(param);
+			}
+			return param;
+		} catch (MNotFoundException e) {
+			throw new MException(ApplicationErrorCode.ROOM_NOT_FOUNT.getValue(), ApplicationErrorCode.ROOM_NOT_FOUNT.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

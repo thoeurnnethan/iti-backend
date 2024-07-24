@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
-import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
@@ -16,13 +15,13 @@ import com.iti.thesis.helicopter.thesis.service.RoomInformationService;;
 
 @RestController
 @RequestMapping("/api/room")
-public class RoomInformationInquiryList extends BaseTemplate {
+public class RoomInformationUpdate extends BaseTemplate {
 	
 	@Autowired
 	private RoomInformationService roomInformationService;
-
+	
 	@Override
-	@PostMapping("/list")
+	@PostMapping("/update")
 	public JsonNode onRequest(@RequestBody MData message) throws MException {
 		try {
 			return super.onProcess(message);
@@ -35,21 +34,15 @@ public class RoomInformationInquiryList extends BaseTemplate {
 	
 	@Override
 	public MData onExecute(MData param) throws MException {
+		MData response = new MData();
 		try {
-			MMultiData	roomList	= roomInformationService.retrieveRoomInformationList(param);
-			MData		resCount	= roomInformationService.retrieveRoomInformationTotalCount(param);
-			return prepareResponse(roomList, resCount);
+			MData result = roomInformationService.updateRoomInformation(param);
+			response.appendFrom(result);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
 		}
-	}
-	
-	private MData prepareResponse(MMultiData roomList, MData resCount) {
-		MData		response	= new MData();
-		response.setInt("totalCount", resCount.getInt("totalCount"));
-		response.setMMultiData("roomList", roomList);
 		return response;
 	}
 
