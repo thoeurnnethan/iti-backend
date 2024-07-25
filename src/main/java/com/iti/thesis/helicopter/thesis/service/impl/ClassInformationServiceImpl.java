@@ -3,6 +3,7 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.iti.thesis.helicopter.thesis.common.ErrorCode.ApplicationErrorCode;
 import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
@@ -64,6 +65,8 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 				classInformationMapper.registerClassInformation(param);
 			}
 			return outputData;
+		} catch (MNotFoundException e) {
+			throw new MException(ApplicationErrorCode.DEPARTMENT_NOT_FOUND.getValue(), ApplicationErrorCode.DEPARTMENT_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -99,7 +102,6 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 		return outputData;
@@ -114,6 +116,8 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 				classInformationMapper.updateClassInformation(param);
 			}
 			return classInfo;
+		} catch (MNotFoundException e) {
+			throw new MException(ApplicationErrorCode.CLASS_NOT_FOUND.getValue(), ApplicationErrorCode.CLASS_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

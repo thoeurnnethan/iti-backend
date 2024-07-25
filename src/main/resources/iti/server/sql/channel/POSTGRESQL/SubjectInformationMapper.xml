@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.SubjectInformationMapper">
+	
+	<select id="retrieveSubjectInformationList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveSubjectInformationList */
+		       CLS_ID                     AS "classID"
+		     , SEQNO                      AS "seqNo"
+		     , SUB_NM                     AS "subjectName"
+		     , SUB_DESC                   AS "subjectDesc"
+		     , STCD                       AS "statusCode"
+		     , FRST_REG_DT                AS "firstRegisterDate"
+		     , FRST_REG_TIME              AS "firstRegisterTime"
+		     , LAST_CHNG_DT               AS "lastChangeDate"
+		     , LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.SUBJ_INFO 
+		 WHERE ('' = COALESCE(#{classID}, '') OR CLS_ID = #{classID})
+		   AND (SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		 ORDER BY CLS_ID
+		        , SEQNO
+		]]>
+	</select>
+	
+	<select id="retrieveLastClassIDs" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveLastClassID */
+		       CLS_ID                AS "classID"
+		  FROM FRST.CLS_INFO A
+		 ORDER BY CLS_ID DESC
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<select id="retrieveSubjectIsExist" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveSubjectIsExist */
+		       CLS_ID                     AS "classID"
+		     , SEQNO                      AS "seqNo"
+		     , SUB_NM                     AS "subjectName"
+		     , SUB_DESC                   AS "subjectDesc"
+		     , STCD                       AS "statusCode"
+		  FROM FRST.SUBJ_INFO
+		 WHERE CLS_ID = #{classID}
+		   AND ('' = COALESCE(#{seqNo}::TEXT, '') OR SEQNO = #{seqNo})
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<insert id="registerSubjectInformation">
+		<![CDATA[
+		INSERT /* RegisterSubjectInformation */
+		  INTO FRST.SUBJ_INFO 
+		     ( CLS_ID
+		     , SEQNO 
+		     , SUB_NM 
+		     , SUB_DESC 
+		     , STCD
+		     , FRST_REG_DT
+		     , FRST_REG_TIME
+		     , LAST_CHNG_DT
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{classID}
+		     , #{seqNo}
+		     , COALESCE(#{subjectName}, '')
+		     , COALESCE(#{subjectDesc}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateSubjectInformation">
+		<![CDATA[
+		UPDATE /* UpdateSubjectInformation */
+		       FRST.SUBJ_INFO 
+		   SET SUB_NM = COALESCE(#{subjectName}, SUB_NM)
+		     , SUB_DESC = COALESCE(#{subjectDesc}, SUB_DESC)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE CLS_ID = #{classID}
+		   AND SEQNO = #{seqNo}
+		]]>
+	</update>
+
+</mapper>

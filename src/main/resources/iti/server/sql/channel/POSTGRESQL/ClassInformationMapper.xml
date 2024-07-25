@@ -76,7 +76,6 @@
 		     , A.STCD                       AS "statusCode"
 		  FROM FRST.CLS_INFO A
 		 WHERE A.CLS_ID = #{classID}
-		   AND A.DEPT_ID = #{departmentID}
 		]]>
 	</select>
 	

@@ -88,7 +88,7 @@ public class RoomInformationServiceImpl implements RoomInformationService {
 			}
 			return param;
 		} catch (MNotFoundException e) {
-			throw new MException(ApplicationErrorCode.ROOM_NOT_FOUNT.getValue(), ApplicationErrorCode.ROOM_NOT_FOUNT.getDescription());
+			throw new MException(ApplicationErrorCode.ROOM_NOT_FOUND.getValue(), ApplicationErrorCode.ROOM_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
