@@ -54,6 +54,8 @@ public class UserInfoInquiryList extends BaseTemplate {
 	private MData prepareResponse(MMultiData userList, MData userCount) {
 		MData response = new MData();
 		response.setInt("totalCount", userCount.getInt("totalCount"));
+		response.setInt("totalMale", userCount.getInt("totalMale"));
+		response.setInt("totalFemale", userCount.getInt("totalFemale"));
 		response.setMMultiData("userList", userList);
 		return response;
 	}

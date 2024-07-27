@@ -10,8 +10,8 @@
 		SELECT /* RetrieveRoomInformationList */
 		       RM_ID                    AS "roomID"
 		     , RM_NM                    AS "roomName"
-		     , RM_DESC                  AS "roomName"
-		     , BUILDING                 AS "roomDesc"
+		     , RM_DESC                  AS "roomDesc"
+		     , BUILDING                 AS "building"
 		     , FLOOR                    AS "floor"
 		     , STCD                     AS "statusCode"
 		     , FRST_REG_DT              AS "firstRegisterDate"

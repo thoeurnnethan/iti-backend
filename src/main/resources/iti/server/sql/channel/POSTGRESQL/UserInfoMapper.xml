@@ -40,15 +40,21 @@
 	</select>
 	<select id="retrieveUserInfoTotalCount" resultType="MData">
 		<![CDATA[
+		    WITH FilteredUsers AS (
+		  SELECT *
+		    FROM FRST.USER_INFO
+		   WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		      OR LAST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		      OR NICK_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		      OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		     AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
+		     AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
+		)
 		SELECT /* RetrieveUserInfoTotalCount */
-			   COUNT(*)                     AS "totalCount"
-		  FROM FRST.USER_INFO 
-		 WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR LAST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR NICK_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
-		   AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
-		   AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
+		       COUNT(*)                                         AS "totalCount"
+		     , SUM(CASE WHEN GENDER = 'M' THEN 1 ELSE 0 END)    AS "totalMale"
+		     , SUM(CASE WHEN GENDER = 'F' THEN 1 ELSE 0 END)    AS "totalFemale"
+		  FROM FilteredUsers
 		]]>
 	</select>
 	
