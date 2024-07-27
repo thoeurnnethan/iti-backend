@@ -9,6 +9,7 @@ import lombok.Getter;
 public enum StatusCode {
 
 	ACTIVE("01", "Active"),
+	DELETE("02", "Delete"),
 	INACTIVE("09", "InActive");
 	
 	private String value;

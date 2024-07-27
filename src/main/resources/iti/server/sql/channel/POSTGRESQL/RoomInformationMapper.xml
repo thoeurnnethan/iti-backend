@@ -24,6 +24,7 @@
 		    OR RM_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR BUILDING ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR FLOOR::TEXT ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND STCD <> '02'
 		 ORDER BY STCD 
 		        , RM_ID DESC 
 		 LIMIT #{limit}
@@ -35,12 +36,13 @@
 		<![CDATA[
 		SELECT /* RetrieveRoomInformationTotalCount */
 		       COUNT(*)                   AS "totalCount"
-		 FROM FRST.RM_INFO
+		  FROM FRST.RM_INFO
 		 WHERE (RM_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR RM_ID ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR RM_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR BUILDING ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR FLOOR::TEXT ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND STCD <> '02'
 		]]>
 	</select>
 	
@@ -55,6 +57,7 @@
 		     , STCD                          AS "statusCode"
 		  FROM FRST.RM_INFO 
 		 WHERE RM_ID = #{roomID}
+		   AND STCD <> '02'
 		 LIMIT 1
 		]]>
 	</select>
@@ -109,6 +112,7 @@
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE RM_ID = #{roomID}
+		   AND STCD <> '02'
 		]]>
 	</update>
 
