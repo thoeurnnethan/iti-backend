@@ -11,5 +11,6 @@ public interface DepartmentInformationService {
 	public MData retrieveDepartmentInformationDetail(MData param) throws MException;
 	public MData retrieveDepartmentInformationTotalCount(MData param) throws MException;
 	public MData updateDepartmentInformation(MData param) throws MException;
+	public MMultiData retrieveDepartmentInformationListForDownload(MData param) throws MException;
 
 }

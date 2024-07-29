@@ -12,4 +12,5 @@ public interface DepartmentInformationMapper {
 	public MData retrieveDepartmentInformationTotalCount(MData param) throws MException;
 	public int updateDepartmentInformation(MData param) throws MException;
 	public MData retrieveLastDepartmentID(MData param) throws MException;
+	public MMultiData retrieveDepartmentInformationListForDownload(MData param) throws MException;
 }

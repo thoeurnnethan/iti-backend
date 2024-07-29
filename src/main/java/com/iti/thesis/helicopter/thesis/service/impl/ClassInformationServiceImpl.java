@@ -53,6 +53,19 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 	}
 
 	@Override
+	public MMultiData retrieveClassInformationListForDownload(MData param) throws MException {
+		try {
+			return classInformationMapper.retrieveClassInformationListForDownload(param);
+		} catch (MException e) {
+			log.error(e.getMessage(), e);
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+
+	@Override
 	public MData registerClassInformation(MData param) {
 		MData	outputData		= param;
 		try {

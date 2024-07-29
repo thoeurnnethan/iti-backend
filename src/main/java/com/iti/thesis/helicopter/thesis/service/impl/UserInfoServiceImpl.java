@@ -82,12 +82,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 				MData teacherParam = new MData();
 				teacherParam.setString("teacherID", userInfo.getString("specificID"));
 				teacherParam.setString("roleID", userInfo.getString("roleID"));
-				response.appendFrom(teacherDetailService.retrieveTeacherDetail(teacherParam));
+				response.setMData("teacherInfo", teacherDetailService.retrieveTeacherDetail(teacherParam));
 			} else if (UserRoleCode.STUDENT.getValue().equals(userRoleCode)) {
 				MData studentParam = new MData();
 				studentParam.setString("studentID", userInfo.getString("specificID"));
 				studentParam.setString("roleID", userInfo.getString("roleID"));
-				response.appendFrom(studentDetailService.retrieveStudentDetailSummary(studentParam));
+				response.setMData("studentInfo", studentDetailService.retrieveStudentDetailSummary(studentParam));
 			}
 		} catch (MException e) {
 			throw e;

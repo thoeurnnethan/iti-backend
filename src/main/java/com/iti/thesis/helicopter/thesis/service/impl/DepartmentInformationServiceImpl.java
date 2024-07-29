@@ -75,6 +75,17 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 	}
 	
 	@Override
+	public MMultiData retrieveDepartmentInformationListForDownload(MData param) throws MException {
+		try {
+			return departmentInformationMapper.retrieveDepartmentInformationListForDownload(param);
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+
+	@Override
 	public MData retrieveDepartmentInformationDetail(MData param) throws MException {
 		MData outputData = new MData();
 		try {
@@ -102,11 +113,11 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 					department.setString("departmentID", departmentID);
 					department.setString("teacherID", teacherID);
 					department.setString("departmentRoleCode", DepartmentRoleCode.MANAGER.getValue());
-					department.setString("statusCode", StatusCode.ACTIVE.getValue());
 					boolean isExist = this.retrieveAndValidateDepartmentMgt(department);
 					if(isExist) {
 						departmentManagementMapper.updateDepartmentManagement(department);
 					}else {
+						department.setString("statusCode", StatusCode.ACTIVE.getValue());
 						departmentManagementMapper.registerDepartmentManagement(department);
 					}
 				}

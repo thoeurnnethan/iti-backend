@@ -52,6 +52,34 @@
 		]]>
 	</select>
 	
+	<select id="retrieveDepartmentInformationListForDownload" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveDepartmentInformationListForDownload */
+		       A.DEPT_ID                    AS "departmentID"
+		     , A.DEPT_NM                    AS "departmentName"
+		     , A.DEPT_DESC                  AS "departmentDesc"
+		     , A.STCD                       AS "statusCode"
+		     , A.FRST_REG_DT                AS "firstRegisterDate"
+		     , A.LAST_CHNG_DT               AS "lastChangeDate"
+		     , B.TCH_ID                     AS "teacherID"
+		     , D.FRST_NM                    AS "firstName"
+		     , D.LAST_NM                    AS "lastName"
+		  FROM FRST.DEPT_INFO A
+		  LEFT JOIN FRST.DEPT_MNGT B
+		    ON A.DEPT_ID = B.DEPT_ID 
+		   AND B.DEPT_ROLE_CD = '01' --Manager
+		   AND B.STCD <> '09'
+		  LEFT JOIN FRST.USER_INFO D 
+		    ON B.TCH_ID = D.SPEC_ID 
+		   AND D.STCD <> '09'
+		   AND D.ROLE_ID = '02'  -- Department Manager
+		 WHERE (A.DEPT_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR A.DEPT_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		 ORDER BY A.STCD 
+		        , A.DEPT_ID DESC 
+		]]>
+	</select>
+	
 	<select id="retrieveDepartmentInformationDetail" resultType="MData">
 		<![CDATA[
 		SELECT /* RetrieveDepartmentInformationDetail */

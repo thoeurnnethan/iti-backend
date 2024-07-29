@@ -16,13 +16,18 @@ public class DepartmentInformationMapperImpl implements DepartmentInformationMap
 	private ChannelDBDao channelDBDao;
 
 	@Override
-	public MMultiData retrieveDepartmentInformationList(MData requestBody) throws MException {
-		return channelDBDao.selectListForPage("retrieveDepartmentInformationList", requestBody);
+	public MMultiData retrieveDepartmentInformationList(MData param) throws MException {
+		return channelDBDao.selectListForPage("retrieveDepartmentInformationList", param);
 	}
 
 	@Override
 	public MData retrieveDepartmentInformationTotalCount(MData param) throws MException {
 		return channelDBDao.selectOne("retrieveDepartmentInformationTotalCount", param);
+	}
+
+	@Override
+	public MMultiData retrieveDepartmentInformationListForDownload(MData param) throws MException {
+		return channelDBDao.selectList("retrieveDepartmentInformationListForDownload", param);
 	}
 
 	@Override

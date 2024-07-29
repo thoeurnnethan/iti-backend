@@ -21,8 +21,11 @@
 		 WHERE ('' = COALESCE(#{classID}, '') OR CLS_ID = #{classID})
 		   AND (SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND STCD <> '02'
 		 ORDER BY CLS_ID
 		        , SEQNO
+		 LIMIT #{limit}
+		OFFSET #{offset}
 		]]>
 	</select>
 	
