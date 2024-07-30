@@ -24,7 +24,6 @@
 		     , IMG_URL                     AS "imageUrl"
 		     , FRST_LOGIN_DT               AS "firstLoginDate"
 		     , LAST_LOGIN_DT               AS "lastLoginDate"
-		     , SEC_KEY                     AS "secretKey"
 		     , STCD                        AS "statusCode"
 		  FROM FRST.USER_INFO 
 		 WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
@@ -33,6 +32,7 @@
 		    OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		   AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
 		   AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
+		   AND STCD <> '02'
 		 ORDER BY (FRST_NM,LAST_NM) ASC
 		 LIMIT #{limit}
 		OFFSET #{offset}
@@ -49,6 +49,7 @@
 		      OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		     AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
 		     AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
+		     AND STCD <> '02'
 		)
 		SELECT /* RetrieveUserInfoTotalCount */
 		       COUNT(*)                                         AS "totalCount"
@@ -77,14 +78,13 @@
 		     , IMG_URL                     AS "imageUrl"
 		     , FRST_LOGIN_DT               AS "firstLoginDate"
 		     , LAST_LOGIN_DT               AS "lastLoginDate"
-		     , SEC_KEY                     AS "secretKey"
 		     , PASSWD_ERR_CT               AS "userPasswordErrorCount"
 		     , LOCK_DT                     AS "lockDateTime"
 		     , LOGIN_BY_USER_YN            AS "loginByUserYn"
 		     , STCD                        AS "statusCode"
 		  FROM FRST.USER_INFO 
 		 WHERE USER_ID = #{userID}
-		   AND STCD <> '09'
+		   AND STCD <> '02'
 		]]>
 	</select>
 	
@@ -154,7 +154,6 @@
 		     , EMAIL 
 		     , PASSWD 
 		     , IMG_URL 
-		     , SEC_KEY
 		     , FRST_LOGIN_DT
 		     , LAST_LOGIN_DT 
 		     , STCD 
@@ -177,7 +176,6 @@
 		     , COALESCE(#{email}, '')
 		     , COALESCE(#{passwd}, '')
 		     , COALESCE(#{imageUrl}, '')
-		     , COALESCE(#{secretKey}, '')
 		     , COALESCE(#{firstLoginDate}, '')
 		     , COALESCE(#{lastLoginDate}, '')
 		     , COALESCE(#{statusCode}, '')

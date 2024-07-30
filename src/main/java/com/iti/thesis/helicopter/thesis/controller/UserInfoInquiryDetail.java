@@ -23,8 +23,7 @@ public class UserInfoInquiryDetail extends BaseTemplate {
 	
 	@Autowired
 	private UserInfoService		userInfoService;
-	private final String[] removeKey = {"secretKey","parentID","firstLoginDate", "parentID"
-			,"lastLoginDate","statusCode","userPasswordErrorCount"};
+	private final String[] removeKey = {"firstLoginDate","lastLoginDate","statusCode","userPasswordErrorCount","loginByUserYn","lockDateTime"};
 	
 	@Override
 	@PostMapping("/detail")

@@ -25,13 +25,14 @@
 		  FROM FRST.CLS_INFO A
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID 
-		   AND B.STCD <> '09'
+		   AND B.STCD <> '02'
 		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%'
 		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%')
 		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
 		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
 		   AND ('' = COALESCE(#{generation}, '') OR A.GENR = #{generation})
 		   AND ('' = COALESCE(#{semester}::TEXT , '') OR A.SEMESTER = #{semester})
+		   AND A.STCD <> '02'
 		 ORDER BY A.STCD
 		        , A.CLS_ID DESC
 		 LIMIT #{limit}
@@ -46,13 +47,14 @@
 		  FROM FRST.CLS_INFO A
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID 
-		   AND B.STCD <> '09'
+		   AND B.STCD <> '02'
 		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%'
 		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%')
 		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
 		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
 		   AND ('' = COALESCE(#{generation}, '') OR A.GENR = #{generation})
 		   AND ('' = COALESCE(#{semester}::TEXT , '') OR A.SEMESTER = #{semester})
+		   AND A.STCD <> '02'
 		]]>
 	</select>
 	
@@ -76,13 +78,14 @@
 		  FROM FRST.CLS_INFO A
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID 
-		   AND B.STCD <> '09'
+		   AND B.STCD <> '02'
 		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%'
 		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%')
 		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
 		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
 		   AND ('' = COALESCE(#{generation}, '') OR A.GENR = #{generation})
 		   AND ('' = COALESCE(#{semester}::TEXT , '') OR A.SEMESTER = #{semester})
+		   AND A.STCD <> '02'
 		 ORDER BY A.STCD
 		        , A.CLS_ID DESC
 		]]>
