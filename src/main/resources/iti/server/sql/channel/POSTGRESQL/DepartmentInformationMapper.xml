@@ -45,9 +45,10 @@
 		    ON A.DEPT_ID = B.DEPT_ID 
 		   AND B.DEPT_ROLE_CD = '01' --Manager
 		   AND B.STCD <> '02'
-		  LEFT JOIN FRST.TCH_DETAIL D 
-		    ON B.TCH_ID = D.TCH_ID 
+		  LEFT JOIN FRST.USER_INFO D 
+		    ON B.TCH_ID = D.SPEC_ID 
 		   AND D.STCD <> '02'
+		   AND D.ROLE_ID = '02'  -- Department Manager
 		 WHERE (A.DEPT_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR A.DEPT_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		   AND A.STCD <> '02'
