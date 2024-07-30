@@ -8,22 +8,26 @@
 	<select id="retrieveSubjectInformationList" resultType="MData">
 		<![CDATA[
 		SELECT /* RetrieveSubjectInformationList */
-		       CLS_ID                     AS "classID"
-		     , SEQNO                      AS "seqNo"
-		     , SUB_NM                     AS "subjectName"
-		     , SUB_DESC                   AS "subjectDesc"
-		     , STCD                       AS "statusCode"
-		     , FRST_REG_DT                AS "firstRegisterDate"
-		     , FRST_REG_TIME              AS "firstRegisterTime"
-		     , LAST_CHNG_DT               AS "lastChangeDate"
-		     , LAST_CHNG_TIME             AS "lastChangeTime"
-		  FROM FRST.SUBJ_INFO 
-		 WHERE ('' = COALESCE(#{classID}, '') OR CLS_ID = #{classID})
-		   AND (SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
-		   AND STCD <> '02'
-		 ORDER BY CLS_ID
-		        , SEQNO
+		       A.CLS_ID                     AS "classID"
+		     , B.CLS_NM                     AS "className"
+		     , A.SEQNO                      AS "seqNo"
+		     , A.SUB_NM                     AS "subjectName"
+		     , A.SUB_DESC                   AS "subjectDesc"
+		     , A.STCD                       AS "statusCode"
+		     , A.FRST_REG_DT                AS "firstRegisterDate"
+		     , A.FRST_REG_TIME              AS "firstRegisterTime"
+		     , A.LAST_CHNG_DT               AS "lastChangeDate"
+		     , A.LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.SUBJ_INFO A
+		  JOIN FRST.CLS_INFO B
+		    ON A.CLS_ID = B.CLS_ID 
+		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
+		   AND (A.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR A.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND A.STCD <> '02'
+		   AND B.STCD <> '02'
+		 ORDER BY A.CLS_ID
+		        , A.SEQNO
 		 LIMIT #{limit}
 		OFFSET #{offset}
 		]]>
@@ -31,23 +35,27 @@
 	
 	<select id="retrieveSubjectInformationListForDownload" resultType="MData">
 		<![CDATA[
-		SELECT /* RetrieveSubjectInformationListForDownload */
-		       CLS_ID                     AS "classID"
-		     , SEQNO                      AS "seqNo"
-		     , SUB_NM                     AS "subjectName"
-		     , SUB_DESC                   AS "subjectDesc"
-		     , STCD                       AS "statusCode"
-		     , FRST_REG_DT                AS "firstRegisterDate"
-		     , FRST_REG_TIME              AS "firstRegisterTime"
-		     , LAST_CHNG_DT               AS "lastChangeDate"
-		     , LAST_CHNG_TIME             AS "lastChangeTime"
-		  FROM FRST.SUBJ_INFO 
-		 WHERE ('' = COALESCE(#{classID}, '') OR CLS_ID = #{classID})
-		   AND (SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
-		   AND STCD <> '02'
-		 ORDER BY CLS_ID
-		        , SEQNO
+		SELECT /* retrieveSubjectInformationListForDownload */
+		       A.CLS_ID                     AS "classID"
+		     , B.CLS_NM                     AS "className"
+		     , A.SEQNO                      AS "seqNo"
+		     , A.SUB_NM                     AS "subjectName"
+		     , A.SUB_DESC                   AS "subjectDesc"
+		     , A.STCD                       AS "statusCode"
+		     , A.FRST_REG_DT                AS "firstRegisterDate"
+		     , A.FRST_REG_TIME              AS "firstRegisterTime"
+		     , A.LAST_CHNG_DT               AS "lastChangeDate"
+		     , A.LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.SUBJ_INFO A
+		  JOIN FRST.CLS_INFO B
+		    ON A.CLS_ID = B.CLS_ID 
+		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
+		   AND (A.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR A.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND A.STCD <> '02'
+		   AND B.STCD <> '02'
+		 ORDER BY A.CLS_ID
+		        , A.SEQNO
 		]]>
 	</select>
 	

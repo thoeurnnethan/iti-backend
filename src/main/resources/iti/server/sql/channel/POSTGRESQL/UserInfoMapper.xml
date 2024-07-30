@@ -33,7 +33,9 @@
 		   AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
 		   AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
 		   AND STCD <> '02'
-		 ORDER BY (FRST_NM,LAST_NM) ASC
+		 ORDER BY (FRST_REG_DT,FRST_REG_TIME) DESC
+		        , ROLE_ID DESC
+		        , SPEC_ID DESC 
 		 LIMIT #{limit}
 		OFFSET #{offset}
 		]]>
