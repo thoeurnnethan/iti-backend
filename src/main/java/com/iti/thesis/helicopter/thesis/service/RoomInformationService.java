@@ -14,4 +14,6 @@ public interface RoomInformationService {
 
 	public MData updateRoomInformation(MData param) throws MException;
 
+	public MMultiData retrieveRoomInformationListForDownload(MData param) throws MException;
+
 }

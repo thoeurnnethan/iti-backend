@@ -10,5 +10,6 @@ public interface SubjectInformationService {
 	public MData registerSubjectInformation(MData param) throws MException;
 	public MData retrieveClassInformationDetail(MData param) throws MException;
 	public MData updateSubjectInformation(MData param) throws MException;
+	public MMultiData retrieveSubjectInformationListForDownload(MData param) throws MException;
 
 }

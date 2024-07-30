@@ -10,17 +10,12 @@
 		SELECT /* RetrieveDepartmentManagementList */
 		       A.TCH_ID                     AS "teacherID"
 		     , A.DEPT_ID                    AS "departmentID"
-		     , C.DEPT_ROLE_NM               AS "departmentRoelName"
-		     , C.DEPT_ROLE_DESC             AS "departmentRoelDesc"
 		     , B.DEPT_NM                    AS "departmentName"
 		     , B.DEPT_DESC                  AS "departmentDesc"
 		  FROM FRST.DEPT_MNGT A
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID
 		   AND B.STCD <> '02'
-		  JOIN FRST.DEPT_ROLE_MNGT C
-		    ON A.DEPT_ROLE_CD = C.DEPT_ROLE_CD
-		   AND C.STCD <> '02'
 		 WHERE ('' = COALESCE(#{teacherID}, '') OR A.TCH_ID = #{teacherID})
 		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
 		   AND A.STCD <> '02'
@@ -37,10 +32,7 @@
 		  FROM FRST.DEPT_MNGT A
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID
-		   AND B.STCD <> '09'
-		  JOIN FRST.DEPT_ROLE_MNGT C
-		    ON A.DEPT_ROLE_CD = C.DEPT_ROLE_CD
-		   AND C.STCD <> '02'
+		   AND B.STCD <> '02'
 		 WHERE ('' = COALESCE(#{teacherID}, '') OR A.TCH_ID = #{teacherID})
 		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
 		   AND A.STCD <> '02'

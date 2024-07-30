@@ -11,4 +11,5 @@ public interface SubjectInformationMapper {
 	public MData retrieveSubjectIsExist(MData param) throws MException;
 	public MData retrieveLastClassID(MData param) throws MException;
 	public int updateSubjectInformation(MData param) throws MException;
+	public MMultiData retrieveSubjectInformationListForDownload(MData param) throws MException;
 }

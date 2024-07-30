@@ -57,6 +57,24 @@ public class RoomInformationServiceImpl implements RoomInformationService {
 	}
 
 	@Override
+	public MData updateRoomInformation(MData param) throws MException {
+		try {
+			
+			MData roomInfo = roomInformationMapper.retrieveRoomInformationDetail(param);
+			if(!MStringUtil.isEmpty(roomInfo)) {
+				roomInformationMapper.updateRoomInformation(param);
+			}
+			return param;
+		} catch (MNotFoundException e) {
+			throw new MException(ApplicationErrorCode.ROOM_NOT_FOUND.getValue(), ApplicationErrorCode.ROOM_NOT_FOUND.getDescription());
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+
+	@Override
 	public MMultiData retrieveRoomInformationList(MData param) throws MException {
 		try {
 			return roomInformationMapper.retrieveRoomInformationList(param);
@@ -79,16 +97,9 @@ public class RoomInformationServiceImpl implements RoomInformationService {
 	}
 
 	@Override
-	public MData updateRoomInformation(MData param) throws MException {
+	public MMultiData retrieveRoomInformationListForDownload(MData param) throws MException {
 		try {
-			
-			MData roomInfo = roomInformationMapper.retrieveRoomInformationDetail(param);
-			if(!MStringUtil.isEmpty(roomInfo)) {
-				roomInformationMapper.updateRoomInformation(param);
-			}
-			return param;
-		} catch (MNotFoundException e) {
-			throw new MException(ApplicationErrorCode.ROOM_NOT_FOUND.getValue(), ApplicationErrorCode.ROOM_NOT_FOUND.getDescription());
+			return roomInformationMapper.retrieveRoomInformationListForDownload(param);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

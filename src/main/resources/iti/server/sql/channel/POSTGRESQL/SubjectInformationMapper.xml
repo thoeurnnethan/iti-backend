@@ -29,6 +29,28 @@
 		]]>
 	</select>
 	
+	<select id="retrieveSubjectInformationListForDownload" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveSubjectInformationListForDownload */
+		       CLS_ID                     AS "classID"
+		     , SEQNO                      AS "seqNo"
+		     , SUB_NM                     AS "subjectName"
+		     , SUB_DESC                   AS "subjectDesc"
+		     , STCD                       AS "statusCode"
+		     , FRST_REG_DT                AS "firstRegisterDate"
+		     , FRST_REG_TIME              AS "firstRegisterTime"
+		     , LAST_CHNG_DT               AS "lastChangeDate"
+		     , LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.SUBJ_INFO 
+		 WHERE ('' = COALESCE(#{classID}, '') OR CLS_ID = #{classID})
+		   AND (SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND STCD <> '02'
+		 ORDER BY CLS_ID
+		        , SEQNO
+		]]>
+	</select>
+	
 	<select id="retrieveLastClassIDs" resultType="MData">
 		<![CDATA[
 		SELECT /* RetrieveLastClassID */

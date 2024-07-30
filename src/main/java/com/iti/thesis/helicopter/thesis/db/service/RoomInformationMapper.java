@@ -12,4 +12,5 @@ public interface RoomInformationMapper {
 	public MData retrieveRoomInformationTotalCount(MData param) throws MException;
 	public int updateRoomInformation(MData param) throws MException;
 	public MData retrieveRoomInformationDetail(MData param) throws MException;
+	public MMultiData retrieveRoomInformationListForDownload(MData param) throws MException;
 }

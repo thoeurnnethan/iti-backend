@@ -26,6 +26,11 @@ public class RoomInformationMapperImpl implements RoomInformationMapper {
 	}
 
 	@Override
+	public int updateRoomInformation(MData param) throws MException {
+		return channelDBDao.update("updateRoomInformation", param);
+	}
+
+	@Override
 	public MMultiData retrieveRoomInformationList(MData param) throws MException {
 		return channelDBDao.selectListForPage("retrieveRoomInformationList", param);
 	}
@@ -36,13 +41,13 @@ public class RoomInformationMapperImpl implements RoomInformationMapper {
 	}
 
 	@Override
-	public int updateRoomInformation(MData param) throws MException {
-		return channelDBDao.update("updateRoomInformation", param);
+	public MData retrieveRoomInformationDetail(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveRoomInformationDetail", param);
 	}
 
 	@Override
-	public MData retrieveRoomInformationDetail(MData param) throws MException {
-		return channelDBDao.selectOne("retrieveRoomInformationDetail", param);
+	public MMultiData retrieveRoomInformationListForDownload(MData param) throws MException {
+		return channelDBDao.selectList("retrieveRoomInformationListForDownload", param);
 	}
 
 }

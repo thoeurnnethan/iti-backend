@@ -37,6 +37,17 @@ public class SubjectInformationServiceImpl implements SubjectInformationService	
 	}
 
 	@Override
+	public MMultiData retrieveSubjectInformationListForDownload(MData param) throws MException {
+		try {
+			return subjectInformationMapper.retrieveSubjectInformationListForDownload(param);
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+
+	@Override
 	public MData registerSubjectInformation(MData param) {
 		MData	outputData		= new MData();
 		try {
