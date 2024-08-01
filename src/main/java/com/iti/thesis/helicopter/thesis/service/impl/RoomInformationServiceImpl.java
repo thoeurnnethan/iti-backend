@@ -3,7 +3,7 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.iti.thesis.helicopter.thesis.common.ErrorCode.ApplicationErrorCode;
+import com.iti.thesis.helicopter.thesis.common.ErrorCode.ErrorCode;
 import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
 import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
@@ -66,7 +66,7 @@ public class RoomInformationServiceImpl implements RoomInformationService {
 			}
 			return param;
 		} catch (MNotFoundException e) {
-			throw new MException(ApplicationErrorCode.ROOM_NOT_FOUND.getValue(), ApplicationErrorCode.ROOM_NOT_FOUND.getDescription());
+			throw new MException(ErrorCode.ROOM_NOT_FOUND.getValue(), ErrorCode.ROOM_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

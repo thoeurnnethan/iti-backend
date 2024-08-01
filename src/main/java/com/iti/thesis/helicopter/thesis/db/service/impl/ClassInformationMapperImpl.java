@@ -31,6 +31,11 @@ public class ClassInformationMapperImpl implements ClassInformationMapper {
 	}
 
 	@Override
+	public MMultiData retrieveClassInformationStudentList(MData param) throws MException {
+		return channelDBDao.selectList("retrieveClassInformationStudentList", param);
+	}
+
+	@Override
 	public int registerClassInformation(MData param) throws MException {
 		return channelDBDao.insert("registerClassInformation", param);
 	}

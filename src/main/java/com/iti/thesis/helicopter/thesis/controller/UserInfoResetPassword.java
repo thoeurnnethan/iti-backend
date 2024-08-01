@@ -1,8 +1,5 @@
 package com.iti.thesis.helicopter.thesis.controller;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,48 +11,42 @@ import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
-import com.iti.thesis.helicopter.thesis.service.UserAuthenticationService;
-import com.iti.thesis.helicopter.thesis.util.MResponseUtil;
-import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
+import com.iti.thesis.helicopter.thesis.service.UserInfoService;
 
 import lombok.extern.slf4j.Slf4j;;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/user")
-public class UserInfoLogin extends BaseTemplate {
+public class UserInfoResetPassword extends BaseTemplate {
 	
 	@Autowired
-	private UserAuthenticationService userAuthenticationService;
-	
-	private final String[] removeKey = {"secretKey","studentID","firstLoginDate", "parentID"
-			,"lastLoginDate","lastChangeDate","lastChangeTime","statusCode","userPasswordErrorCount","academicList","parentList"};
+	private UserInfoService		userInfoService;
 	
 	@Override
-	@PostMapping("/login")
+	@PostMapping("/reset-password")
 	public JsonNode onRequest(@RequestBody MData message) throws MException {
 		try {
-			message.setBoolean("isLogin", true);
 			return super.onProcess(message);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.toString());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
 		}
 	}
-	
+
 	@Override
 	public MData onExecute(MData param) throws MException {
+		MData response = new MData();
 		try {
-			MValidatorUtil.validate(param, "userID", "password");
-			param.put("password", URLDecoder.decode(param.getString("password"), StandardCharsets.UTF_8.toString()));
-			return MResponseUtil.removeKey(userAuthenticationService.userLogin(param), removeKey);
+			response = userInfoService.updateUserInfoResetPassword(param);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
 		}
+		return response;
 	}
-	
+
 }

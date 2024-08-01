@@ -1,8 +1,5 @@
 package com.iti.thesis.helicopter.thesis.controller;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,36 +8,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
+import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
-import com.iti.thesis.helicopter.thesis.service.UserAuthenticationService;
-import com.iti.thesis.helicopter.thesis.util.MResponseUtil;
-import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
+import com.iti.thesis.helicopter.thesis.service.ClassInformationService;;
 
-import lombok.extern.slf4j.Slf4j;;
-
-@Slf4j
 @RestController
-@RequestMapping("/api/user")
-public class UserInfoLogin extends BaseTemplate {
+@RequestMapping("/api/class-info")
+public class ClassInformationInquiryStudentList extends BaseTemplate {
 	
 	@Autowired
-	private UserAuthenticationService userAuthenticationService;
-	
-	private final String[] removeKey = {"secretKey","studentID","firstLoginDate", "parentID"
-			,"lastLoginDate","lastChangeDate","lastChangeTime","statusCode","userPasswordErrorCount","academicList","parentList"};
-	
+	private ClassInformationService		classInformationService;
+
 	@Override
-	@PostMapping("/login")
+	@PostMapping("/list/student")
 	public JsonNode onRequest(@RequestBody MData message) throws MException {
 		try {
-			message.setBoolean("isLogin", true);
 			return super.onProcess(message);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.toString());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
 		}
 	}
@@ -48,9 +36,8 @@ public class UserInfoLogin extends BaseTemplate {
 	@Override
 	public MData onExecute(MData param) throws MException {
 		try {
-			MValidatorUtil.validate(param, "userID", "password");
-			param.put("password", URLDecoder.decode(param.getString("password"), StandardCharsets.UTF_8.toString()));
-			return MResponseUtil.removeKey(userAuthenticationService.userLogin(param), removeKey);
+			MMultiData	studentList		= classInformationService.retrieveClassInformationStudentList(param);
+			return prepareResponse(studentList);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -58,4 +45,11 @@ public class UserInfoLogin extends BaseTemplate {
 		}
 	}
 	
+	private MData prepareResponse(MMultiData studentList) {
+		MData response = new MData();
+		response.setInt("totalCount", studentList.size());
+		response.setMMultiData("studentList", studentList);
+		return response;
+	}
+
 }

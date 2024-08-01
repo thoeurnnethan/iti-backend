@@ -22,8 +22,6 @@
 		     , EMAIL                       AS "email"
 		     , PASSWD                      AS "passwd"
 		     , IMG_URL                     AS "imageUrl"
-		     , FRST_LOGIN_DT               AS "firstLoginDate"
-		     , LAST_LOGIN_DT               AS "lastLoginDate"
 		     , STCD                        AS "statusCode"
 		  FROM FRST.USER_INFO 
 		 WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
@@ -80,7 +78,7 @@
 		     , IMG_URL                     AS "imageUrl"
 		     , FRST_LOGIN_DT               AS "firstLoginDate"
 		     , LAST_LOGIN_DT               AS "lastLoginDate"
-		     , PASSWD_ERR_CT               AS "userPasswordErrorCount"
+		     , PASS_ERR_CT                 AS "userPasswordErrorCount"
 		     , LOCK_DT                     AS "lockDateTime"
 		     , LOGIN_BY_USER_YN            AS "loginByUserYn"
 		     , STCD                        AS "statusCode"
@@ -90,9 +88,9 @@
 		]]>
 	</select>
 	
-	<select id="retrieveUserInfoDetailByUserIDAndRoleID" resultType="MData">
+	<select id="retrieveUserInfoAllStatus" resultType="MData">
 		<![CDATA[
-		SELECT /* RetrieveUserInfoDetailByUserID */
+		SELECT /* RetrieveUserInfoAllStatus */
 		       USER_ID                     AS "userID"
 		     , ROLE_ID                     AS "roleID"
 		  FROM FRST.USER_INFO 
@@ -104,7 +102,7 @@
 		<![CDATA[
 		UPDATE /* UpdateUserLoginInfo */
 		       FRST.USER_INFO
-		   SET PASSWD_ERR_CT = COALESCE(#{userPasswordErrorCount}, PASSWD_ERR_CT)
+		   SET PASS_ERR_CT = COALESCE(#{userPasswordErrorCount}, PASS_ERR_CT)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LOCK_DT = COALESCE(#{lockDateTime}, LOCK_DT)
 		     , FRST_LOGIN_DT = COALESCE(#{firstLoginDate}, FRST_LOGIN_DT)
@@ -156,8 +154,11 @@
 		     , EMAIL 
 		     , PASSWD 
 		     , IMG_URL 
+		     , PASS_ERR_CT 
 		     , FRST_LOGIN_DT
 		     , LAST_LOGIN_DT 
+		     , LOGIN_BY_USER_YN 
+		     , LOCK_DT 
 		     , STCD 
 		     , FRST_REG_DT 
 		     , FRST_REG_TIME 
@@ -178,8 +179,11 @@
 		     , COALESCE(#{email}, '')
 		     , COALESCE(#{passwd}, '')
 		     , COALESCE(#{imageUrl}, '')
+		     , COALESCE(#{userPasswordErrorCount}, 0)
 		     , COALESCE(#{firstLoginDate}, '')
 		     , COALESCE(#{lastLoginDate}, '')
+		     , COALESCE(#{loginByUserYn}, '')
+		     , COALESCE(#{lockDate}, '')
 		     , COALESCE(#{statusCode}, '')
 		     , COALESCE(#{firstRegisterDate}, '')
 		     , COALESCE(#{firstRegisterTime}, '')

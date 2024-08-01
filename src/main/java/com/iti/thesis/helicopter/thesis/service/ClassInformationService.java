@@ -12,5 +12,6 @@ public interface ClassInformationService {
 	public MData retrieveClassInformationTotalCount(MData param) throws MException;
 	public MData updateClassInformation(MData param) throws MException;
 	public MMultiData retrieveClassInformationListForDownload(MData param) throws MException;
+	public MMultiData retrieveClassInformationStudentList(MData param) throws MException;
 
 }

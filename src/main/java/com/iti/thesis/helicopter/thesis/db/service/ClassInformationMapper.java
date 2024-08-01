@@ -13,4 +13,5 @@ public interface ClassInformationMapper {
 	public MData retrieveClassInformationTotalCount(MData param) throws MException;
 	public int updateClassInformation(MData param) throws MException;
 	public MMultiData retrieveClassInformationListForDownload(MData param) throws MException;
+	public MMultiData retrieveClassInformationStudentList(MData param) throws MException;
 }

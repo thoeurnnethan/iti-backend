@@ -10,6 +10,7 @@ import com.iti.thesis.helicopter.thesis.constant.UserStatusCode;
 import com.iti.thesis.helicopter.thesis.constant.YnTypeCode;
 import com.iti.thesis.helicopter.thesis.context.builder.SessionDataBuilder;
 import com.iti.thesis.helicopter.thesis.context.parameter.MContextParameter;
+import com.iti.thesis.helicopter.thesis.context.util.MHttpRequestUtil;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
@@ -22,9 +23,6 @@ import com.iti.thesis.helicopter.thesis.util.MPasswordUtil;
 import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Service
 public class UserAuthenticationServiceImpl implements UserAuthenticationService {
 
@@ -90,27 +88,23 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				if(MStringUtil.isEmpty(userInfo.getString("firstLoginDate"))) {
 					userInfo.setString("firstLoginDate", MDateUtil.getCurrentDate());
 				}
-//				updateSessionInfoData(param);
+				
 				userInfo.setString("lastLoginDate", MDateUtil.getCurrentDate());
 				userInfoService.updateUserLoginInfo(userInfo);
 				response.appendFrom(userInfo);
 				// Change Context data
-				log.error(MContextParameter.getSessionContext().toString());
 				MData sessionData = SessionDataBuilder.create()
 						.loginUserId(userInfo.getString("userID"))
 						.userRoleID(userInfo.getString("roleID"))
 						.build();
 				// Update session data
 				MContextParameter.setSessionContext(sessionData);
-				log.error(MContextParameter.getSessionContext().toString());
 				SessionUtil.updateSession(sessionData);
-				log.error(SessionUtil.getSessionId());
-				log.error(SessionUtil.isLoggedin()+"");
-				MData session = MContextParameter.getSessionContext();
-				response.setMData("session", session);
-				response.appendFrom(userInfo);
+				MHttpRequestUtil.setSessionAttribute(sessionData);
 			}
 			
+		} catch (MNotFoundException e) {
+			throw new MBizException(ErrorCode.USER_NOT_FOUND.getValue(), ErrorCode.USER_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -121,6 +115,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			errorData.setString("roleID", userInfo.getString("roleID"));
 			errorData.setString("lockDateTime", userInfo.getString("lockDateTime"));
 			errorData.setString("statusCode", userInfo.getString("statusCode"));
+			errorData.setInt("userPasswordErrorCount", 0);
 			if(isIncorrectPasswd){
 				errorData.setInt("userPasswordErrorCount", userPasswdErrorCount);
 				if(isUserLock) {
@@ -131,55 +126,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			userInfoService.updateUserLoginInfo(errorData);
 		}
 		return response;
-	}
-	
-	private MData updateSessionInfoData(MData param) {
-		MData sessionMData = new MData();
-		try {
-			MValidatorUtil.validate(param, "userID");
-			MData	userLoginInfoMData	= new MData();
-			try {
-				userLoginInfoMData	= userInfoService.retrieveUserInfoDetail(param);
-			} catch (MNotFoundException e) {
-				userLoginInfoMData	= new MData();
-			}
-			
-			//=========================================================
-			//# Start Creating Session
-			//=========================================================
-			String userID = param.getString("userID");
-			sessionMData = SessionDataBuilder.create()
-					.loginUserId(userID)
-					.build();
-			//change context data
-			MContextParameter.setSessionContext(sessionMData);
-			//update session data
-			SessionUtil.updateSession(sessionMData);
-			log.info("Write SessionID>>>{}", SessionUtil.getSessionId());
-			log.info("Write Data>>>{}", sessionMData);
-			
-			/* kill duplicated session */
-			String	sessionId = userLoginInfoMData.getString("loginUuID");
-			log.info("Trying Read SesionID <<< {}", sessionId);
-			//#########################################################
-			//# End Creating Session
-			//#########################################################
-			
-			MData	userLoginInfo			= new MData();
-//			MData	userLoginInfoForUpdate	= retrieveUserLoginInfoForUpdate(param);
-			userLoginInfo.setString("userID", param.getString("userID"));
-			userLoginInfo.setString("deviceID", param.getString("deviceID"));
-			userLoginInfo.setString("loginUuID", SessionUtil.getSessionId());
-			userLoginInfo.setString("lastLoginDate", MDateUtil.getCurrentDate());
-			userLoginInfo.setString("lastLoginTime", MDateUtil.getCurrentTime());
-			
-		} catch (MException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new MBizException("00017", "Create Session Uncaught Exception Error");
-		}
-		
-		return sessionMData;
 	}
 	
 	private boolean isInLockTime(String lockDateTime) {

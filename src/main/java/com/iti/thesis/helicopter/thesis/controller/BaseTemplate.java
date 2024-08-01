@@ -36,7 +36,13 @@ public abstract class BaseTemplate {
 		//======================================================
 		//# create session data
 		//======================================================
-		JsonAdaptorObject obj = MHttpRequestUtil.createSession(param);
+		JsonAdaptorObject obj = new JsonAdaptorObject();
+		try {
+			obj = MHttpRequestUtil.createSession(param);
+		} catch (MException e) {
+			MContextHolder.clear();
+			return makeFailResponse(param, e.getMCode(), e.getMMessage());
+		}
 		//======================================================
 		//# initialize context
 		//======================================================
@@ -65,15 +71,11 @@ public abstract class BaseTemplate {
 		//======================================================
 		// keep request object
 		MContextParameter.setContext(obj);
-//		log.error(MContextParameter.getContext()+"");
 		// keep header into context 
 		MContextParameter.setRequestHeader(requestHeader);
 		// init session context
-//		log.error(SessionUtil.getSessionId());
 		if (!"Unknown".equals(SessionUtil.getSessionId())) {
 			MContextParameter.setSessionContext(convertPojoToMData(metaNode));
-//			log.error(MContextParameter.getSessionContext()+"");
-//			log.error(MContextUtil.getLoginUserId()+"");
 		}
 		try {
 			responseBody = onExecute(requestBody);

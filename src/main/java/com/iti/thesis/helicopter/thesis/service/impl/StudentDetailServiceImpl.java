@@ -4,16 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
+import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
+import com.iti.thesis.helicopter.thesis.db.service.StudentClassMappingMapper;
 import com.iti.thesis.helicopter.thesis.db.service.StudentDetailMapper;
 import com.iti.thesis.helicopter.thesis.service.StudentAcademicHistoryService;
 import com.iti.thesis.helicopter.thesis.service.StudentDetailService;
 import com.iti.thesis.helicopter.thesis.service.StudentParentDetailService;
+import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
 @Service
@@ -21,6 +24,8 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 	
 	@Autowired
 	private StudentDetailMapper				studentDetailMapper;
+	@Autowired
+	private StudentClassMappingMapper		studentClassMappingMapper;
 	@Autowired
 	private StudentParentDetailService		parentDetailService;
 	@Autowired
@@ -33,6 +38,14 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 			param.setString("studentID", studentID);
 			// Register Student Info
 			studentDetailMapper.registerStudentDetail(param);
+			// Register Class Mapping
+			if(!MStringUtil.isEmpty(param.getString("classID"))) {
+				MData mappingParam = new MData();
+				mappingParam.setString("classID", param.getString("classID"));
+				mappingParam.setString("studentID", studentID);
+				mappingParam.setString("statusCode", StatusCode.ACTIVE.getValue());
+				studentClassMappingMapper.registerStudentClassMappingInfo(mappingParam);
+			}
 			// Register Parent Info
 			parentDetailService.registerStudentParentDetail(param);
 			// Register Academic History Info

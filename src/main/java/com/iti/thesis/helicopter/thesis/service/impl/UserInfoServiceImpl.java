@@ -8,7 +8,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
-import com.iti.thesis.helicopter.thesis.common.ErrorCode.UserErrorCode;
+import com.iti.thesis.helicopter.thesis.common.ErrorCode.ErrorCode;
 import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.constant.UserRoleCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
@@ -107,7 +107,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			MMultiData	userList	= param.getMMultiData("userList");
 			for(MData userInfo		: userList.toListMData()) {
 				String	roleID		= userInfo.getString("roleID");
-				String	userID		= this.generateUserID(userInfo);
+				String	userID		= this.generateUserID();
 				String	passwd		= MGenerateIDUtil.generateUserPassword();
 				
 				userInfo.setString("userID", userID);
@@ -150,16 +150,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 	}
 
-	private String generateUserID(MData param) {
+	private String generateUserID() {
 		try {
-			MValidatorUtil.validate(param, "roleID");
+			MData	param			= new MData();
 			String	userID			= MStringUtil.EMPTY;
 			Boolean	isValidUserID	= false;
 			while(!isValidUserID) {
 				userID = MGenerateIDUtil.generateUserID();
 				param.setString("userID", userID);
-				isValidUserID = isValidUserID(param);
-				if (isValidUserID) {
+				if (!isValidUserID) {
+					isValidUserID = this.isValidUserID(param);
 					return userID;
 				}
 			}
@@ -174,7 +174,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	
 	private boolean isValidUserID(MData param) {
 		try {
-			userInfoMapper.retrieveUserInfoDetailByUserIDAndRoleID(param);
+			userInfoMapper.retrieveUserInfoAllStatus(param);
 			return false;
 		} catch (MNotFoundException e) {
 			return true;
@@ -245,7 +245,46 @@ public class UserInfoServiceImpl implements UserInfoService {
 			
 			return param;
 		} catch (MNotFoundException e) {
-			throw new MException(UserErrorCode.USER_NOT_FOUND.getValue(), UserErrorCode.USER_NOT_FOUND.getDescription());
+			throw new MException(ErrorCode.USER_NOT_FOUND.getValue(), ErrorCode.USER_NOT_FOUND.getDescription());
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
+		}
+	}
+
+	@Override
+	public MData updateUserInfoResetPassword(MData param) throws MException {
+		try {
+			MValidatorUtil.validate(param, "LIUserID","resetUserID");
+			MData	adminInfo	= new MData();
+			adminInfo.setString("userID", param.getString("LIUserID"));
+			adminInfo	= userInfoMapper.retrieveUserInfoDetail(param);
+			String adminRole = adminInfo.getString("roleID");
+			if(!UserRoleCode.ADMIN.getValue().equals(adminRole)) {
+				throw new MException(ErrorCode.ONLY_ADMIN_CAN_UPDATE.getValue(), ErrorCode.ONLY_ADMIN_CAN_UPDATE.getDescription());
+			}else {
+				MData userInfo = new MData();
+				userInfo.setString("userID", param.getString("resetUserID"));
+				userInfo = userInfoMapper.retrieveUserInfoDetail(userInfo);
+				String userRoleID = userInfo.getString("roleID");
+				if(UserRoleCode.ADMIN.getValue().equals(userRoleID)) {
+					throw new MException(ErrorCode.CANNOT_RESET_ADMIN_PASS.getValue(), ErrorCode.CANNOT_RESET_ADMIN_PASS.getDescription());
+				}else {
+					String newUserID		= this.generateUserID();
+					String newUserPasword	= MGenerateIDUtil.generateUserPassword();
+					userInfo.setString("newUserID", newUserID);
+					userInfo.setString("newUserPasword", newUserPasword);
+					userInfo.setString("userPasswordErrorCount", newUserPasword);
+					userInfo.setString("lockDateTime", newUserPasword);
+					userInfo.setString("firstLoginDate", newUserPasword);
+					userInfo.setString("statusCode", newUserPasword);
+				}
+			}
+			
+			return adminInfo;
+		} catch (MNotFoundException e) {
+			throw new MException(ErrorCode.USER_NOT_FOUND.getValue(), ErrorCode.USER_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

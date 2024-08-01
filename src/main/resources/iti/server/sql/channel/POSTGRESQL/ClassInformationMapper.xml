@@ -31,7 +31,7 @@
 		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
 		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
 		   AND ('' = COALESCE(#{generation}, '') OR A.GENR = #{generation})
-		   AND ('' = COALESCE(#{semester}::TEXT , '') OR A.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
 		   AND A.STCD <> '02'
 		 ORDER BY A.STCD
 		        , A.CLS_ID DESC
@@ -53,7 +53,7 @@
 		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
 		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
 		   AND ('' = COALESCE(#{generation}, '') OR A.GENR = #{generation})
-		   AND ('' = COALESCE(#{semester}::TEXT , '') OR A.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
 		   AND A.STCD <> '02'
 		]]>
 	</select>
@@ -84,10 +84,38 @@
 		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
 		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
 		   AND ('' = COALESCE(#{generation}, '') OR A.GENR = #{generation})
-		   AND ('' = COALESCE(#{semester}::TEXT , '') OR A.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
 		   AND A.STCD <> '02'
 		 ORDER BY A.STCD
 		        , A.CLS_ID DESC
+		]]>
+	</select>
+	
+	<select id="retrieveClassInformationStudentList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveClassInformationStudentList */
+		       A.CLS_ID                     AS "classID"
+		     , A.CLS_NM                     AS "className"
+		     , A.CLS_DESC                   AS "classDesc"
+		     , B.STD_ID                     AS "studentID"
+		     , C.FRST_NM                    AS "firstName"
+		     , C.LAST_NM                    AS "lastName"
+		     , C.DOB                        AS "dateOfBirth"
+		     , C.GENDER                     AS "gender"
+		     , C_YEAR                       AS "year"
+		     , A.C_TIME                     AS "time"
+		     , A.GENR                       AS "generation"
+		     , A.SEMESTER                   AS "semester"
+		     , A.STCD                       AS "statusCode"
+		  FROM FRST.CLS_INFO A
+		 RIGHT JOIN FRST.STD_CLS_MAP B
+		    ON A.CLS_ID = B.CLS_ID 
+		   AND B.STCD <> '02'
+		  LEFT JOIN FRST.USER_INFO C
+		    ON B.STD_ID = C.SPEC_ID 
+		   AND C.STCD <> '02'
+		 WHERE A.CLS_ID = #{classID}
+		 ORDER BY (C.FRST_NM, C.LAST_NM)
 		]]>
 	</select>
 	
@@ -140,7 +168,7 @@
 		     , COALESCE(#{cyear}, '')
 		     , COALESCE(#{generation}, '')
 		     , COALESCE(#{ctime}, '')
-		     , COALESCE(#{semester}, 0)
+		     , COALESCE(#{semester}, '')
 		     , COALESCE(#{firstRegisterDate}, '')
 		     , COALESCE(#{firstRegisterTime}, '')
 		     , COALESCE(#{lastChangeDate}, '')

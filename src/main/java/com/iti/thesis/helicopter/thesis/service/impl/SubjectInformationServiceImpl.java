@@ -3,7 +3,7 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.iti.thesis.helicopter.thesis.common.ErrorCode.ApplicationErrorCode;
+import com.iti.thesis.helicopter.thesis.common.ErrorCode.ErrorCode;
 import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
@@ -57,7 +57,7 @@ public class SubjectInformationServiceImpl implements SubjectInformationService	
 			if(!classInfo.isEmpty()) {
 				boolean isExist = this.retrieveValidateSubject(param);
 				if(isExist) {
-					throw new MException(ApplicationErrorCode.SUBJECT_ALREADY_REGISTER.getValue(), ApplicationErrorCode.SUBJECT_ALREADY_REGISTER.getDescription());
+					throw new MException(ErrorCode.SUBJECT_ALREADY_REGISTER.getValue(), ErrorCode.SUBJECT_ALREADY_REGISTER.getDescription());
 				}else {
 					int seqNo = 0;
 					MMultiData subList = new MMultiData();
@@ -65,7 +65,7 @@ public class SubjectInformationServiceImpl implements SubjectInformationService	
 						MValidatorUtil.validate(subject, "subjectName");
 						
 						subject.setString("classID", param.getString("classID"));
-						subject.setInt("seqNo", ++seqNo);
+						subject.setString("subjectID", param.getString("classID")+ "_SUB"+ (++seqNo));
 						subject.setString("statusCode", StatusCode.ACTIVE.getValue());
 						subjectInformationMapper.registerSubjectInformation(subject);
 						subList.addMData(subject);
@@ -75,7 +75,7 @@ public class SubjectInformationServiceImpl implements SubjectInformationService	
 			}
 			return outputData;
 		} catch (MNotFoundException e) {
-			throw new MException(ApplicationErrorCode.CLASS_NOT_FOUND.getValue(), ApplicationErrorCode.CLASS_NOT_FOUND.getDescription());
+			throw new MException(ErrorCode.CLASS_NOT_FOUND.getValue(), ErrorCode.CLASS_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -118,7 +118,7 @@ public class SubjectInformationServiceImpl implements SubjectInformationService	
 			MData classInfo = classInformationMapper.retrieveClassInformationDetail(param);
 			if(!classInfo.isEmpty()) {
 				for(MData subject : param.getMMultiData("subjectList").toListMData()) {
-					MValidatorUtil.validate(subject, "seqNo");
+					MValidatorUtil.validate(subject, "subjectID");
 					subject.setString("classID", param.getString("classID"));
 					boolean isExist = this.retrieveValidateSubject(subject);
 					if(isExist) {

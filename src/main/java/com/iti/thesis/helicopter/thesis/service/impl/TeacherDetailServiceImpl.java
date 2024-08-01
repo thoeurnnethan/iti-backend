@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
+import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.constant.UserRoleCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
@@ -40,6 +41,7 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 				qualSeqNo ++;
 				qual.setString("teacherID", tacherID);
 				qual.setInt("seqNo", qualSeqNo);
+				qual.setString("statusCode", StatusCode.ACTIVE.getValue());
 				teacherQualificationHistoryMapper.registerTeacherQualificationHistory(qual);
 			}
 			return param;

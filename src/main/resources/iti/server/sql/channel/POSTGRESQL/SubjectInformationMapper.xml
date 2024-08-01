@@ -10,7 +10,7 @@
 		SELECT /* RetrieveSubjectInformationList */
 		       A.CLS_ID                     AS "classID"
 		     , B.CLS_NM                     AS "className"
-		     , A.SEQNO                      AS "seqNo"
+		     , A.SUB_ID                     AS "subjectID"
 		     , A.SUB_NM                     AS "subjectName"
 		     , A.SUB_DESC                   AS "subjectDesc"
 		     , A.STCD                       AS "statusCode"
@@ -27,7 +27,7 @@
 		   AND A.STCD <> '02'
 		   AND B.STCD <> '02'
 		 ORDER BY A.CLS_ID
-		        , A.SEQNO
+		        , A.SUB_ID
 		 LIMIT #{limit}
 		OFFSET #{offset}
 		]]>
@@ -38,7 +38,7 @@
 		SELECT /* retrieveSubjectInformationListForDownload */
 		       A.CLS_ID                     AS "classID"
 		     , B.CLS_NM                     AS "className"
-		     , A.SEQNO                      AS "seqNo"
+		     , A.SUB_ID                      AS "SUB_ID"
 		     , A.SUB_NM                     AS "subjectName"
 		     , A.SUB_DESC                   AS "subjectDesc"
 		     , A.STCD                       AS "statusCode"
@@ -55,17 +55,7 @@
 		   AND A.STCD <> '02'
 		   AND B.STCD <> '02'
 		 ORDER BY A.CLS_ID
-		        , A.SEQNO
-		]]>
-	</select>
-	
-	<select id="retrieveLastClassIDs" resultType="MData">
-		<![CDATA[
-		SELECT /* RetrieveLastClassID */
-		       CLS_ID                AS "classID"
-		  FROM FRST.CLS_INFO A
-		 ORDER BY CLS_ID DESC
-		 LIMIT 1
+		        , A.SUB_ID
 		]]>
 	</select>
 	
@@ -73,13 +63,13 @@
 		<![CDATA[
 		SELECT /* RetrieveSubjectIsExist */
 		       CLS_ID                     AS "classID"
-		     , SEQNO                      AS "seqNo"
+		     , SUB_ID                     AS "subjectID"
 		     , SUB_NM                     AS "subjectName"
 		     , SUB_DESC                   AS "subjectDesc"
 		     , STCD                       AS "statusCode"
 		  FROM FRST.SUBJ_INFO
 		 WHERE CLS_ID = #{classID}
-		   AND ('' = COALESCE(#{seqNo}::TEXT, '') OR SEQNO = #{seqNo})
+		   AND ('' = COALESCE(#{subjectID}::TEXT, '') OR SUB_ID = #{subjectID})
 		 LIMIT 1
 		]]>
 	</select>
@@ -89,7 +79,7 @@
 		INSERT /* RegisterSubjectInformation */
 		  INTO FRST.SUBJ_INFO 
 		     ( CLS_ID
-		     , SEQNO 
+		     , SUB_ID 
 		     , SUB_NM 
 		     , SUB_DESC 
 		     , STCD
@@ -99,7 +89,7 @@
 		     , LAST_CHNG_TIME)
 		VALUES 
 		     ( #{classID}
-		     , #{seqNo}
+		     , #{subjectID}
 		     , COALESCE(#{subjectName}, '')
 		     , COALESCE(#{subjectDesc}, '')
 		     , COALESCE(#{statusCode}, '')
@@ -120,7 +110,7 @@
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE CLS_ID = #{classID}
-		   AND SEQNO = #{seqNo}
+		   AND SUB_ID = #{subjectID}
 		]]>
 	</update>
 

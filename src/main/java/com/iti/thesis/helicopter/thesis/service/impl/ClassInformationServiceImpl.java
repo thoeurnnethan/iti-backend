@@ -3,7 +3,7 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.iti.thesis.helicopter.thesis.common.ErrorCode.ApplicationErrorCode;
+import com.iti.thesis.helicopter.thesis.common.ErrorCode.ErrorCode;
 import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
@@ -32,7 +32,6 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 		try {
 			return classInformationMapper.retrieveClassInformationList(param);
 		} catch (MException e) {
-			log.error(e.getMessage(), e);
 			throw e;
 		} catch (Exception e){
 			log.error(e.getLocalizedMessage());
@@ -57,7 +56,19 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 		try {
 			return classInformationMapper.retrieveClassInformationListForDownload(param);
 		} catch (MException e) {
-			log.error(e.getMessage(), e);
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+
+	@Override
+	public MMultiData retrieveClassInformationStudentList(MData param) throws MException {
+		try {
+			MValidatorUtil.validate(param, "classID");
+			return classInformationMapper.retrieveClassInformationStudentList(param);
+		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
 			log.error(e.getLocalizedMessage());
@@ -70,7 +81,6 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 		MData	outputData		= param;
 		try {
 			MValidatorUtil.validate(param, "departmentID", "className","cyear","generation","semester");
-			
 			MData	departmentInfo	= departmentInformationMapper.retrieveDepartmentInformationDetail(param);
 			if(!departmentInfo.isEmpty()) {
 				String classID = this.retrieveLastClassID(param);
@@ -79,7 +89,7 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 			}
 			return outputData;
 		} catch (MNotFoundException e) {
-			throw new MException(ApplicationErrorCode.DEPARTMENT_NOT_FOUND.getValue(), ApplicationErrorCode.DEPARTMENT_NOT_FOUND.getDescription());
+			throw new MException(ErrorCode.DEPARTMENT_NOT_FOUND.getValue(), ErrorCode.DEPARTMENT_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -123,14 +133,14 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 	@Override
 	public MData updateClassInformation(MData param) throws MException {
 		try {
-			MValidatorUtil.validate(param, "classID","departmentID");
+			MValidatorUtil.validate(param, "classID","departmentID","className","year","generation","semester","statusCode");
 			MData classInfo = classInformationMapper.retrieveClassInformationDetail(param);
 			if(!classInfo.isEmpty()) {
 				classInformationMapper.updateClassInformation(param);
 			}
-			return classInfo;
+			return param;
 		} catch (MNotFoundException e) {
-			throw new MException(ApplicationErrorCode.CLASS_NOT_FOUND.getValue(), ApplicationErrorCode.CLASS_NOT_FOUND.getDescription());
+			throw new MException(ErrorCode.CLASS_NOT_FOUND.getValue(), ErrorCode.CLASS_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
