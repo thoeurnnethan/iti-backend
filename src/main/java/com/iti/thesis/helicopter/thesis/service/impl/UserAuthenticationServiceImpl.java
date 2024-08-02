@@ -38,8 +38,9 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		MData	response				= new MData();
 		MData	userInfo				= new MData();
 		int		userPasswdErrorCount	= 0;
-		boolean isIncorrectPasswd		= false;
-		boolean isUserLock				= false;
+		boolean	isIncorrectPasswd		= false;
+		boolean	isUserLock				= false;
+		String	loginByUserYn			= MStringUtil.EMPTY;
 		try {
 			MValidatorUtil.validate(param, "userID", "password");
 			
@@ -48,11 +49,12 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			String statusCode		= userInfo.getString("statusCode");
 			String lockDateTime		= userInfo.getString("lockDateTime");
 			userPasswdErrorCount	= userInfo.getInt("userPasswordErrorCount");
+			loginByUserYn			= userInfo.getString("loginByUserYn");
 			String	userPwd			= userInfo.getString("passwd");
 			String	password		= param.getString("password");
 			
 			// If user is already login, then password need to encrypt
-			if(YnTypeCode.YES.getValue().equals(userInfo.getString("loginByUserYn"))) {
+			if(!MStringUtil.isEmpty(loginByUserYn) && YnTypeCode.YES.getValue().equals(loginByUserYn)) {
 				password	= MPasswordUtil.oneWayEnc(password, MStringUtil.EMPTY);
 			}
 			
@@ -85,13 +87,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				}
 				throw new MBizException(ErrorCode.INCORRECT_PASSWORD.getValue(), ErrorCode.INCORRECT_PASSWORD.getDescription());
 			} else {
-				if(MStringUtil.isEmpty(userInfo.getString("firstLoginDate"))) {
-					userInfo.setString("firstLoginDate", MDateUtil.getCurrentDate());
-				}
-				
-				userInfo.setString("lastLoginDate", MDateUtil.getCurrentDate());
-				userInfoService.updateUserLoginInfo(userInfo);
-				response.appendFrom(userInfo);
 				// Change Context data
 				MData sessionData = SessionDataBuilder.create()
 						.loginUserId(userInfo.getString("userID"))
@@ -101,8 +96,9 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				MContextParameter.setSessionContext(sessionData);
 				SessionUtil.updateSession(sessionData);
 				MHttpRequestUtil.setSessionAttribute(sessionData);
+				response.appendFrom(userInfo);
 			}
-			
+			return response;
 		} catch (MNotFoundException e) {
 			throw new MBizException(ErrorCode.USER_NOT_FOUND.getValue(), ErrorCode.USER_NOT_FOUND.getDescription());
 		} catch (MException e) {
@@ -110,22 +106,35 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		} finally {
-			MData errorData = new MData();
-			errorData.setString("userID", userInfo.getString("userID"));
-			errorData.setString("roleID", userInfo.getString("roleID"));
-			errorData.setString("lockDateTime", userInfo.getString("lockDateTime"));
-			errorData.setString("statusCode", userInfo.getString("statusCode"));
-			errorData.setInt("userPasswordErrorCount", 0);
+			MData updateData = new MData();
+			updateData.setString("userID", userInfo.getString("userID"));
+			updateData.setString("roleID", userInfo.getString("roleID"));
+			updateData.setString("lockDateTime", userInfo.getString("lockDateTime"));
+			updateData.setString("statusCode", userInfo.getString("statusCode"));
+			updateData.setInt("userPasswordErrorCount", 0);
+			// Update Login fail
 			if(isIncorrectPasswd){
-				errorData.setInt("userPasswordErrorCount", userPasswdErrorCount);
+				updateData.setInt("userPasswordErrorCount", userPasswdErrorCount);
 				if(isUserLock) {
-					errorData.setString("lockDateTime", MDateUtil.getCurrentDateTime());
-					errorData.setString("statusCode", UserStatusCode.LOCK.getValue());
+					updateData.setString("lockDateTime", MDateUtil.getCurrentDateTime());
+					updateData.setString("statusCode", UserStatusCode.LOCK.getValue());
 				}
+				userInfoService.updateUserLoginInfo(updateData);
 			}
-			userInfoService.updateUserLoginInfo(errorData);
+			// Update Login Success
+			else {
+				updateData.setString("lockDateTime", MStringUtil.EMPTY);
+				updateData.setString("lastLoginDate", MDateUtil.getCurrentDate());
+				// Update in case login first time
+				if(MStringUtil.isEmpty(loginByUserYn) && !YnTypeCode.YES.getValue().equals(loginByUserYn)) {
+					updateData.setString("loginByUserYn", YnTypeCode.YES.getValue());
+					updateData.setString("firstLoginDate", MDateUtil.getCurrentDate());
+					String encryptedPassword = MPasswordUtil.oneWayEnc(userInfo.getString("passwd"), MStringUtil.EMPTY);
+					updateData.setString("newPassword", encryptedPassword);
+				}
+				userInfoService.updateUserLoginInfo(updateData);
+			}
 		}
-		return response;
 	}
 	
 	private boolean isInLockTime(String lockDateTime) {

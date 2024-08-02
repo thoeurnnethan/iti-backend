@@ -62,6 +62,7 @@ public class MHttpRequestUtil {
 		} catch (MException e) {
 			throw new MException(e.getMCode(), e.getMMessage());
 		} catch (Exception e) {
+			log.error(e.getLocalizedMessage());
 			throw new MException("00000", "There are problem while working with session");
 		}
 	}

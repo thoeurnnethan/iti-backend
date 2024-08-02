@@ -40,7 +40,7 @@ public class UserInfoInquiryDetail extends BaseTemplate {
 	@Override
 	public MData onExecute(MData param) throws MException {
 		try {
-			return MResponseUtil.removeKey(userInfoService.retrieveUserInfoDetail(param), removeKey);
+			return MResponseUtil.removeKey(userInfoService.retrieveUserInfoDetailSummary(param), removeKey);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

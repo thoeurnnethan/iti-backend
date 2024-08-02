@@ -107,6 +107,8 @@
 		     , LOCK_DT = COALESCE(#{lockDateTime}, LOCK_DT)
 		     , FRST_LOGIN_DT = COALESCE(#{firstLoginDate}, FRST_LOGIN_DT)
 		     , LAST_LOGIN_DT = COALESCE(#{lastLoginDate}, LAST_LOGIN_DT)
+		     , LOGIN_BY_USER_YN = COALESCE(#{loginByUserYn}, LOGIN_BY_USER_YN)
+		     , PASSWD = COALESCE(#{newPassword}, PASSWD)
 		     , SPEC_ID = COALESCE(#{specificID}, SPEC_ID)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME  = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)

@@ -33,11 +33,11 @@ import lombok.extern.slf4j.Slf4j;
 public class UserInfoServiceImpl implements UserInfoService {
 	
 	@Autowired
-	private UserInfoMapper			userInfoMapper;
+	private UserInfoMapper						userInfoMapper;
 	@Autowired
-	private StudentDetailService	studentDetailService;
+	private StudentDetailService				studentDetailService;
 	@Autowired
-	private TeacherDetailService	teacherDetailService;
+	private TeacherDetailService				teacherDetailService;
 	@Autowired
 	private PlatformTransactionManager			txManager;
 	
@@ -66,7 +66,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public MData retrieveUserInfoDetail(MData param) throws MException {
+	public MData retrieveUserInfoDetailSummary(MData param) throws MException {
 		MData	response	= new MData();
 		try {
 			MValidatorUtil.validate(param, "userID");
@@ -96,6 +96,19 @@ public class UserInfoServiceImpl implements UserInfoService {
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 		return response;
+	}
+	
+	@Override
+	public MData retrieveUserInfoDetail(MData param) throws MException {
+		try {
+			MValidatorUtil.validate(param, "userID");
+			return userInfoMapper.retrieveUserInfoDetail(param);
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
 	}
 	
 	@Override
@@ -149,38 +162,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 	}
-
-	private String generateUserID() {
-		try {
-			MData	param			= new MData();
-			String	userID			= MStringUtil.EMPTY;
-			Boolean	isValidUserID	= false;
-			while(!isValidUserID) {
-				userID = MGenerateIDUtil.generateUserID();
-				param.setString("userID", userID);
-				if (!isValidUserID) {
-					isValidUserID = this.isValidUserID(param);
-					return userID;
-				}
-			}
-			return userID;
-		} catch (MException e) {
-			throw e;
-		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
-			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
-		}
-	}
-	
-	private boolean isValidUserID(MData param) {
-		try {
-			userInfoMapper.retrieveUserInfoAllStatus(param);
-			return false;
-		} catch (MNotFoundException e) {
-			return true;
-		}
-	}
-	
 
 	@Override
 	public int updateUserLoginInfo(MData param) throws MException {
@@ -289,6 +270,37 @@ public class UserInfoServiceImpl implements UserInfoService {
 			throw e;
 		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
+		}
+	}
+
+	private String generateUserID() {
+		try {
+			MData	param			= new MData();
+			String	userID			= MStringUtil.EMPTY;
+			Boolean	isValidUserID	= false;
+			while(!isValidUserID) {
+				userID = MGenerateIDUtil.generateUserID();
+				param.setString("userID", userID);
+				if (!isValidUserID) {
+					isValidUserID = this.isValidUserID(param);
+					return userID;
+				}
+			}
+			return userID;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
+		}
+	}
+
+	private boolean isValidUserID(MData param) {
+		try {
+			userInfoMapper.retrieveUserInfoAllStatus(param);
+			return false;
+		} catch (MNotFoundException e) {
+			return true;
 		}
 	}
 	
