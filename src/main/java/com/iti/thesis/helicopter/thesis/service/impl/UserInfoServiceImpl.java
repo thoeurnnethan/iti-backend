@@ -236,11 +236,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public MData updateUserInfoResetPassword(MData param) throws MException {
+		MData response = new MData();
 		try {
 			MValidatorUtil.validate(param, "LIUserID","resetUserID");
 			MData	adminInfo	= new MData();
 			adminInfo.setString("userID", param.getString("LIUserID"));
-			adminInfo	= userInfoMapper.retrieveUserInfoDetail(param);
+			adminInfo	= userInfoMapper.retrieveUserInfoDetail(adminInfo);
 			String adminRole = adminInfo.getString("roleID");
 			if(!UserRoleCode.ADMIN.getValue().equals(adminRole)) {
 				throw new MException(ErrorCode.ONLY_ADMIN_CAN_UPDATE.getValue(), ErrorCode.ONLY_ADMIN_CAN_UPDATE.getDescription());
@@ -256,14 +257,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 					String newUserPasword	= MGenerateIDUtil.generateUserPassword();
 					userInfo.setString("newUserID", newUserID);
 					userInfo.setString("newUserPasword", newUserPasword);
-					userInfo.setString("userPasswordErrorCount", newUserPasword);
-					userInfo.setString("lockDateTime", newUserPasword);
-					userInfo.setString("firstLoginDate", newUserPasword);
-					userInfo.setString("statusCode", newUserPasword);
+					userInfo.setInt("userPasswordErrorCount", 0);
+					userInfo.setString("lockDateTime", MStringUtil.EMPTY);
+					userInfo.setString("loginByUserYn", MStringUtil.EMPTY);
+					userInfo.setString("firstLoginDate", MStringUtil.EMPTY);
+					userInfo.setString("statusCode", StatusCode.ACTIVE.getValue());
+					userInfoMapper.updateUserInfoResetPassword(userInfo);
+					response.setString("userID", newUserID);
+					response.setString("password", newUserPasword);
 				}
 			}
 			
-			return adminInfo;
+			return response;
 		} catch (MNotFoundException e) {
 			throw new MException(ErrorCode.USER_NOT_FOUND.getValue(), ErrorCode.USER_NOT_FOUND.getDescription());
 		} catch (MException e) {

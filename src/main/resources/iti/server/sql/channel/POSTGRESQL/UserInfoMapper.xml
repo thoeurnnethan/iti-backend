@@ -98,6 +98,27 @@
 		]]>
 	</select>
 	
+	<update id="updateUserInfo">
+		<![CDATA[
+		UPDATE /* UpdateUserInfo */
+		       FRST.USER_INFO
+		   SET FRST_NM = COALESCE(#{firstName}, FRST_NM)
+		     , LAST_NM = COALESCE(#{lastName}, LAST_NM)
+		     , NICK_NM = COALESCE(#{nickName}, NICK_NM)
+		     , GENDER = COALESCE(#{gender}, GENDER)
+		     , DOB = COALESCE(#{dateOfBirth}, DOB)
+		     , POB = COALESCE(#{placeOfBirth}, POB)
+		     , ADDR = COALESCE(#{address}, ADDR)
+		     , PHONE = COALESCE(#{phone}, PHONE)
+		     , EMAIL = COALESCE(#{address}, EMAIL)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME  = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE USER_ID = #{userID}
+		   AND SPEC_ID = #{specificID}
+		]]>
+	</update>
+	
 	<update id="updateUserLoginInfo">
 		<![CDATA[
 		UPDATE /* UpdateUserLoginInfo */
@@ -117,24 +138,22 @@
 		]]>
 	</update>
 	
-	<update id="updateUserInfo">
+	<update id="updateUserInfoResetPassword">
 		<![CDATA[
-		UPDATE /* UpdateUserInfo */
+		UPDATE /* UpdateUserInfoResetPassword */
 		       FRST.USER_INFO
-		   SET FRST_NM = COALESCE(#{firstName}, FRST_NM)
-		     , LAST_NM = COALESCE(#{lastName}, LAST_NM)
-		     , NICK_NM = COALESCE(#{nickName}, NICK_NM)
-		     , GENDER = COALESCE(#{gender}, GENDER)
-		     , DOB = COALESCE(#{dateOfBirth}, DOB)
-		     , POB = COALESCE(#{placeOfBirth}, POB)
-		     , ADDR = COALESCE(#{address}, ADDR)
-		     , PHONE = COALESCE(#{phone}, PHONE)
-		     , EMAIL = COALESCE(#{address}, EMAIL)
+		   SET USER_ID = COALESCE(#{newUserID}, USER_ID)
+		     , PASSWD = COALESCE(#{newUserPasword}, PASSWD)
+		     , PASS_ERR_CT = COALESCE(#{userPasswordErrorCount}, PASS_ERR_CT)
 		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LOCK_DT = COALESCE(#{lockDateTime}, LOCK_DT)
+		     , FRST_LOGIN_DT = COALESCE(#{firstLoginDate}, FRST_LOGIN_DT)
+		     , LAST_LOGIN_DT = COALESCE(#{lastLoginDate}, LAST_LOGIN_DT)
+		     , LOGIN_BY_USER_YN = COALESCE(#{loginByUserYn}, LOGIN_BY_USER_YN)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME  = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE USER_ID = #{userID}
-		   AND SPEC_ID = #{specificID}
+		   AND ROLE_ID = #{roleID}
 		]]>
 	</update>
 	

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.iti.thesis.helicopter.thesis.context.util.MContextUtil;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
@@ -39,6 +40,7 @@ public class UserInfoResetPassword extends BaseTemplate {
 	public MData onExecute(MData param) throws MException {
 		MData response = new MData();
 		try {
+			param.setString("LIUserID", MContextUtil.getLoginUserId());
 			response = userInfoService.updateUserInfoResetPassword(param);
 		} catch (MException e) {
 			throw e;

@@ -22,7 +22,7 @@ public class SessionDataBuilder {
 	}
 	
 	public SessionDataBuilder userRoleID(String roleID) {
-		this.metaData.setString("userRoleID", roleID);
+		this.metaData.setString("userRoleId", roleID);
 		return this;
 	}
 	

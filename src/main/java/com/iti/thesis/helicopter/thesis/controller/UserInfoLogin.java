@@ -37,7 +37,6 @@ public class UserInfoLogin extends BaseTemplate {
 	@PostMapping("/login")
 	public JsonNode onRequest(@RequestBody MData message) throws MException {
 		try {
-			message.setBoolean("isLogin", true);
 			return super.onProcess(message);
 		} catch (MException e) {
 			throw e;

@@ -34,6 +34,10 @@ public abstract class BaseTemplate {
 	public final JsonNode onProcess(MData param) {
 		
 		//======================================================
+		//# initialize context
+		//======================================================
+		MContextParameter.initMContextParameter();
+		//======================================================
 		//# create session data
 		//======================================================
 		JsonAdaptorObject obj = new JsonAdaptorObject();
@@ -43,10 +47,6 @@ public abstract class BaseTemplate {
 			MContextHolder.clear();
 			return makeFailResponse(param, e.getMCode(), e.getMMessage());
 		}
-		//======================================================
-		//# initialize context
-		//======================================================
-		MContextParameter.initMContextParameter();
 		//======================================================
 		//# initialize default transaction
 		//======================================================
@@ -78,6 +78,8 @@ public abstract class BaseTemplate {
 			MContextParameter.setSessionContext(convertPojoToMData(metaNode));
 		}
 		try {
+//			MHttpRequestUtil.checkAuthorization(responseBody);
+			
 			responseBody = onExecute(requestBody);
 			JsonNode response = prepareResponse(requestMessage, responseBody);
 			txManager.commit(txStatus);
