@@ -21,6 +21,16 @@ public class UserInfoMapperImpl implements UserInfoMapper {
 	}
 	
 	@Override
+	public MData retrieveUserInfoTotalCount(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveUserInfoTotalCount", param);
+	}
+
+	@Override
+	public MMultiData retrieveUserInfoListForDownload(MData param) throws MException {
+		return channelDBDao.selectList("retrieveUserInfoListForDownload", param);
+	}
+
+	@Override
 	public MData retrieveUserInfoDetail(MData param) throws MException {
 		return channelDBDao.selectOne("retrieveUserInfoDetail", param);
 	}
@@ -33,11 +43,6 @@ public class UserInfoMapperImpl implements UserInfoMapper {
 	@Override
 	public MData retrieveUserInfoAllStatus(MData param) throws MException {
 		return channelDBDao.selectOne("retrieveUserInfoAllStatus", param);
-	}
-
-	@Override
-	public MData retrieveUserInfoTotalCount(MData param) throws MException {
-		return channelDBDao.selectOne("retrieveUserInfoTotalCount", param);
 	}
 
 	@Override

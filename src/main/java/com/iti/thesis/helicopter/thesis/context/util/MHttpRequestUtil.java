@@ -65,13 +65,15 @@ public class MHttpRequestUtil {
 			JsonUtil.putValue((ObjectNode) jsonNode, "requestUri", requestUri);
 			obj.put(JsonAdaptorObject.TYPE.META, jsonNode);
 			obj.put(JsonAdaptorObject.TYPE.REQUEST, convertMDataToJsonNode(param));
-			if(!isLoginRequest) {
+			if(!isLoginRequest && SessionUtil.isLoggedin()) {
 				MData sessionData = MHttpRequestUtil.getSessionAttribute(sessionID);
 				JsonUtil.putValue((ObjectNode) jsonNode, "loginUserId", sessionData.getString("loginUserId"));
 				JsonUtil.putValue((ObjectNode) jsonNode, "userRoleId", sessionData.getString("userRoleId"));
 				obj.put(JsonAdaptorObject.TYPE.META, jsonNode);
 				MContextParameter.setContext(obj);
 				SessionUtil.updateSession(convertJsonNodeToMData(jsonNode));
+			}else {
+//				throw new MException(ErrorCode.INVALID_ACCESS.getValue(), ErrorCode.INVALID_ACCESS.getDescription());
 			}
 			return obj;
 		} catch (MException e) {

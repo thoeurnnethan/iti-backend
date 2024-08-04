@@ -66,6 +66,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
+	public MMultiData retrieveUserInfoListForDownload(MData param) throws MException {
+		try {
+			return userInfoMapper.retrieveUserInfoListForDownload(param);
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+
+	@Override
 	public MData retrieveUserInfoDetailSummary(MData param) throws MException {
 		MData	response	= new MData();
 		try {

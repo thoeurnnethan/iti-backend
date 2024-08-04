@@ -38,6 +38,7 @@
 		OFFSET #{offset}
 		]]>
 	</select>
+	
 	<select id="retrieveUserInfoTotalCount" resultType="MData">
 		<![CDATA[
 		    WITH FilteredUsers AS (
@@ -56,6 +57,38 @@
 		     , SUM(CASE WHEN GENDER = 'M' THEN 1 ELSE 0 END)    AS "totalMale"
 		     , SUM(CASE WHEN GENDER = 'F' THEN 1 ELSE 0 END)    AS "totalFemale"
 		  FROM FilteredUsers
+		]]>
+	</select>
+	
+	<select id="retrieveUserInfoListForDownload" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveUserInfoListForDownload */
+		       USER_ID                     AS "userID"
+		     , ROLE_ID                     AS "roleID"
+		     , SPEC_ID                     AS "specificID"
+		     , FRST_NM                     AS "firstName"
+		     , LAST_NM                     AS "lastName"
+		     , NICK_NM                     AS "nickName"
+		     , GENDER                      AS "gender"
+		     , DOB                         AS "dateOfBirth"
+		     , POB                         AS "placeOfBirth"
+		     , ADDR                        AS "address"
+		     , PHONE                       AS "phone"
+		     , EMAIL                       AS "email"
+		     , PASSWD                      AS "passwd"
+		     , IMG_URL                     AS "imageUrl"
+		     , STCD                        AS "statusCode"
+		  FROM FRST.USER_INFO 
+		 WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR LAST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR NICK_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
+		   AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
+		   AND STCD <> '02'
+		 ORDER BY (FRST_REG_DT,FRST_REG_TIME) DESC
+		        , ROLE_ID DESC
+		        , SPEC_ID DESC 
 		]]>
 	</select>
 	
