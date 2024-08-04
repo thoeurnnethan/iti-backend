@@ -17,7 +17,7 @@ import com.iti.thesis.helicopter.thesis.service.SubjectInformationService;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
 @Service
-public class SubjectInformationServiceImpl implements SubjectInformationService	 {
+public class SubjectInformationServiceImpl implements SubjectInformationService {
 	
 	@Autowired
 	private ClassInformationMapper		classInformationMapper;

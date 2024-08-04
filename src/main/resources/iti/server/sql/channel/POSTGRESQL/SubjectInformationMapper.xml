@@ -69,7 +69,7 @@
 		     , STCD                       AS "statusCode"
 		  FROM FRST.SUBJ_INFO
 		 WHERE CLS_ID = #{classID}
-		   AND ('' = COALESCE(#{subjectID}::TEXT, '') OR SUB_ID = #{subjectID})
+		   AND ('' = COALESCE(#{subjectID}, '') OR SUB_ID = #{subjectID})
 		 LIMIT 1
 		]]>
 	</select>

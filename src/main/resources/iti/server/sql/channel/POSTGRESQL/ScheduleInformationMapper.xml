@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.SubjectInformationMapper">
+	
+	<select id="retrieveScheduleInformationList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveScheduleInformationList */
+		       A."year"                          AS "scheduleYear"
+		     , G.CLS_ID                          AS "classID"
+		     , G.CLS_NM                          AS "className"
+		     , G.C_YEAR                          AS "classYear"
+		     , G.SEMESTER                        AS "semester"
+		     , G.GENR                            AS "generation"
+		     , G.DEPT_ID                         AS "departmentID"
+		     , H.DEPT_NM                         AS "departmentName"
+		     , B.SCH_ID                          AS "scheduleID"
+		     , B."day"                           AS "scheduleDay"
+		     , B.SEQNO                           AS "seqNo"
+		     , B.TCH_ID                          AS "teacherID"
+		     , D.FRST_NM                         AS "firstName"
+		     , D.LAST_NM                         AS "lastName"
+		     , D.GENDER                          AS "gender"
+		     , D.PHONE                           AS "phoneNumber"
+		     , D.EMAIL                           AS "email"
+		     , B.SUB_ID                          AS "subjectID"
+		     , E.SUB_NM                          AS "subjectName"
+		     , B.RM_ID                           AS "roomID"
+		     , F.RM_NM                           AS "roomName"
+		     , F.BUILDING                        AS "building"
+		     , F.FLOOR                           AS "floor"
+		     , B.STA_TIME                        AS "startTime"
+		     , B.END_TIME                        AS "endTime"
+		  FROM FRST.SCHED_INFO A
+		  JOIN FRST.SCHED_DETAIL B
+		    ON A.SCH_ID = B.SCH_ID 
+		  JOIN FRST.CLS_INFOV1 C
+		    ON A.CLS_INFO_ID = C.CLS_INFO_ID 
+		   AND C.STCD <> '02'
+		  JOIN FRST.USER_INFO D
+		    ON B.TCH_ID = D.SPEC_ID 
+		   AND D.STCD <> '02'
+		  JOIN FRST.SUBJ_INFO E
+		    ON B.SUB_ID = E.SUB_ID 
+		   AND E.STCD <> '02'
+		  JOIN FRST.RM_INFO F
+		    ON B.RM_ID = F.RM_ID 
+		   AND F.STCD <> '02'
+		  JOIN FRST.CLS_INFOV1 G
+		    ON A.CLS_INFO_ID = G.CLS_INFO_ID 
+		   AND G.STCD <> '02'
+		  JOIN FRST.DEPT_INFO H
+		    ON G.DEPT_ID = H.DEPT_ID 
+		   AND H.STCD <> '02'
+		 WHERE ('' = COALESCE(#{scheduleDay}, '') OR LOWER(B."day") = #{scheduleDay})
+		   AND ('' = COALESCE(#{teacherID}, '') OR B.TCH_ID = #{teacherID})
+		   AND ('' = COALESCE(#{subjectID}, '') OR B.SUB_ID = #{subjectID})
+		   AND ('' = COALESCE(#{roomID}, '') OR B.RM_ID = #{roomID})
+		   AND ('' = COALESCE(#{floor}, '') OR F.FLOOR = #{floor})
+		   AND ('' = COALESCE(#{classYear}, '') OR G.C_YEAR = #{classYear})
+		   AND ('' = COALESCE(#{semester}, '') OR G.SEMESTER = #{semester})
+		 ORDER BY A."year" DESC 
+		        , B.SEQNO 
+		]]>
+	</select>
+	
+	<select id="retrieveSubjectInformationListForDownloadss" resultType="MData">
+		<![CDATA[
+		SELECT /* retrieveSubjectInformationListForDownload */
+		       A.CLS_ID                     AS "classID"
+		     , B.CLS_NM                     AS "className"
+		     , A.SUB_ID                      AS "SUB_ID"
+		     , A.SUB_NM                     AS "subjectName"
+		     , A.SUB_DESC                   AS "subjectDesc"
+		     , A.STCD                       AS "statusCode"
+		     , A.FRST_REG_DT                AS "firstRegisterDate"
+		     , A.FRST_REG_TIME              AS "firstRegisterTime"
+		     , A.LAST_CHNG_DT               AS "lastChangeDate"
+		     , A.LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.SUBJ_INFO A
+		  JOIN FRST.CLS_INFO B
+		    ON A.CLS_ID = B.CLS_ID 
+		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
+		   AND (A.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR A.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND A.STCD <> '02'
+		   AND B.STCD <> '02'
+		 ORDER BY A.CLS_ID
+		        , A.SUB_ID
+		]]>
+	</select>
+	
+	<select id="retrieveSubjectIsExistss" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveSubjectIsExist */
+		       CLS_ID                     AS "classID"
+		     , SUB_ID                     AS "subjectID"
+		     , SUB_NM                     AS "subjectName"
+		     , SUB_DESC                   AS "subjectDesc"
+		     , STCD                       AS "statusCode"
+		  FROM FRST.SUBJ_INFO
+		 WHERE CLS_ID = #{classID}
+		   AND ('' = COALESCE(#{subjectID}, '') OR SUB_ID = #{subjectID})
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<insert id="registerSubjectInformationss">
+		<![CDATA[
+		INSERT /* RegisterSubjectInformation */
+		  INTO FRST.SUBJ_INFO 
+		     ( CLS_ID
+		     , SUB_ID 
+		     , SUB_NM 
+		     , SUB_DESC 
+		     , STCD
+		     , FRST_REG_DT
+		     , FRST_REG_TIME
+		     , LAST_CHNG_DT
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{classID}
+		     , #{subjectID}
+		     , COALESCE(#{subjectName}, '')
+		     , COALESCE(#{subjectDesc}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateSubjectInformationss">
+		<![CDATA[
+		UPDATE /* UpdateSubjectInformation */
+		       FRST.SUBJ_INFO 
+		   SET SUB_NM = COALESCE(#{subjectName}, SUB_NM)
+		     , SUB_DESC = COALESCE(#{subjectDesc}, SUB_DESC)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE CLS_ID = #{classID}
+		   AND SUB_ID = #{subjectID}
+		]]>
+	</update>
+
+</mapper>
