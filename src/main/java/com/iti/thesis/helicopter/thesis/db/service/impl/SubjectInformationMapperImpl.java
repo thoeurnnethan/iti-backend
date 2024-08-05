@@ -17,7 +17,7 @@ public class SubjectInformationMapperImpl implements SubjectInformationMapper {
 
 	@Override
 	public MMultiData retrieveSubjectInformationList(MData param) throws MException {
-		return channelDBDao.selectListForPage("retrieveSubjectInformationList", param);
+		return channelDBDao.selectList("retrieveSubjectInformationList", param);
 	}
 
 	@Override

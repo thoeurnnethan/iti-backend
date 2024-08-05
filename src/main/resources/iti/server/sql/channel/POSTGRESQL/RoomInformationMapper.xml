@@ -116,7 +116,7 @@
 		     , COALESCE(#{roomName}, '')
 		     , COALESCE(#{roomDesc}, '')
 		     , COALESCE(#{building}, '')
-		     , COALESCE(#{floor}, 0)
+		     , COALESCE(#{floor}, '')
 		     , COALESCE(#{statusCode}, '')
 		     , COALESCE(#{firstRegisterDate}, '')
 		     , COALESCE(#{firstRegisterTime}, '')

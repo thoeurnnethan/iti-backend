@@ -28,8 +28,6 @@
 		   AND B.STCD <> '02'
 		 ORDER BY A.CLS_ID
 		        , A.SUB_ID
-		 LIMIT #{limit}
-		OFFSET #{offset}
 		]]>
 	</select>
 	
@@ -70,6 +68,7 @@
 		  FROM FRST.SUBJ_INFO
 		 WHERE CLS_ID = #{classID}
 		   AND ('' = COALESCE(#{subjectID}, '') OR SUB_ID = #{subjectID})
+		   AND STCD <> '02'
 		 LIMIT 1
 		]]>
 	</select>
