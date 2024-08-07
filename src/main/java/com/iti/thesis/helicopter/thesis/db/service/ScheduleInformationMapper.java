@@ -7,5 +7,6 @@ import com.iti.thesis.helicopter.thesis.core.exception.MException;
 public interface ScheduleInformationMapper {
 
 	public MMultiData retrieveScheduleInformationList(MData param) throws MException;
+	public int registerScheduleInformation(MData param) throws MException;
 	
 }

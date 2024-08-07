@@ -80,11 +80,12 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 	public MData registerClassInformation(MData param) {
 		MData	outputData		= param;
 		try {
-			MValidatorUtil.validate(param, "departmentID", "className","cyear","generation","semester");
+			MValidatorUtil.validate(param, "departmentID","cyear","semester", "className","generation");
 			MData	departmentInfo	= departmentInformationMapper.retrieveDepartmentInformationDetail(param);
 			if(!departmentInfo.isEmpty()) {
 				String classID = this.retrieveLastClassID(param);
 				param.setString("classID", classID);
+				param.setString("classInfoID", classID + param.getString("cyear")+param.getString("semester"));
 				classInformationMapper.registerClassInformation(param);
 			}
 			return outputData;

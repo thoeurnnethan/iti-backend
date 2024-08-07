@@ -17,6 +17,7 @@ import com.iti.thesis.helicopter.thesis.core.Json.JsonAdaptorObject;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
+import com.iti.thesis.helicopter.thesis.util.MCryptoUtil;
 import com.iti.thesis.helicopter.thesis.util.MGUIDUtil;
 import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 
@@ -84,18 +85,18 @@ public abstract class BaseTemplate {
 			JsonNode response = prepareResponse(requestMessage, responseBody);
 			txManager.commit(txStatus);
 			log.info("Commit Transaction :: {}", transactionName);
-			JsonNode j= makeResponse(requestMessage, response);
+			JsonNode j = makeResponse(requestMessage, response, false);
 			return j;
 		} catch (MException e) {
 			txManager.rollback(txStatus);
 			log.info("Rollback Transaction :: {}", transactionName);
-			log.error(e.getMessage(), e);
+			log.error(e.getLocalizedMessage() + ": {}", e.getMMessage(), e);
 			adapterErrorCode	= e.getMCode();
 			adapterErrorMessage	= e.getMMessage();
 		} catch(Exception e){
 			txManager.rollback(txStatus);
 			log.info("Rollback Transaction :: {}", transactionName);
-			log.error(e.getMessage(), e);
+			log.error(e.getLocalizedMessage() + ": {}", e.getMessage(), e);
 			adapterErrorCode	= CommonErrorCode.UNCAUGHT.getCode();
 			adapterErrorMessage	= CommonErrorCode.UNCAUGHT.getDescription();
 		} finally {
@@ -137,7 +138,13 @@ public abstract class BaseTemplate {
 		return toJsonNode(resObj);
 	}
 	
-	public final JsonNode makeResponse(MData resObj,JsonNode response) {
+	public final JsonNode makeResponse(MData resObj,JsonNode response, boolean isEncrypted) throws Exception {
+		if(isEncrypted) {
+			String	encData	= MCryptoUtil.encrypt(resObj);
+			MData	encRes	= new MData();
+			encRes.setString("encBody", encData);
+			return toJsonNode(encRes);
+		}
 		return response;
 	}
 	

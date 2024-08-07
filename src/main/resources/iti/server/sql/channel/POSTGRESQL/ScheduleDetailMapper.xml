@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.ScheduleDetailMapper">
+	
+	<select id="selectCheckDuplicateTime" resultType="MData">
+		<![CDATA[
+		SELECT /* RelectCheckDuplicateTime */
+		       SCH_ID                     AS "scheduleID"
+		     , "day"                      AS "scheduleDay"
+		     , SEQNO                      AS "seqNo"
+		     , TCH_ID                     AS "teacherID"
+		     , SUB_ID                     AS "subjectID"
+		     , RM_ID                      AS "roomID"
+		     , STA_TIME                   AS "startTime"
+		     , END_TIME                   AS "endTime"
+		  FROM FRST.SCHED_DETAIL
+		 WHERE SCH_ID = #{scheduleID}
+		   AND "day" = #{scheduleDay}
+		]]>
+	</select>
+	
+	<select id="selectCheckDuplicateTeacher" resultType="MData">
+		<![CDATA[
+		SELECT /* SelectCheckDuplicateTeacher */
+		       A."year"                     AS "scheduleYear"
+		     , B.SCH_ID                     AS "scheduleID"
+		     , C.CLS_ID                     AS "classID"
+		     , C.C_YEAR                     AS "classYear"
+		     , C.SEMESTER                   AS "semester"
+		     , C.CLS_INFO_ID                AS "classInfoID"
+		     , B."day"                      AS "scheduleDay"
+		     , B.SEQNO                      AS "seqNo"
+		     , B.TCH_ID                     AS "teacherID"
+		     , B.SUB_ID                     AS "subjectID"
+		     , B.RM_ID                      AS "roomID"
+		     , B.STA_TIME                   AS "startTime"
+		     , B.END_TIME                   AS "endTime"
+		  FROM FRST.SCHED_INFO A
+		  JOIN FRST.SCHED_DETAIL B
+		    ON A.SCH_ID = B.SCH_ID 
+		  JOIN FRST.CLS_INFO C
+		    ON C.CLS_INFO_ID = A.CLS_INFO_ID 
+		 WHERE A."year" = #{scheduleYear}
+		   AND C.C_YEAR = #{classYear}
+		   AND C.SEMESTER = #{semester}
+		   AND B.TCH_ID = #{teacherID}
+		   AND ('' = #{departmentID} OR C.DEPT_ID = #{departmentID}) 
+		]]>
+	</select>
+	
+	<insert id="registerScheduleDetail">
+		<![CDATA[
+		INSERT /* RegisterScheduleDetail */
+		  INTO FRST.SCHED_DETAIL 
+		     ( SCH_ID 
+		     , "day" 
+		     , SEQNO 
+		     , TCH_ID
+		     , SUB_ID 
+		     , RM_ID 
+		     , STA_TIME
+		     , END_TIME 
+		     , STCD 
+		     , FRST_REG_DT
+		     , FRST_REG_TIME
+		     , LAST_CHNG_DT
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{scheduleID}
+		     , #{scheduleDay}
+		     , #{seqNo}
+		     , COALESCE(#{teacherID}, '')
+		     , COALESCE(#{subjectID}, '')
+		     , COALESCE(#{roomID}, '')
+		     , COALESCE(#{startTime}, '')
+		     , COALESCE(#{endTime}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateSubjectInformationss">
+		<![CDATA[
+		UPDATE /* UpdateSubjectInformation */
+		       FRST.SUBJ_INFO 
+		   SET SUB_NM = COALESCE(#{subjectName}, SUB_NM)
+		     , SUB_DESC = COALESCE(#{subjectDesc}, SUB_DESC)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE CLS_ID = #{classID}
+		   AND SUB_ID = #{subjectID}
+		]]>
+	</update>
+
+</mapper>

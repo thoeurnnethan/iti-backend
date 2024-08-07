@@ -22,9 +22,6 @@ import com.iti.thesis.helicopter.thesis.db.dao.ChannelDBDao;
 import com.iti.thesis.helicopter.thesis.db.dao.constant.MDaoConst;
 import com.iti.thesis.helicopter.thesis.util.MDateUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Service
 public class ChannelDBDaoImpl implements ChannelDBDao {
     @Qualifier("channelDBSqlSessionTemplate")
@@ -38,16 +35,12 @@ public class ChannelDBDaoImpl implements ChannelDBDao {
 			 parameter.appendFrom(getCommonInfo(true));
 			return sqlSession.insert(statement, parameter);
 		} catch (BadSqlGrammarException e) {
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.REGISTER.getCode(), CommonErrorCode.REGISTER.getDescription(), e);
 		} catch (DuplicateKeyException e) {
-			log.error(e.getLocalizedMessage());
 			throw new MDuplicateException(CommonErrorCode.DUPLICATED_DATA.getCode(), CommonErrorCode.DUPLICATED_DATA.getDescription(), e);
 		} catch (DataIntegrityViolationException e) {
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.REGISTER.getCode(), CommonErrorCode.REGISTER.getDescription(), e);
 		} catch (Exception e) {
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.REGISTER.getCode(), CommonErrorCode.REGISTER.getDescription(), e);
 		}
 		
@@ -58,23 +51,17 @@ public class ChannelDBDaoImpl implements ChannelDBDao {
 		try {
 			 parameter.appendFrom(getCommonInfo(false));
 			int rows = sqlSession.update(statement, parameter);
-			
 			if (rows <= 0) {
 				throw new MNotAffectedException(CommonErrorCode.UPDATE_NOT_AFFECT.getCode(), CommonErrorCode.UPDATE_NOT_AFFECT.getDescription());
 			}
-			
 			return rows;
 		} catch (MNotAffectedException e) {
-			log.error(e.getLocalizedMessage());
 			throw e;
 		}catch (BadSqlGrammarException e) {
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UPDATE.getCode(), CommonErrorCode.UPDATE.getDescription(), e);
 		} catch (DataIntegrityViolationException e) {
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UPDATE.getCode(), CommonErrorCode.UPDATE.getDescription(), e);
 		} catch (Exception  e) {
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UPDATE.getCode(), CommonErrorCode.UPDATE.getDescription(), e);
 		}
 		
@@ -86,23 +73,17 @@ public class ChannelDBDaoImpl implements ChannelDBDao {
 		try {
 			// parameter.appendFrom(getCommonInfo(false));
 			int result = sqlSession.delete(statementID, parameter);
-			
 			if (result == 0) {
 				throw new MNotAffectedException(CommonErrorCode.UPDATE_NOT_AFFECT.getCode(), CommonErrorCode.UPDATE_NOT_AFFECT.getDescription());
 			}
-			
 			return result;
 		}catch ( MNotAffectedException e) {
-			log.error(e.getLocalizedMessage());
 			throw e;
 		} catch (BadSqlGrammarException e) {
-			log.error(e.getLocalizedMessage());
 			throw new MException(CommonErrorCode.DELETE.getCode(), CommonErrorCode.DELETE.getDescription(), e);
 		} catch (DataIntegrityViolationException e) {
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.DELETE.getCode(), CommonErrorCode.DELETE.getDescription(), e);
 		} catch (Exception e) {
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.DELETE.getCode(), CommonErrorCode.DELETE.getDescription(), e);
 		}
 		
@@ -114,11 +95,9 @@ public class ChannelDBDaoImpl implements ChannelDBDao {
 		
 		try {
 			result = sqlSession.selectOne(statementID, parameter);
-			
 			if (result == null) {
 				throw new MNotFoundException(CommonErrorCode.NOT_FOUND.getCode(), CommonErrorCode.NOT_FOUND.getDescription());
 			}
-			
 		}catch (TooManyResultsException e) {
 			throw new MTooManyRowException(CommonErrorCode.TOO_MANY_ROWS.getCode(), CommonErrorCode.TOO_MANY_ROWS.getDescription(), e);
 		} catch (BadSqlGrammarException e) {
@@ -133,7 +112,7 @@ public class ChannelDBDaoImpl implements ChannelDBDao {
 		try {
 			return new MMultiData(sqlSession.selectList(statementID, parameter));
 		} catch (Exception e) {
-			log.error(e.getLocalizedMessage());
+			
 			throw new MBizException(CommonErrorCode.INQUIRY.getCode(), CommonErrorCode.INQUIRY.getDescription(), e);
 		}
 	}
@@ -144,28 +123,22 @@ public class ChannelDBDaoImpl implements ChannelDBDao {
 			
 			setPagination(parameter);
 			return new MMultiData(sqlSession.selectList(statementID, parameter));
-			
 		} catch (Exception e) {
-//			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.INQUIRY.getCode(), CommonErrorCode.INQUIRY.getDescription(), e);
 		}
 	}
 	
 	private void setPagination(MData parameter) {
-		
 		if (parameter == null) {
 			parameter = new MData();
 		}
-		
 		int	limit		= 0;
 		int	pageSize	= parameter.getInt(MDaoConst.PAGE_SIZE);
-		
 		if (pageSize <= 0) {
 			limit = MDaoConst.DEFAULT_LIMIT;
 		} else {
 			limit = pageSize;
 		}
-		
 		parameter.put(MDaoConst.LIMIT, limit);
 		int	offset		= 0;
 		int	pageNumber	= parameter.getInt(MDaoConst.PAGE_NUMBER);
@@ -175,7 +148,6 @@ public class ChannelDBDaoImpl implements ChannelDBDao {
 		} else {
 			offset = (pageNumber - 1) * limit;
 		}
-		
 		parameter.put(MDaoConst.OFFSET, offset);
 	}
 	
@@ -183,12 +155,10 @@ public class ChannelDBDaoImpl implements ChannelDBDao {
 		MData commonParam = new MData();
 		commonParam.setString("lastChangeDate", MDateUtil.getCurrentDate());
 		commonParam.setString("lastChangeTime", MDateUtil.getCurrentTime(MDateUtil.FORMAT_TIME_SHORT));
-		
 		if (isInsert) {
 			commonParam.setString("firstRegisterDate", MDateUtil.getCurrentDate());
 			commonParam.setString("firstRegisterTime", MDateUtil.getCurrentTime(MDateUtil.FORMAT_TIME_SHORT));
 		}
-		
 		return commonParam;
 	}
 	

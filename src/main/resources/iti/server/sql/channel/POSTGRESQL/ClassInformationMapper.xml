@@ -14,7 +14,6 @@
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
 		     , C_YEAR                       AS "year"
-		     , C_TIME                       AS "time"
 		     , GENR                         AS "generation"
 		     , SEMESTER                     AS "semester"
 		     , A.STCD                       AS "statusCode"
@@ -67,7 +66,6 @@
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
 		     , C_YEAR                       AS "year"
-		     , C_TIME                       AS "time"
 		     , GENR                         AS "generation"
 		     , SEMESTER                     AS "semester"
 		     , A.STCD                       AS "statusCode"
@@ -103,7 +101,6 @@
 		     , C.DOB                        AS "dateOfBirth"
 		     , C.GENDER                     AS "gender"
 		     , C_YEAR                       AS "year"
-		     , A.C_TIME                     AS "time"
 		     , A.GENR                       AS "generation"
 		     , A.SEMESTER                   AS "semester"
 		     , A.STCD                       AS "statusCode"
@@ -134,11 +131,17 @@
 		SELECT /* RetrieveClassInformationDetail */
 		       A.CLS_ID                     AS "classID"
 		     , A.DEPT_ID                    AS "departmentID"
+		     , A.CLS_INFO_ID                AS "classInfoID"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
+		     , A.C_YEAR                     AS "classYear"
+		     , A.SEMESTER                   AS "semester"
+		     , A.GENR                       AS "generation"
 		     , A.STCD                       AS "statusCode"
 		  FROM FRST.CLS_INFO A
 		 WHERE A.CLS_ID = #{classID}
+		   AND A.C_YEAR = #{cyear}
+		   AND A.SEMESTER = #{semester}
 		]]>
 	</select>
 	
@@ -147,28 +150,28 @@
 		INSERT /* RegisterClassInformation */
 		  INTO FRST.CLS_INFO
 		     ( CLS_ID
+		     , C_YEAR
+		     , SEMESTER
+		     , CLS_INFO_ID
 		     , DEPT_ID 
 		     , CLS_NM 
 		     , CLS_DESC 
 		     , STCD
-		     , C_YEAR
 		     , GENR
-		     , C_TIME
-		     , SEMESTER
 		     , FRST_REG_DT
 		     , FRST_REG_TIME
 		     , LAST_CHNG_DT
 		     , LAST_CHNG_TIME)
 		VALUES 
 		     ( #{classID}
+		     , #{cyear}
+		     , #{semester}
+		     , #{classInfoID}
 		     , #{departmentID}
 		     , COALESCE(#{className}, '')
 		     , COALESCE(#{classDesc}, '')
 		     , COALESCE(#{statusCode}, '')
-		     , COALESCE(#{cyear}, '')
 		     , COALESCE(#{generation}, '')
-		     , COALESCE(#{ctime}, '')
-		     , COALESCE(#{semester}, '')
 		     , COALESCE(#{firstRegisterDate}, '')
 		     , COALESCE(#{firstRegisterTime}, '')
 		     , COALESCE(#{lastChangeDate}, '')
@@ -185,7 +188,6 @@
 		     , CLS_DESC = COALESCE(#{classDesc}, CLS_DESC)
 		     , C_YEAR = COALESCE(#{cyear}, C_YEAR)
 		     , GENR = COALESCE(#{generation}, GENR)
-		     , C_TIME = COALESCE(#{ctime}, C_TIME)
 		     , SEMESTER = COALESCE(#{semester}, SEMESTER)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)

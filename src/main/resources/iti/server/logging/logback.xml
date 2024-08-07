@@ -8,16 +8,18 @@
             <onMismatch>ACCEPT</onMismatch>
         </filter>
         <encoder>
-            <pattern>%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%logger{36}-%M:%line] - %msg%n</pattern>
+            <!-- <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%logger{8}-%M:%line] - %msg%n</pattern> -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%t] [%logger{0}-%M:%line] - %msg%n</pattern>
         </encoder>
-    </appender>
+    </appender>al
     <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
         <target>System.err</target>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
         <encoder>
-            <pattern>%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%logger{36}:%line] - %msg%n</pattern>
+            <!-- <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%logger{8}:%line] - %msg%n</pattern> -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%t] [%logger{0}:%line] - %msg%n</pattern>
         </encoder>
     </appender>
     
@@ -35,6 +37,10 @@
             <appender-ref ref="STDERR"/>
         </logger>
         <logger name="com.zaxxer.hikari" level="ERROR" additivity="false">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="STDERR"/>
+        </logger>
+        <logger name="_org.springframework.web.servlet" level="ERROR" additivity="false">
             <appender-ref ref="STDOUT"/>
             <appender-ref ref="STDERR"/>
         </logger>

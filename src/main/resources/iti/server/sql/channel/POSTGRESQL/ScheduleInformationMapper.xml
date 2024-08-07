@@ -3,7 +3,7 @@
 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.SubjectInformationMapper">
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.ScheduleInformationMapper">
 	
 	<select id="retrieveScheduleInformationList" resultType="MData">
 		<![CDATA[
@@ -110,24 +110,22 @@
 		]]>
 	</select>
 	
-	<insert id="registerSubjectInformationss">
+	<insert id="registerScheduleInformation">
 		<![CDATA[
-		INSERT /* RegisterSubjectInformation */
-		  INTO FRST.SUBJ_INFO 
-		     ( CLS_ID
-		     , SUB_ID 
-		     , SUB_NM 
-		     , SUB_DESC 
+		INSERT /* RegisterScheduleInformation */
+		  INTO FRST.SCHED_INFO 
+		     ( "year" 
+		     , CLS_INFO_ID 
+		     , SCH_ID 
 		     , STCD
 		     , FRST_REG_DT
 		     , FRST_REG_TIME
 		     , LAST_CHNG_DT
 		     , LAST_CHNG_TIME)
 		VALUES 
-		     ( #{classID}
-		     , #{subjectID}
-		     , COALESCE(#{subjectName}, '')
-		     , COALESCE(#{subjectDesc}, '')
+		     ( #{schYear}
+		     , #{classInfoID}
+		     , #{scheduleID}
 		     , COALESCE(#{statusCode}, '')
 		     , COALESCE(#{firstRegisterDate}, '')
 		     , COALESCE(#{firstRegisterTime}, '')
