@@ -9,12 +9,12 @@
 		<![CDATA[
 		SELECT /* RetrieveScheduleInformationList */
 		       A."year"                          AS "scheduleYear"
-		     , G.CLS_ID                          AS "classID"
-		     , G.CLS_NM                          AS "className"
-		     , G.C_YEAR                          AS "classYear"
-		     , G.SEMESTER                        AS "semester"
-		     , G.GENR                            AS "generation"
-		     , G.DEPT_ID                         AS "departmentID"
+		     , C.CLS_ID                          AS "classID"
+		     , C.CLS_NM                          AS "className"
+		     , C.C_YEAR                          AS "classYear"
+		     , C.SEMESTER                        AS "semester"
+		     , C.GENR                            AS "generation"
+		     , C.DEPT_ID                         AS "departmentID"
 		     , H.DEPT_NM                         AS "departmentName"
 		     , B.SCH_ID                          AS "scheduleID"
 		     , B."day"                           AS "scheduleDay"
@@ -36,7 +36,7 @@
 		  FROM FRST.SCHED_INFO A
 		  JOIN FRST.SCHED_DETAIL B
 		    ON A.SCH_ID = B.SCH_ID 
-		  LEFT JOIN FRST.CLS_INFOV1 C
+		  LEFT JOIN FRST.CLS_INFO C
 		    ON A.CLS_INFO_ID = C.CLS_INFO_ID 
 		   AND C.STCD <> '02'
 		  LEFT JOIN FRST.USER_INFO D
@@ -48,24 +48,31 @@
 		  LEFT JOIN FRST.RM_INFO F
 		    ON B.RM_ID = F.RM_ID 
 		   AND F.STCD <> '02'
-		  LEFT JOIN FRST.CLS_INFOV1 G
-		    ON A.CLS_INFO_ID = G.CLS_INFO_ID 
-		   AND G.STCD <> '02'
 		  LEFT JOIN FRST.DEPT_INFO H
-		    ON G.DEPT_ID = H.DEPT_ID 
+		    ON C.DEPT_ID = H.DEPT_ID 
 		   AND H.STCD <> '02'
-		 WHERE ('' = #{scheduleDay} OR LOWER(B."day") = #{scheduleDay})
+		 WHERE ('' =  #{scheduleDay} OR LOWER(B."day") = LOWER(#{scheduleDay}))
 		   AND ('' = #{departmentID} OR H.DEPT_ID = #{departmentID})
 		   AND ('' = #{teacherID} OR B.TCH_ID = #{teacherID})
 		   AND ('' = #{subjectID} OR B.SUB_ID = #{subjectID})
 		   AND ('' = #{roomID} OR B.RM_ID = #{roomID})
-		   AND ('' = #{floor} OR F.FLOOR = #{floor})
-		   AND ('' = #{classYear} OR G.C_YEAR = #{classYear})
-		   AND ('' = #{semester} OR G.SEMESTER = #{semester})
+		   AND ('' = #{classID} OR C.CLS_ID = #{classID})
+		   AND ('' = #{classYear} OR C.C_YEAR = #{classYear})
+		   AND ('' = #{semester} OR C.SEMESTER = #{semester})
 		 ORDER BY A."year" DESC 
-		        , G.C_YEAR DESC 
-		        , G.SEMESTER DESC 
-		        , B.SEQNO 
+		        , C.C_YEAR DESC 
+		        , C.SEMESTER DESC 
+		        , C.CLS_ID 
+		        , CASE B."day" 
+		               WHEN 'Monday' THEN 1
+		               WHEN 'Tuesday' THEN 2
+		               WHEN 'Wednesday' THEN 3
+		               WHEN 'Thursday' THEN 4
+		               WHEN 'Friday' THEN 5
+		               WHEN 'Saturday' THEN 6
+		               WHEN 'Sunday' THEN 7
+		             END
+		        , B.SEQNO
 		]]>
 	</select>
 	

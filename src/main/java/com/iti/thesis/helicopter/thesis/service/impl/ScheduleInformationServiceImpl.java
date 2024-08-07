@@ -1,5 +1,9 @@
 package com.iti.thesis.helicopter.thesis.service.impl;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,18 +36,69 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 	@Override
 	public MMultiData retrieveScheduleInformationList(MData param) throws MException {
 		try {
-			return scheduleInformationMapper.retrieveScheduleInformationList(param);
+			MMultiData prepareResponse = scheduleInformationMapper.retrieveScheduleInformationList(param);
+			if(!MStringUtil.isEmpty(param.getString("departmentID")) && !MStringUtil.isEmpty(param.getString("classID"))) {
+				MData prepare = this.prepareScheduleByDepartmentAndClass(prepareResponse);
+				prepareResponse = prepare.getMMultiData("tableList");
+			}
+			return prepareResponse;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 	}
+	
+	private MData prepareScheduleByDepartmentAndClass(MMultiData scheduleList) {
+		MMultiData			formattedScheduleList		= new MMultiData();
+		Map<Integer, MData>	groupedSchedules			= new LinkedHashMap<>();
+		for(MData schedule : scheduleList.toListMData()) {
+			int		seqNo	= schedule.getInt("seqNo");
+			String	day		= schedule.getString("scheduleDay");
+			if(!groupedSchedules.containsKey(seqNo)) {
+				MData weekSchedule = new MData();
+				groupedSchedules.put(seqNo, weekSchedule);
+			}
+			MData dayMap = groupedSchedules.get(seqNo);
+			dayMap.setMData(day, this.prepareDataByDay(schedule));
+		}
+		for (MData weekSchedule : groupedSchedules.values()) {
+			MData fullWeekSchedule = new MData();
+			for (String day : Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")) {
+				if (!weekSchedule.containsKey(day)) {
+					weekSchedule.setMData(day, new MData());
+				}
+			}
+			fullWeekSchedule.putAll(weekSchedule);
+			formattedScheduleList.add(fullWeekSchedule);
+		}
+		MData result = new MData();
+		result.setMMultiData("tableList", formattedScheduleList);
+		return result;
+	}
+	
+	private MData prepareDataByDay(MData scheduleInfo) {
+		MData tableInfo = new MData();
+		tableInfo.setString("scheduleDay", scheduleInfo.getString("scheduleDay"));
+		tableInfo.setInt("seqNo", scheduleInfo.getInt("seqNo"));
+		tableInfo.setString("teacherID", scheduleInfo.getString("teacherID"));
+		tableInfo.setString("firstName", scheduleInfo.getString("firstName"));
+		tableInfo.setString("lastName", scheduleInfo.getString("lastName"));
+		tableInfo.setString("phoneNumber", scheduleInfo.getString("phoneNumber"));
+		tableInfo.setString("subjectID", scheduleInfo.getString("subjectID"));
+		tableInfo.setString("subjectName", scheduleInfo.getString("subjectName"));
+		tableInfo.setString("roomID", scheduleInfo.getString("roomID"));
+		tableInfo.setString("roomName", scheduleInfo.getString("roomName"));
+		tableInfo.setString("building", scheduleInfo.getString("building"));
+		tableInfo.setString("floor", scheduleInfo.getString("floor"));
+		tableInfo.setString("startTime", scheduleInfo.getString("startTime"));
+		tableInfo.setString("endTime", scheduleInfo.getString("endTime"));
+		return tableInfo;
+	}
 
 	@Override
 	public MData registerScheduleInformation(MData param) throws MException {
 		try {
-			
 			// Retrieve Class Info
 			MValidatorUtil.validate(param, "schYear", "classID", "cyear", "semester");
 			MData classInfo = classInformationService.retrieveClassInformationDetail(param);
