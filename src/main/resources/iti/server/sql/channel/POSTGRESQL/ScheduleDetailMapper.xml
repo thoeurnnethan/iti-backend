@@ -7,7 +7,7 @@
 	
 	<select id="selectCheckDuplicateTime" resultType="MData">
 		<![CDATA[
-		SELECT /* RelectCheckDuplicateTime */
+		SELECT /* SelectCheckDuplicateTime */
 		       SCH_ID                     AS "scheduleID"
 		     , "day"                      AS "scheduleDay"
 		     , SEQNO                      AS "seqNo"

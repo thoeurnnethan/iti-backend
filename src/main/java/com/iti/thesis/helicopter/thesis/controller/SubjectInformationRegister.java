@@ -35,8 +35,7 @@ public class SubjectInformationRegister extends BaseTemplate {
 	@Override
 	public MData onExecute(MData param) throws MException {
 		try {
-			MData	subjectInfo		= subjectInformationService.registerSubjectInformation(param);
-			return subjectInfo;
+			return subjectInformationService.registerSubjectInformation(param);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

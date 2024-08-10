@@ -64,7 +64,7 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 		}
 		for (MData weekSchedule : groupedSchedules.values()) {
 			MData fullWeekSchedule = new MData();
-			for (String day : Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")) {
+			for (String day : Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")) {
 				if (!weekSchedule.containsKey(day)) {
 					weekSchedule.setMData(day, new MData());
 				}

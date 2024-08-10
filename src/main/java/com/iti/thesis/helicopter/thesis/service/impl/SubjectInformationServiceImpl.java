@@ -14,6 +14,7 @@ import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
 import com.iti.thesis.helicopter.thesis.db.service.ClassInformationMapper;
 import com.iti.thesis.helicopter.thesis.db.service.SubjectInformationMapper;
 import com.iti.thesis.helicopter.thesis.service.SubjectInformationService;
+import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
 @Service
@@ -53,7 +54,7 @@ public class SubjectInformationServiceImpl implements SubjectInformationService 
 		try {
 			MValidatorUtil.validate(param, "classID", "subjectList");
 			
-			MData classInfo = classInformationMapper.retrieveClassInformationDetail(param);
+			MData classInfo = classInformationMapper.retrieveClassInformationDetailByClassInfoID(param);
 			if(!classInfo.isEmpty()) {
 				boolean isExist = this.retrieveValidateSubject(param);
 				if(isExist) {
@@ -115,7 +116,7 @@ public class SubjectInformationServiceImpl implements SubjectInformationService 
 		MData outputData = new MData();
 		try {
 			MValidatorUtil.validate(param, "classID","subjectList");
-			MData classInfo = classInformationMapper.retrieveClassInformationDetail(param);
+			MData classInfo = classInformationMapper.retrieveClassInformationDetailByClassInfoID(param);
 			if(!classInfo.isEmpty()) {
 				for(MData subject : param.getMMultiData("subjectList").toListMData()) {
 					MValidatorUtil.validate(subject, "subjectID");
@@ -129,6 +130,8 @@ public class SubjectInformationServiceImpl implements SubjectInformationService 
 					}
 				}
 			}
+			param.setString("classInfoID", param.getString("classID"));
+			param.setString("searchKey", MStringUtil.EMPTY);
 			MMultiData subjectList = this.retrieveSubjectInformationList(param);
 			outputData.setMMultiData("subjectList", subjectList);
 			return outputData;

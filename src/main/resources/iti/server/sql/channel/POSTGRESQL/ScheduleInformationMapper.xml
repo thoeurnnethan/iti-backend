@@ -36,6 +36,7 @@
 		  FROM FRST.SCHED_INFO A
 		  JOIN FRST.SCHED_DETAIL B
 		    ON A.SCH_ID = B.SCH_ID 
+		   AND B.STCD <> '02'
 		  LEFT JOIN FRST.CLS_INFO C
 		    ON A.CLS_INFO_ID = C.CLS_INFO_ID 
 		   AND C.STCD <> '02'
@@ -81,7 +82,7 @@
 		SELECT /* retrieveSubjectInformationListForDownload */
 		       A.CLS_ID                     AS "classID"
 		     , B.CLS_NM                     AS "className"
-		     , A.SUB_ID                      AS "SUB_ID"
+		     , A.SUB_ID                     AS "SUB_ID"
 		     , A.SUB_NM                     AS "subjectName"
 		     , A.SUB_DESC                   AS "subjectDesc"
 		     , A.STCD                       AS "statusCode"

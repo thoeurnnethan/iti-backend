@@ -9,64 +9,76 @@
 		<![CDATA[
 		SELECT /* RetrieveSubjectInformationList */
 		       A.CLS_ID                     AS "classID"
-		     , B.CLS_NM                     AS "className"
-		     , A.SUB_ID                     AS "subjectID"
-		     , A.SUB_NM                     AS "subjectName"
-		     , A.SUB_DESC                   AS "subjectDesc"
-		     , A.STCD                       AS "statusCode"
-		     , A.FRST_REG_DT                AS "firstRegisterDate"
-		     , A.FRST_REG_TIME              AS "firstRegisterTime"
-		     , A.LAST_CHNG_DT               AS "lastChangeDate"
-		     , A.LAST_CHNG_TIME             AS "lastChangeTime"
-		  FROM FRST.SUBJ_INFO A
-		  JOIN FRST.CLS_INFO B
-		    ON A.CLS_ID = B.CLS_ID 
-		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
-		   AND (A.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR A.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
-		   AND A.STCD <> '02'
+		     , A.CLS_INFO_ID                AS "classInfoID"
+		     , A.CLS_NM                     AS "className"
+		     , A.C_YEAR                     AS "year"
+		     , A.SEMESTER                   AS "semester"
+		     , B.SUB_ID                     AS "subjectID"
+		     , B.SUB_NM                     AS "subjectName"
+		     , B.SUB_DESC                   AS "subjectDesc"
+		     , B.STCD                       AS "statusCode"
+		     , B.FRST_REG_DT                AS "firstRegisterDate"
+		     , B.FRST_REG_TIME              AS "firstRegisterTime"
+		     , B.LAST_CHNG_DT               AS "lastChangeDate"
+		     , B.LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.CLS_INFO A
+		  LEFT JOIN FRST.SUBJ_INFO B
+		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
 		   AND B.STCD <> '02'
-		 ORDER BY A.CLS_ID
-		        , A.SUB_ID
+		 WHERE ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		   AND (B.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR B.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND A.STCD <> '02'
+		 ORDER BY A.C_YEAR DESC 
+		        , A.SEMESTER DESC 
+		        , A.CLS_ID DESC 
+		        , B.SUB_ID
+		        , B.STCD 
 		]]>
 	</select>
 	
 	<select id="retrieveSubjectInformationListForDownload" resultType="MData">
 		<![CDATA[
-		SELECT /* retrieveSubjectInformationListForDownload */
+		SELECT /* RetrieveSubjectInformationListForDownload */
 		       A.CLS_ID                     AS "classID"
-		     , B.CLS_NM                     AS "className"
-		     , A.SUB_ID                      AS "SUB_ID"
-		     , A.SUB_NM                     AS "subjectName"
-		     , A.SUB_DESC                   AS "subjectDesc"
-		     , A.STCD                       AS "statusCode"
-		     , A.FRST_REG_DT                AS "firstRegisterDate"
-		     , A.FRST_REG_TIME              AS "firstRegisterTime"
-		     , A.LAST_CHNG_DT               AS "lastChangeDate"
-		     , A.LAST_CHNG_TIME             AS "lastChangeTime"
-		  FROM FRST.SUBJ_INFO A
-		  JOIN FRST.CLS_INFO B
-		    ON A.CLS_ID = B.CLS_ID 
-		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
-		   AND (A.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR A.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
-		   AND A.STCD <> '02'
+		     , A.CLS_INFO_ID                AS "classInfoID"
+		     , A.CLS_NM                     AS "className"
+		     , A.C_YEAR                     AS "year"
+		     , A.SEMESTER                   AS "semester"
+		     , B.SUB_ID                     AS "subjectID"
+		     , B.SUB_NM                     AS "subjectName"
+		     , B.SUB_DESC                   AS "subjectDesc"
+		     , B.STCD                       AS "statusCode"
+		     , B.FRST_REG_DT                AS "firstRegisterDate"
+		     , B.FRST_REG_TIME              AS "firstRegisterTime"
+		     , B.LAST_CHNG_DT               AS "lastChangeDate"
+		     , B.LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.CLS_INFO A
+		  LEFT JOIN FRST.SUBJ_INFO B
+		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
 		   AND B.STCD <> '02'
-		 ORDER BY A.CLS_ID
-		        , A.SUB_ID
+		 WHERE ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		   AND (B.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR B.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND A.STCD <> '02'
+		 ORDER BY A.C_YEAR DESC 
+		        , A.SEMESTER DESC 
+		        , A.CLS_ID DESC 
+		        , B.SUB_ID
+		        , B.STCD 
 		]]>
 	</select>
 	
 	<select id="retrieveSubjectIsExist" resultType="MData">
 		<![CDATA[
 		SELECT /* RetrieveSubjectIsExist */
-		       CLS_ID                     AS "classID"
-		     , SUB_ID                     AS "subjectID"
-		     , SUB_NM                     AS "subjectName"
-		     , SUB_DESC                   AS "subjectDesc"
-		     , STCD                       AS "statusCode"
+		       CLS_INFO_ID                     AS "classID"
+		     , SUB_ID                          AS "subjectID"
+		     , SUB_NM                          AS "subjectName"
+		     , SUB_DESC                        AS "subjectDesc"
+		     , STCD                            AS "statusCode"
 		  FROM FRST.SUBJ_INFO
-		 WHERE CLS_ID = #{classID}
+		 WHERE CLS_INFO_ID = #{classID}
 		   AND ('' = COALESCE(#{subjectID}, '') OR SUB_ID = #{subjectID})
 		   AND STCD <> '02'
 		 LIMIT 1
@@ -77,7 +89,7 @@
 		<![CDATA[
 		INSERT /* RegisterSubjectInformation */
 		  INTO FRST.SUBJ_INFO 
-		     ( CLS_ID
+		     ( CLS_INFO_ID 
 		     , SUB_ID 
 		     , SUB_NM 
 		     , SUB_DESC 
@@ -108,7 +120,7 @@
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
-		 WHERE CLS_ID = #{classID}
+		 WHERE CLS_INFO_ID = #{classID}
 		   AND SUB_ID = #{subjectID}
 		]]>
 	</update>

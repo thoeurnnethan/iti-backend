@@ -12,14 +12,13 @@ public class CorsConfiguration implements WebMvcConfigurer {
 	public void addCorsMappings(@NonNull CorsRegistry registry) {
 		registry
 		.addMapping("/**")
-//		.allowedOrigins("http://localhost:9090")
-		.allowedOriginPatterns("*")
+		.allowedOrigins("http://127.0.0.1:8080")
+//		.allowedOriginPatterns("*")
 		.allowCredentials(true)
 		.allowedHeaders("*")
 		.exposedHeaders("*")
 		.maxAge(60*30)
-		.allowedMethods("GET","POST","PUT","DELETE","OPTIONS","HEAD")
-		.allowedMethods("POST")
+		.allowedMethods("GET","POST")
 		;
 	}
 }

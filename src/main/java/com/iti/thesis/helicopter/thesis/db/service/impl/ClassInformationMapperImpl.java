@@ -54,5 +54,10 @@ public class ClassInformationMapperImpl implements ClassInformationMapper {
 	public int updateClassInformation(MData param) throws MException {
 		return channelDBDao.update("updateClassInformation", param);
 	}
+
+	@Override
+	public MData retrieveClassInformationDetailByClassInfoID(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveClassInformationDetailByClassInfoID", param);
+	}
 	
 }

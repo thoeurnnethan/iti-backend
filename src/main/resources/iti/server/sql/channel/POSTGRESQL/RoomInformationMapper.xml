@@ -19,11 +19,11 @@
 		     , LAST_CHNG_DT             AS "lastChangeDate"
 		     , LAST_CHNG_TIME           AS "lastChangeTime"
 		  FROM FRST.RM_INFO
-		 WHERE (RM_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR RM_ID ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR RM_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR BUILDING ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR FLOOR::TEXT ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		 WHERE (RM_NM ILIKE '%' || #{searchKey} || '%'
+		    OR RM_ID ILIKE '%' || #{searchKey} || '%'
+		    OR RM_DESC ILIKE '%' || #{searchKey} || '%'
+		    OR BUILDING ILIKE '%' || #{searchKey} || '%'
+		    OR FLOOR ILIKE '%' || #{searchKey} || '%')
 		   AND STCD <> '02'
 		 ORDER BY STCD 
 		        , RM_ID DESC 
@@ -37,11 +37,11 @@
 		SELECT /* RetrieveRoomInformationTotalCount */
 		       COUNT(*)                   AS "totalCount"
 		  FROM FRST.RM_INFO
-		 WHERE (RM_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR RM_ID ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR RM_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR BUILDING ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR FLOOR::TEXT ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		 WHERE (RM_NM ILIKE '%' || #{searchKey} || '%'
+		    OR RM_ID ILIKE '%' || #{searchKey} || '%'
+		    OR RM_DESC ILIKE '%' || #{searchKey} || '%'
+		    OR BUILDING ILIKE '%' || #{searchKey} || '%'
+		    OR FLOOR ILIKE '%' || #{searchKey} || '%')
 		   AND STCD <> '02'
 		]]>
 	</select>
@@ -60,11 +60,11 @@
 		     , LAST_CHNG_DT             AS "lastChangeDate"
 		     , LAST_CHNG_TIME           AS "lastChangeTime"
 		  FROM FRST.RM_INFO
-		 WHERE (RM_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR RM_ID ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR RM_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR BUILDING ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
-		    OR FLOOR::TEXT ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		 WHERE (RM_NM ILIKE '%' || #{searchKey} || '%'
+		    OR RM_ID ILIKE '%' || #{searchKey} || '%'
+		    OR RM_DESC ILIKE '%' || #{searchKey} || '%'
+		    OR BUILDING ILIKE '%' || #{searchKey} || '%'
+		    OR FLOOR ILIKE '%' || #{searchKey} || '%')
 		   AND STCD <> '02'
 		 ORDER BY STCD 
 		        , RM_ID DESC 
@@ -92,6 +92,7 @@
 		SELECT /* RetrieveLastRoomID */
 		       RM_ID                    AS "roomID"
 		  FROM FRST.RM_INFO
+		 WHERE STCD <> '02'
 		 ORDER BY RM_ID DESC 
 		 LIMIT 1
 		]]>

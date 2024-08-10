@@ -9,13 +9,14 @@
 		<![CDATA[
 		SELECT /* RetrieveClassInformationList */
 		       A.CLS_ID                     AS "classID"
+		     , A.CLS_INFO_ID                AS "classInfoID"
 		     , A.DEPT_ID                    AS "departmentID"
 		     , B.DEPT_NM                    AS "departmentName"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
-		     , C_YEAR                       AS "year"
-		     , GENR                         AS "generation"
-		     , SEMESTER                     AS "semester"
+		     , A.C_YEAR                     AS "year"
+		     , A.SEMESTER                   AS "semester"
+		     , A.GENR                       AS "generation"
 		     , A.STCD                       AS "statusCode"
 		     , A.FRST_REG_DT                AS "firstRegisterDate"
 		     , A.FRST_REG_TIME              AS "firstRegisterTime"
@@ -25,15 +26,19 @@
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID 
 		   AND B.STCD <> '02'
-		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%'
-		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%')
-		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
-		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
-		   AND ('' = COALESCE(#{generation}, '') OR A.GENR = #{generation})
-		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND ('' = #{departmentID} OR A.DEPT_ID = #{departmentID})
+		   AND ('' = #{year} OR A.C_YEAR = #{year})
+		   AND ('' = #{generation} OR A.GENR = #{generation})
+		   AND ('' = #{semester} OR A.SEMESTER = #{semester})
+		   AND ('' = #{classID} OR A.CLS_ID = #{classID})
 		   AND A.STCD <> '02'
 		 ORDER BY A.STCD
+		        , A.DEPT_ID 
 		        , A.CLS_ID DESC
+		        , A.C_YEAR DESC 
+		        , A.SEMESTER DESC 
 		 LIMIT #{limit}
 		OFFSET #{offset}
 		]]>
@@ -47,12 +52,13 @@
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID 
 		   AND B.STCD <> '02'
-		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%'
-		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%')
-		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
-		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
-		   AND ('' = COALESCE(#{generation}, '') OR A.GENR = #{generation})
-		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND ('' = #{departmentID} OR A.DEPT_ID = #{departmentID})
+		   AND ('' = #{year} OR A.C_YEAR = #{year})
+		   AND ('' = #{generation} OR A.GENR = #{generation})
+		   AND ('' = #{semester} OR A.SEMESTER = #{semester})
+		   AND ('' = #{classID} OR A.CLS_ID = #{classID})
 		   AND A.STCD <> '02'
 		]]>
 	</select>
@@ -77,15 +83,19 @@
 		  JOIN FRST.DEPT_INFO B
 		    ON A.DEPT_ID = B.DEPT_ID 
 		   AND B.STCD <> '02'
-		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%'
-		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKeyword}, '') || '%')
-		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
-		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
-		   AND ('' = COALESCE(#{generation}, '') OR A.GENR = #{generation})
-		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND ('' = #{departmentID} OR A.DEPT_ID = #{departmentID})
+		   AND ('' = #{year} OR A.C_YEAR = #{year})
+		   AND ('' = #{generation} OR A.GENR = #{generation})
+		   AND ('' = #{semester} OR A.SEMESTER = #{semester})
+		   AND ('' = #{classID} OR A.CLS_ID = #{classID})
 		   AND A.STCD <> '02'
 		 ORDER BY A.STCD
+		        , A.DEPT_ID 
 		        , A.CLS_ID DESC
+		        , A.C_YEAR DESC 
+		        , A.SEMESTER DESC 
 		]]>
 	</select>
 	
@@ -122,6 +132,19 @@
 		       CLS_ID                AS "classID"
 		  FROM FRST.CLS_INFO A
 		 ORDER BY CLS_ID DESC
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<select id="retrieveClassInformationDetailByClassInfoID" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveClassInformationDetailByClassInfoID */
+		       CLS_ID                       AS "classID"
+		     , CLS_INFO_ID                  AS "classInfoID"
+		     , C_YEAR                       AS "year"
+		     , SEMESTER                     AS "semester"
+		  FROM FRST.CLS_INFO A
+		 WHERE CLS_INFO_ID = #{classID}
 		 LIMIT 1
 		]]>
 	</select>
@@ -193,6 +216,8 @@
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE CLS_ID = #{classID}
+		   AND C_YEAR = #{cyear}
+		   AND SEMESTER = #{semester}
 		]]>
 	</update>
 
