@@ -52,14 +52,16 @@
 		  LEFT JOIN FRST.DEPT_INFO H
 		    ON C.DEPT_ID = H.DEPT_ID 
 		   AND H.STCD <> '02'
-		 WHERE ('' =  #{scheduleDay} OR LOWER(B."day") = LOWER(#{scheduleDay}))
-		   AND ('' = #{departmentID} OR H.DEPT_ID = #{departmentID})
-		   AND ('' = #{teacherID} OR B.TCH_ID = #{teacherID})
-		   AND ('' = #{subjectID} OR B.SUB_ID = #{subjectID})
-		   AND ('' = #{roomID} OR B.RM_ID = #{roomID})
+		 WHERE ('' = #{departmentID} OR H.DEPT_ID = #{departmentID})
 		   AND ('' = #{classID} OR C.CLS_ID = #{classID})
 		   AND ('' = #{classYear} OR C.C_YEAR = #{classYear})
 		   AND ('' = #{semester} OR C.SEMESTER = #{semester})
+		   AND ('' = #{searchKey} 
+		    OR B.TCH_ID = #{searchKey} 
+		    OR B.SUB_ID = #{searchKey} 
+		    OR B.RM_ID = #{searchKey}
+		    OR D.FRST_NM ILIKE '%' || #{searchKey} || '%'
+		    OR D.LAST_NM ILIKE '%' || #{searchKey} || '%')
 		 ORDER BY A."year" DESC 
 		        , C.C_YEAR DESC 
 		        , C.SEMESTER DESC 
@@ -72,7 +74,7 @@
 		               WHEN 'Friday' THEN 5
 		               WHEN 'Saturday' THEN 6
 		               WHEN 'Sunday' THEN 7
-		             END
+		           END
 		        , B.SEQNO
 		]]>
 	</select>

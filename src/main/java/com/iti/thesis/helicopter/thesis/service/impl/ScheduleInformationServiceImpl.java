@@ -37,7 +37,7 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 	public MMultiData retrieveScheduleInformationList(MData param) throws MException {
 		try {
 			MMultiData prepareResponse = scheduleInformationMapper.retrieveScheduleInformationList(param);
-			if(!MStringUtil.isEmpty(param.getString("departmentID")) && !MStringUtil.isEmpty(param.getString("classID"))) {
+			if(isRetrieveForSpecificClass(param)) {
 				MData prepare = this.prepareScheduleByDepartmentAndClass(prepareResponse);
 				prepareResponse = prepare.getMMultiData("tableList");
 			}
@@ -47,6 +47,10 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
+	}
+	
+	private boolean isRetrieveForSpecificClass(MData param) {
+		return (!MStringUtil.isEmpty(param.getString("classID")) && !MStringUtil.isEmpty(param.getString("classYear")) && !MStringUtil.isEmpty(param.getString("semester")));
 	}
 	
 	private MData prepareScheduleByDepartmentAndClass(MMultiData scheduleList) {

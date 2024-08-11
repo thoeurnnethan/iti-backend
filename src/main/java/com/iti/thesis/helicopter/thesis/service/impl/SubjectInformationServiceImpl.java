@@ -56,19 +56,26 @@ public class SubjectInformationServiceImpl implements SubjectInformationService 
 			
 			MData classInfo = classInformationMapper.retrieveClassInformationDetailByClassInfoID(param);
 			if(!classInfo.isEmpty()) {
-				boolean isExist = this.retrieveValidateSubject(param);
-				if(isExist) {
+				MData subjectInfo = new MData();
+				subjectInfo.setString("classInfoID", param.getString("classID"));
+				MMultiData subjectList = this.retrieveSubjectInformationList(subjectInfo);
+				if(subjectList.size() > 0) {
 					throw new MException(ErrorCode.SUBJECT_ALREADY_REGISTER.getValue(), ErrorCode.SUBJECT_ALREADY_REGISTER.getDescription());
 				}else {
+					MMultiData	subList		= new MMultiData();
 					int seqNo = 0;
-					MMultiData subList = new MMultiData();
 					for(MData subject : param.getMMultiData("subjectList").toListMData()) {
 						MValidatorUtil.validate(subject, "subjectName");
 						
 						subject.setString("classID", param.getString("classID"));
-						subject.setString("subjectID", param.getString("classID")+ "_SUB"+ (++seqNo));
+						subject.setString("subjectID", param.getString("classID") + "_SUB"+ (++seqNo));
 						subject.setString("statusCode", StatusCode.ACTIVE.getValue());
-						subjectInformationMapper.registerSubjectInformation(subject);
+						boolean isExist = this.retrieveValidateSubject(subject);
+						if(isExist) {
+							subjectInformationMapper.updateSubjectInformation(subject);
+						}else {
+							subjectInformationMapper.registerSubjectInformation(subject);
+						}
 						subList.addMData(subject);
 					}
 					outputData.setMMultiData("subjectList", subList);

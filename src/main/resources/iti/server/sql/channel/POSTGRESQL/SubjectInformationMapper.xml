@@ -25,7 +25,10 @@
 		  LEFT JOIN FRST.SUBJ_INFO B
 		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
 		   AND B.STCD <> '02'
-		 WHERE ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
+		   AND ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		   AND ('' = COALESCE(#{classYear}, '') OR A.C_YEAR = #{classYear})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
 		   AND (B.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR B.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		   AND A.STCD <> '02'
@@ -57,7 +60,9 @@
 		  LEFT JOIN FRST.SUBJ_INFO B
 		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
 		   AND B.STCD <> '02'
-		 WHERE ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
+		   AND ('' = #{classYear} OR A.C_YEAR = #{classYear})
+		   AND ('' = #{semester} OR A.SEMESTER = #{semester})
 		   AND (B.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR B.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		   AND A.STCD <> '02'
@@ -80,7 +85,6 @@
 		  FROM FRST.SUBJ_INFO
 		 WHERE CLS_INFO_ID = #{classID}
 		   AND ('' = COALESCE(#{subjectID}, '') OR SUB_ID = #{subjectID})
-		   AND STCD <> '02'
 		 LIMIT 1
 		]]>
 	</select>
