@@ -137,9 +137,10 @@ public class SubjectInformationServiceImpl implements SubjectInformationService 
 					}
 				}
 			}
-			param.setString("classInfoID", param.getString("classID"));
-			param.setString("searchKey", MStringUtil.EMPTY);
-			MMultiData subjectList = this.retrieveSubjectInformationList(param);
+			MData resParam = new MData();
+			resParam.setString("classInfoID", param.getString("classID"));
+			resParam.setString("searchKey", MStringUtil.EMPTY);
+			MMultiData subjectList = this.retrieveSubjectInformationList(resParam);
 			outputData.setMMultiData("subjectList", subjectList);
 			return outputData;
 		} catch (MException e) {
