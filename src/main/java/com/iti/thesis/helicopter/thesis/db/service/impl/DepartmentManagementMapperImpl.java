@@ -17,7 +17,7 @@ public class DepartmentManagementMapperImpl implements DepartmentManagementMappe
 
 	@Override
 	public MMultiData retrieveDepartmentManagementList(MData requestBody) throws MException {
-		return channelDBDao.selectListForPage("retrieveDepartmentManagementList", requestBody);
+		return channelDBDao.selectList("retrieveDepartmentManagementList", requestBody);
 	}
 
 	@Override

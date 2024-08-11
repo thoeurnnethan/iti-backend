@@ -124,6 +124,7 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 	}
 	
 	private MData validateAndPrepareScheduleData(MData param) {
+		MData outputData = new MData();
 		try {
 			// Retrieve Class Info
 			MValidatorUtil.validate(param, "schYear", "classID", "cyear", "semester");
@@ -161,11 +162,16 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 				}else {
 					scheduleInfo.setString("duplicateTeacherYn", YnTypeCode.NO.getValue());
 				}
-				
 				validateScheduleList.addMData(scheduleInfo);
 			}
-			scheduleInfoParam.setMMultiData("scheduleList", validateScheduleList);
-			return scheduleInfoParam;
+			outputData.setString("schYear", scheduleYear);
+			outputData.setString("classID", param.getString("classID"));
+			outputData.setString("cyear", param.getString("cyear"));
+			outputData.setString("semester", param.getString("semester"));
+			outputData.setString("classInfoID", classInfoID);
+			outputData.setString("scheduleID", schduleID);
+			outputData.setMMultiData("scheduleList", validateScheduleList);
+			return outputData;
 		} catch (MNotFoundException e) {
 			throw new MException(ErrorCode.CLASS_NOT_FOUND.getValue(), ErrorCode.CLASS_NOT_FOUND.getDescription());
 		} catch (MException e) {

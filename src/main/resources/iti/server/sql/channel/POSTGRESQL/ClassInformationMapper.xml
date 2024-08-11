@@ -103,6 +103,9 @@
 		<![CDATA[
 		SELECT /* RetrieveClassInformationStudentList */
 		       A.CLS_ID                     AS "classID"
+		     , A.C_YEAR                     AS "classYear"
+		     , A.SEMESTER                   AS "semester"
+		     , A.GENR                       AS "generation"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
 		     , B.STD_ID                     AS "studentID"
@@ -110,18 +113,16 @@
 		     , C.LAST_NM                    AS "lastName"
 		     , C.DOB                        AS "dateOfBirth"
 		     , C.GENDER                     AS "gender"
-		     , C_YEAR                       AS "year"
-		     , A.GENR                       AS "generation"
-		     , A.SEMESTER                   AS "semester"
+		     , C.PHONE                      AS "phoneNumber"
 		     , A.STCD                       AS "statusCode"
 		  FROM FRST.CLS_INFO A
 		 RIGHT JOIN FRST.STD_CLS_MAP B
-		    ON A.CLS_ID = B.CLS_ID 
+		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
 		   AND B.STCD <> '02'
 		  LEFT JOIN FRST.USER_INFO C
 		    ON B.STD_ID = C.SPEC_ID 
 		   AND C.STCD <> '02'
-		 WHERE A.CLS_ID = #{classID}
+		 WHERE A.CLS_INFO_ID = #{classID}
 		 ORDER BY (C.FRST_NM, C.LAST_NM)
 		]]>
 	</select>
