@@ -93,6 +93,7 @@
 		     , STCD                       AS "statusCode"
 		  FROM FRST.DEPT_INFO
 		 WHERE DEPT_ID = #{departmentID}
+		   AND STCD <> '02'
 		 LIMIT 1
 		]]>
 	</select>

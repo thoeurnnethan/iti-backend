@@ -14,26 +14,24 @@
 		     , A.LAST_NM
 		     , A.GENDER
 		  FROM FRST.USER_INFO A
-		 WHERE A.ROLE_ID = '03'
+		 WHERE A.ROLE_ID IN ('03', '02')
 		   AND A.STCD <> '02'
 		)
-		SELECT A.SPEC_ID               AS "teacherID"
+		SELECT DISTINCT ON (A.SPEC_ID)
+		       A.SPEC_ID               AS "teacherID"
+		     , A.ROLE_ID               AS "roleID"
 		     , A.FRST_NM               AS "firstName"
 		     , A.LAST_NM               AS "lastName"
 		     , A.GENDER                AS "gender"
 		     , B.DEPT_ID               AS "departmentID"
 		     , B.DEPT_ROLE_CD          AS "userRoleInDpm"
-		     , C.DEPT_NM               AS "departmentName"
 		  FROM TMP A
 		  LEFT JOIN FRST.DEPT_MNGT B
 		    ON A.SPEC_ID = B.TCH_ID 
 		   AND B.STCD <> '02'
-		  LEFT JOIN FRST.DEPT_INFO C
-		    ON B.DEPT_ID = C.DEPT_ID 
-		   AND C.STCD <> '02'
 		 WHERE ('' = COALESCE(#{teacherID}, '') OR A.SPEC_ID = #{teacherID})
-		   AND ('' = COALESCE(#{departmentID}, '') OR C.DEPT_ID = #{departmentID})
-		 ORDER BY C.DEPT_ID
+		   AND ('' = COALESCE(#{departmentID}, '') OR B.DEPT_ID = #{departmentID})
+		 ORDER BY A.SPEC_ID
 		]]>
 	</select>
 	
@@ -54,17 +52,19 @@
 	<select id="retrieveDepartmentManagementDetail" resultType="MData">
 		<![CDATA[
 		SELECT /* RetrieveDepartmentManagementDetail */
-		       A.TCH_ID                     AS "teacherID"
+		       B.TCH_ID                     AS "teacherID"
 		     , A.DEPT_ID                    AS "departmentID"
-		     , B.DEPT_NM                    AS "departmentName"
-		     , B.DEPT_DESC                  AS "departmentDesc"
-		     , A.STCD                       as "statusCode"
-		  FROM FRST.DEPT_MNGT A
-		  JOIN FRST.DEPT_INFO B
+		     , A.DEPT_NM                    AS "departmentName"
+		     , A.DEPT_DESC                  AS "departmentDesc"
+		     , B.STCD                       AS "statusCode"
+		  FROM FRST.DEPT_INFO A
+		  JOIN FRST.DEPT_MNGT B
 		    ON A.DEPT_ID = B.DEPT_ID
-		   AND B.STCD <> '02'
 		 WHERE A.DEPT_ID = #{departmentID}
+		   AND ('' = COALESCE(#{teacherID}, '') OR B.TCH_ID = #{teacherID})
+		   AND ('' = COALESCE(#{departmentRoleCode}, '') OR B.DEPT_ROLE_CD = #{departmentRoleCode})
 		   AND A.STCD <> '02'
+		 LIMIT 1
 		]]>
 	</select>
 	
@@ -102,6 +102,7 @@
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE DEPT_ID = #{departmentID}
+		   AND TCH_ID = #{teacherID}
 		]]>
 	</update>
 

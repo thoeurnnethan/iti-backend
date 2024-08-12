@@ -6,5 +6,6 @@ import com.iti.thesis.helicopter.thesis.core.exception.MException;
 public interface StudentClassMappingMapper {
 	
 	public int registerStudentClassMappingInfo(MData param) throws MException;
+	public int updateStudentClassMappingInfo(MData student) throws MException;
 	
 }

@@ -1,10 +1,15 @@
 package com.iti.thesis.helicopter.thesis.service.impl;
 
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.iti.thesis.helicopter.thesis.common.ErrorCode.ErrorCode;
 import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
+import com.iti.thesis.helicopter.thesis.constant.StatusCode;
+import com.iti.thesis.helicopter.thesis.constant.YnTypeCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
@@ -13,7 +18,9 @@ import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
 import com.iti.thesis.helicopter.thesis.db.service.ClassInformationMapper;
 import com.iti.thesis.helicopter.thesis.db.service.DepartmentInformationMapper;
+import com.iti.thesis.helicopter.thesis.db.service.StudentClassMappingMapper;
 import com.iti.thesis.helicopter.thesis.service.ClassInformationService;
+import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +33,8 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 	private ClassInformationMapper		classInformationMapper;
 	@Autowired
 	private DepartmentInformationMapper	departmentInformationMapper;
+	@Autowired 
+	private StudentClassMappingMapper	studentClassMappingMapper;
 	
 	@Override
 	public MMultiData retrieveClassInformationList(MData param) throws MException {
@@ -66,7 +75,7 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 	@Override
 	public MMultiData retrieveClassInformationStudentList(MData param) throws MException {
 		try {
-			MValidatorUtil.validate(param, "classID");
+			MValidatorUtil.validate(param, "classInfoID");
 			return classInformationMapper.retrieveClassInformationStudentList(param);
 		} catch (MException e) {
 			throw e;
@@ -140,6 +149,68 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 				classInformationMapper.updateClassInformation(param);
 			}
 			return param;
+		} catch (MNotFoundException e) {
+			throw new MException(ErrorCode.CLASS_NOT_FOUND.getValue(), ErrorCode.CLASS_NOT_FOUND.getDescription());
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+	
+	@Override
+	public MData registerStudentToClassInformation(MData param, boolean isRegister) throws MException {
+		try {
+			MValidatorUtil.validate(param, "classInfoID", "studentList");
+			MMultiData	resList		= new MMultiData();
+			boolean		isNotValid	= false;
+			MData		classInfo	= new MData();
+			classInfo.setString("classID", param.getString("classInfoID"));
+			classInfo = classInformationMapper.retrieveClassInformationDetailByClassInfoID(classInfo);
+			if(!classInfo.isEmpty()) {
+				MMultiData studentList = param.getMMultiData("studentList");
+				boolean isDuplicateStudent = studentList.stream().map(teacher -> teacher.get("studentID"))
+							.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).values().stream()
+							.anyMatch(count -> count > 1);
+				if(isDuplicateStudent) {
+					throw new MException(ErrorCode.DUPLICATE_STUDENT_ID.getValue(), ErrorCode.DUPLICATE_STUDENT_ID.getDescription());
+				}
+				for(MData student : studentList.toListMData()) {
+					student.setString("classInfoID", param.getString("classInfoID"));
+					String	messageText		= MStringUtil.EMPTY;
+					String	alreadyExist	= YnTypeCode.NO.getValue();
+					MMultiData studentExist = this.retrieveClassInformationStudentList(student);
+					if(studentExist.size() > 0) {
+						if(isRegister) {
+							isNotValid		= true;
+							messageText		= "Already Register";
+							alreadyExist	= YnTypeCode.YES.getValue();
+						}else {
+							studentClassMappingMapper.updateStudentClassMappingInfo(student);
+						}
+					}else if(!isRegister) {
+						student.setString("statusCode", StatusCode.ACTIVE.getValue());
+						student.setString("scoreID", param.getString("classInfoID") + student.getString("studentID"));
+						studentClassMappingMapper.registerStudentClassMappingInfo(student);
+					}
+					student.setString("alreadyExist", alreadyExist);
+					student.setString("messageText", messageText);
+					resList.addMData(student);
+				}
+				if(!isNotValid && isRegister) {
+					for(MData student : resList.toListMData()) {
+						student.setString("statusCode", StatusCode.ACTIVE.getValue());
+						student.setString("scoreID", param.getString("classInfoID") + student.getString("studentID"));
+						studentClassMappingMapper.registerStudentClassMappingInfo(student);
+					}
+				}
+			}
+			MData response = new MData();
+			response.setString("successYn", !isNotValid ? YnTypeCode.YES.getValue() : YnTypeCode.NO.getValue());
+			response.setString("classInfoID", param.getString("classInfoID"));
+			response.setMMultiData("studentList", resList);
+			return response;
 		} catch (MNotFoundException e) {
 			throw new MException(ErrorCode.CLASS_NOT_FOUND.getValue(), ErrorCode.CLASS_NOT_FOUND.getDescription());
 		} catch (MException e) {

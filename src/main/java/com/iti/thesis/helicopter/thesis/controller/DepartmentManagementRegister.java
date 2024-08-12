@@ -36,7 +36,7 @@ public class DepartmentManagementRegister extends BaseTemplate {
 	public MData onExecute(MData param) throws MException {
 		MData response = new MData();
 		try {
-			MData result = departmentManagementService.registerDepartmentManagement(param);
+			MData result = departmentManagementService.registerDepartmentManagement(param, true);
 			response.appendFrom(result);
 		} catch (MException e) {
 			throw e;

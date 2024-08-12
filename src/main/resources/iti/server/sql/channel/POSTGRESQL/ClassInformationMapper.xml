@@ -114,15 +114,16 @@
 		     , C.DOB                        AS "dateOfBirth"
 		     , C.GENDER                     AS "gender"
 		     , C.PHONE                      AS "phoneNumber"
-		     , A.STCD                       AS "statusCode"
+		     , B.STCD                       AS "statusCode"
 		  FROM FRST.CLS_INFO A
 		 RIGHT JOIN FRST.STD_CLS_MAP B
 		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
-		   AND B.STCD <> '02'
 		  LEFT JOIN FRST.USER_INFO C
 		    ON B.STD_ID = C.SPEC_ID 
 		   AND C.STCD <> '02'
-		 WHERE A.CLS_INFO_ID = #{classID}
+		 WHERE ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		   AND ('' = COALESCE(#{studentID}, '') OR B.STD_ID = #{studentID})
+		   AND A.STCD <> '02'
 		 ORDER BY (C.FRST_NM, C.LAST_NM)
 		]]>
 	</select>
@@ -146,6 +147,7 @@
 		     , SEMESTER                     AS "semester"
 		  FROM FRST.CLS_INFO A
 		 WHERE CLS_INFO_ID = #{classID}
+		   AND STCD <> '02'
 		 LIMIT 1
 		]]>
 	</select>

@@ -87,15 +87,14 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 
 	@Override
 	public MData retrieveDepartmentInformationDetail(MData param) throws MException {
-		MData outputData = new MData();
 		try {
-			outputData = departmentInformationMapper.retrieveDepartmentInformationDetail(param);
+			MValidatorUtil.validate(param, "departmentID");
+			return departmentInformationMapper.retrieveDepartmentInformationDetail(param);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
-		return outputData;
 	}
 
 	@Override

@@ -39,10 +39,11 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 			// Register Student Info
 			studentDetailMapper.registerStudentDetail(param);
 			// Register Class Mapping
-			if(!MStringUtil.isEmpty(param.getString("classID"))) {
+			if(!MStringUtil.isEmpty(param.getString("classInfoID"))) {
 				MData mappingParam = new MData();
-				mappingParam.setString("classID", param.getString("classID"));
+				mappingParam.setString("classInfoID", param.getString("classInfoID"));
 				mappingParam.setString("studentID", studentID);
+				mappingParam.setString("scoreID",param.getString("classInfoID") + studentID);
 				mappingParam.setString("statusCode", StatusCode.ACTIVE.getValue());
 				studentClassMappingMapper.registerStudentClassMappingInfo(mappingParam);
 			}
