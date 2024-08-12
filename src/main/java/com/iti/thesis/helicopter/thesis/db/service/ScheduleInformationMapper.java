@@ -8,5 +8,6 @@ public interface ScheduleInformationMapper {
 
 	public MMultiData retrieveScheduleInformationList(MData param) throws MException;
 	public int registerScheduleInformation(MData param) throws MException;
+	public MData retrieveScheduleInformationDetail(MData param) throws MException;
 	
 }

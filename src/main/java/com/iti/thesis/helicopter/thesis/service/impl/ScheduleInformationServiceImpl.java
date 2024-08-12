@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.iti.thesis.helicopter.thesis.common.ErrorCode.ErrorCode;
+import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.constant.YnTypeCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
@@ -32,16 +33,26 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 	@Autowired
 	private ClassInformationService		classInformationService;
 	
-	
 	@Override
-	public MMultiData retrieveScheduleInformationList(MData param) throws MException {
+	public MData retrieveScheduleInformationList(MData param) throws MException {
 		try {
-			MMultiData prepareResponse = scheduleInformationMapper.retrieveScheduleInformationList(param);
-			if(isRetrieveForSpecificClass(param)) {
-				MData prepare = this.prepareScheduleByDepartmentAndClass(prepareResponse);
-				prepareResponse = prepare.getMMultiData("tableList");
+			MData		response		= new MData();
+			MMultiData	prepareResponse	= scheduleInformationMapper.retrieveScheduleInformationList(param);
+			if(prepareResponse.size() > 0 ) {
+				MData schedule = prepareResponse.getMData(0);
+				if(isRetrieveForSpecificClass(param)) {
+					response.setString("scheduleYear", schedule.getString("scheduleYear"));
+					response.setString("className", schedule.getString("className"));
+					response.setString("classYear", schedule.getString("classYear"));
+					response.setString("semester", schedule.getString("semester"));
+					response.setString("generation", schedule.getString("generation"));
+					MData prepare = this.prepareScheduleByDepartmentAndClass(prepareResponse);
+					prepareResponse = prepare.getMMultiData("tableList");
+				}
 			}
-			return prepareResponse;
+			response.setInt("totalCount", prepareResponse.size());
+			response.setMMultiData("scheduleList", prepareResponse);
+			return response;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -50,7 +61,10 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 	}
 	
 	private boolean isRetrieveForSpecificClass(MData param) {
-		return (!MStringUtil.isEmpty(param.getString("classID")) && !MStringUtil.isEmpty(param.getString("classYear")) && !MStringUtil.isEmpty(param.getString("semester")));
+		return (!MStringUtil.isEmpty(param.getString("classID")) 
+				&& !MStringUtil.isEmpty(param.getString("classYear")) 
+				&& !MStringUtil.isEmpty(param.getString("semester"))
+				&& MStringUtil.isEmpty(param.getString("scheduleDay")));
 	}
 	
 	private MData prepareScheduleByDepartmentAndClass(MMultiData scheduleList) {
@@ -103,19 +117,38 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 	@Override
 	public MData registerScheduleInformation(MData param) throws MException {
 		try {
-			// Retrieve Class Info
-			MValidatorUtil.validate(param, "schYear", "classID", "cyear", "semester");
-			MData classInfo = classInformationService.retrieveClassInformationDetail(param);
+			MValidatorUtil.validate(param, "schYear", "classID", "cyear", "semester", "scheduleList");
 			
-			MData validateDate = this.validateAndPrepareScheduleData(param);
-			
-			scheduleInformationMapper.registerScheduleInformation(validateDate);
+			MData validateDate		= this.validateAndPrepareScheduleData(param);
+			MData scheduleInfoParam	= new MData();
+			scheduleInfoParam.setString("schYear", param.getString("schYear"));
+			scheduleInfoParam.setString("classInfoID", validateDate.getString("classInfoID"));
+			scheduleInfoParam.setString("scheduleID", validateDate.getString("scheduleID"));
+			scheduleInfoParam.setString("statusCode", StatusCode.ACTIVE.getValue());
+			boolean isAlreadyRegister = this.isAlreadyRegister(scheduleInfoParam);
+			if(!isAlreadyRegister) {
+				scheduleInformationMapper.registerScheduleInformation(scheduleInfoParam);
+			}
 			
 			for(MData data : validateDate.getMMultiData("scheduleList").toListMData()) {
 				data.setString("scheduleDay", data.getString("schDay"));
+				data.setString("statusCode", StatusCode.ACTIVE.getValue());
 				scheduleDetailMapper.registerScheduleDetail(data);
 			}
-			return classInfo;
+			return param;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+	
+	private boolean isAlreadyRegister(MData param ) {
+		try {
+			scheduleInformationMapper.retrieveScheduleInformationDetail(param);
+			return true;
+		} catch (MNotFoundException e) {
+			return false;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -142,7 +175,6 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 			MMultiData scheduleList = param.getMMultiData("scheduleList");
 			for(MData scheduleInfo : scheduleList.toListMData()) {
 				MValidatorUtil.validate(scheduleInfo, "schDay","seqNo","teacherID","subjectID","roomID","startTime","endTime");
-				
 				scheduleInfo.setString("scheduleYear", scheduleYear);
 				scheduleInfo.setString("scheduleID", schduleID);
 				scheduleInfo.setString("cyear", param.getString("cyear"));
@@ -251,5 +283,4 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 		}
 	}
 	
-
 }

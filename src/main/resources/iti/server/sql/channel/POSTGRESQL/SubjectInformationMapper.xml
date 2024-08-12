@@ -61,8 +61,9 @@
 		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
 		   AND B.STCD <> '02'
 		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
-		   AND ('' = #{classYear} OR A.C_YEAR = #{classYear})
-		   AND ('' = #{semester} OR A.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		   AND ('' = COALESCE(#{classYear}, '') OR A.C_YEAR = #{classYear})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
 		   AND (B.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR B.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		   AND A.STCD <> '02'

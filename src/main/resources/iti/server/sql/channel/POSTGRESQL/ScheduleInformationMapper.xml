@@ -24,7 +24,6 @@
 		     , D.LAST_NM                         AS "lastName"
 		     , D.GENDER                          AS "gender"
 		     , D.PHONE                           AS "phoneNumber"
-		     , D.EMAIL                           AS "email"
 		     , B.SUB_ID                          AS "subjectID"
 		     , E.SUB_NM                          AS "subjectName"
 		     , B.RM_ID                           AS "roomID"
@@ -56,6 +55,7 @@
 		   AND ('' = #{classID} OR C.CLS_ID = #{classID})
 		   AND ('' = #{classYear} OR C.C_YEAR = #{classYear})
 		   AND ('' = #{semester} OR C.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{scheduleDay}, '') OR B."day" = #{scheduleDay})
 		   AND ('' = #{searchKey} 
 		    OR B.TCH_ID = #{searchKey} 
 		    OR B.SUB_ID = #{searchKey} 
@@ -76,6 +76,21 @@
 		               WHEN 'Sunday' THEN 7
 		           END
 		        , B.SEQNO
+		]]>
+	</select>
+	
+	<select id="retrieveScheduleInformationDetail" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveScheduleInformationDetail */
+		       SCH_ID                     AS "scheduleID"
+		     , CLS_INFO_ID                AS "classInfoID"
+		     , "year"                     AS "scheduleYear"
+		     , STCD                       AS "statusCode"
+		  FROM FRST.SCHED_INFO 
+		 WHERE CLS_INFO_ID = #{classInfoID}
+		   AND "year" = #{schYear}
+		   AND SCH_ID = #{scheduleID}
+		 LIMIT 1
 		]]>
 	</select>
 	
@@ -102,21 +117,6 @@
 		   AND B.STCD <> '02'
 		 ORDER BY A.CLS_ID
 		        , A.SUB_ID
-		]]>
-	</select>
-	
-	<select id="retrieveSubjectIsExistss" resultType="MData">
-		<![CDATA[
-		SELECT /* RetrieveSubjectIsExist */
-		       CLS_ID                     AS "classID"
-		     , SUB_ID                     AS "subjectID"
-		     , SUB_NM                     AS "subjectName"
-		     , SUB_DESC                   AS "subjectDesc"
-		     , STCD                       AS "statusCode"
-		  FROM FRST.SUBJ_INFO
-		 WHERE CLS_ID = #{classID}
-		   AND ('' = COALESCE(#{subjectID}, '') OR SUB_ID = #{subjectID})
-		 LIMIT 1
 		]]>
 	</select>
 	

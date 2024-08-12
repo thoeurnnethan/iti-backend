@@ -24,5 +24,10 @@ public class ScheduleInformationMapperImpl implements ScheduleInformationMapper 
 	public int registerScheduleInformation(MData param) throws MException {
 		return channelDBDao.insert("registerScheduleInformation", param);
 	}
+
+	@Override
+	public MData retrieveScheduleInformationDetail(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveScheduleInformationDetail", param);
+	}
 	
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.ScorenformationMapper">
+	
+	<select id="retrieveStudentScoreList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveStudentScore */
+		       A.CLS_INFO_ID               AS "classInfoID"
+		     , A.STD_ID                    AS "studentID"
+		     , D.FRST_NM                   AS "firstName"
+		     , D.LAST_NM                   AS "lastName"
+		     , D.GENDER                    AS "gender"
+		     , D.PHONE                     AS "phoneNumber"
+		     , A.SCR_ID                    AS "scoreID"
+		     , B.SUB_ID                    AS "subjectID"
+		     , C.SUB_NM                    AS "subjectName"
+		     , B.SCORE                     AS "score"
+		  FROM FRST.STD_CLS_MAP A
+		  LEFT JOIN FRST.SCORE_INFO B
+		    ON A.SCR_ID = B.SCR_ID 
+		  LEFT JOIN FRST.SUBJ_INFO C
+		    ON B.SUB_ID = C.SUB_ID 
+		  LEFT JOIN FRST.USER_INFO D
+		    ON A.STD_ID = D.SPEC_ID 
+		 WHERE A.CLS_INFO_ID = #{classInfoID}
+		   AND ('' = COALESCE(#{studentID}, '') OR A.STD_ID = #{studentID})
+		   AND ('' = COALESCE(#{subjectID}, '') OR B.SUB_ID = #{subjectID})
+		 ORDER BY D.FRST_NM DESC 
+		        , D.LAST_NM DESC 
+		        , C.SUB_ID ASC 
+		]]>
+	</select>
+
+</mapper>

@@ -11,14 +11,14 @@ import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
-import com.iti.thesis.helicopter.thesis.service.ScheduleInformationService;;
+import com.iti.thesis.helicopter.thesis.service.ScoreInformationService;;
 
 @RestController
-@RequestMapping("/api/schedule")
-public class ScheduleInformationInquiryList extends BaseTemplate {
+@RequestMapping("/api/score")
+public class StudentScoreInquiryList extends BaseTemplate {
 	
 	@Autowired
-	private ScheduleInformationService		scheduleInformationService;
+	private ScoreInformationService		scoreInformationService;
 
 	@Override
 	@PostMapping("/list")
@@ -35,7 +35,7 @@ public class ScheduleInformationInquiryList extends BaseTemplate {
 	@Override
 	public MData onExecute(MData param) throws MException {
 		try {
-			return scheduleInformationService.retrieveScheduleInformationList(param);
+			return scoreInformationService.retrieveStudentScoreList(param);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
