@@ -11,6 +11,7 @@ import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import com.iti.thesis.helicopter.thesis.common.ErrorCode.ErrorCode;
 import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.constant.UserRoleCode;
+import com.iti.thesis.helicopter.thesis.constant.YnTypeCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
@@ -148,6 +149,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 						UserRoleCode.DEP_MANAGER.getValue().equals(roleID) ||
 						UserRoleCode.TEACHER.getValue().equals(roleID)) {
 					MData	teacherInfo		= userInfo.getMData("teacherInfo");
+					teacherInfo.setString("roleID", roleID);
 					MData	response		= teacherDetailService.registerTeacherDetail(teacherInfo);
 					specificID = response.getString("teacherID");
 				} 
@@ -215,10 +217,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 			MData	userInfo	= userInfoMapper.retrieveUserInfoDetail(param);
 			String	roleID		= userInfo.getString("roleID");
 			
+			
 			// Update User Info
 			param.setString("specificID", userInfo.getString("specificID"));
 			userInfoMapper.updateUserInfo(param);
-			
+			if(!MStringUtil.isEmpty(param.getString("isDeleted")) && YnTypeCode.YES.getValue().equalsIgnoreCase(param.getString("isDeleted"))) {
+				return param;
+			}
 			// Update Specific User Info
 			if(UserRoleCode.ADMIN.getValue().equals(roleID)
 					|| UserRoleCode.DEP_MANAGER.getValue().equals(roleID)

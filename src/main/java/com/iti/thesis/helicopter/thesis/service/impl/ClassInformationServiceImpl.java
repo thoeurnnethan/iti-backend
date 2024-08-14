@@ -221,4 +221,98 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 		}
 	}
 
+	@Override
+	public MData upgradeClassInformation(MData param) throws MException {
+		MData outputData = new MData();
+		try {
+			MValidatorUtil.validate(param, "classID","oldYear","oldSemester","newYear","newSemester");
+			boolean valid = this.checkIsValidClassUpdgrade(param);
+			if(!valid) {
+				throw new MException(ErrorCode.CLASS_INVALID_UPGRADE.getValue(), ErrorCode.CLASS_INVALID_UPGRADE.getDescription());
+			}else {
+				MData oldClassInfo = new MData();
+				oldClassInfo.setString("classID", param.getString("classID") + param.getString("oldYear") + param.getString("oldSemester"));
+				oldClassInfo = classInformationMapper.retrieveClassInformationDetailByClassInfoID(oldClassInfo);
+				
+				MData newClassInfo = new MData();
+				newClassInfo.setString("classID", param.getString("classID") + param.getString("newYear") + param.getString("newSemester"));
+				boolean isExist = this.checkNewClassExist(newClassInfo);
+				if(isExist) {
+					throw new MException(ErrorCode.CLASS_ALREADY_EXIST.getValue(), ErrorCode.CLASS_ALREADY_EXIST.getDescription());
+				}else {
+					MData classInfo = new MData();
+					classInfo.setString("classID", param.getString("classID"));
+					classInfo.setString("cyear", param.getString("newYear"));
+					classInfo.setString("semester", param.getString("newSemester"));
+					classInfo.setString("classInfoID", newClassInfo.getString("classID"));
+					classInfo.setString("departmentID", oldClassInfo.getString("departmentID"));
+					classInfo.setString("className", oldClassInfo.getString("className"));
+					classInfo.setString("classDesc", oldClassInfo.getString("classDesc"));
+					classInfo.setString("classType", oldClassInfo.getString("classType"));
+					classInfo.setString("generation", oldClassInfo.getString("generation"));
+					classInfo.setString("statusCode", StatusCode.ACTIVE.getValue());
+					classInformationMapper.registerClassInformation(classInfo);
+					
+					MMultiData studentListOldClass = classInformationMapper.retrieveClassInformationStudentList(oldClassInfo);
+					if(studentListOldClass.size() > 0) {
+						MMultiData studentListNewClass = new MMultiData();
+						for(MData oldStudentInfo : studentListOldClass.toListMData()) {
+							oldStudentInfo.setString("classYear", param.getString("newYear"));
+							oldStudentInfo.setString("semester", param.getString("newSemester"));
+							studentListNewClass.addMData(oldStudentInfo);
+						}
+						
+						outputData.setString("classID", param.getString("classID"));
+						outputData.setString("classYear", param.getString("newYear"));
+						outputData.setString("semester", param.getString("newSemester"));
+						outputData.setMMultiData("studentList", studentListNewClass);
+						
+						newClassInfo.setString("classInfoID", newClassInfo.getString("classID"));
+						newClassInfo.setMMultiData("studentList", studentListNewClass);
+						this.registerStudentToClassInformation(newClassInfo, true);
+					}
+					
+				}
+			}
+			
+		} catch (MNotFoundException e) {
+			throw new MException(ErrorCode.CLASS_NOT_FOUND.getValue(), ErrorCode.CLASS_NOT_FOUND.getDescription());
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+		return outputData;
+	}
+	
+	private boolean checkIsValidClassUpdgrade(MData param) {
+		String oldYear = param.getString("oldYear");
+		String oldSemester = param.getString("oldSemester");
+		String newYear = param.getString("newYear");
+		String newSemester = param.getString("newSemester");
+		if(oldYear.equals(newYear)) {
+			if(oldSemester.equals(newSemester)) {
+				return false;
+			}else {
+				return true;
+			}
+		}
+		return true;
+	}
+	
+	private boolean checkNewClassExist(MData newClassInfo) {
+		try {
+			classInformationMapper.retrieveClassInformationDetailByClassInfoID(newClassInfo);
+			return true;
+		} catch (MNotFoundException e) {
+			return false;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+
 }

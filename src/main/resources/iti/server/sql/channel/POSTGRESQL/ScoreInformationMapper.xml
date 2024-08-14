@@ -7,7 +7,7 @@
 	
 	<select id="retrieveStudentScoreList" resultType="MData">
 		<![CDATA[
-		SELECT /* RetrieveStudentScore */
+		SELECT /* RetrieveStudentScoreList */
 		       A.CLS_INFO_ID               AS "classInfoID"
 		     , A.STD_ID                    AS "studentID"
 		     , D.FRST_NM                   AS "firstName"

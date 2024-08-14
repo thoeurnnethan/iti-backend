@@ -29,5 +29,15 @@ public class ScheduleDetailMapperImpl implements ScheduleDetailMapper {
 	public MMultiData selectCheckDuplicateTeacher(MData checkParam) throws MException {
 		return channelDBDao.selectList("selectCheckDuplicateTeacher", checkParam);
 	}
+
+	@Override
+	public int updateScheduleDetail(MData data) throws MException {
+		return channelDBDao.update("updateScheduleDetail", data);
+	}
+
+	@Override
+	public MData retrieveScheduleDetail(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveScheduleDetail", param);
+	}
 	
 }

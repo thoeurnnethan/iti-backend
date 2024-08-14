@@ -51,6 +51,20 @@
 		]]>
 	</select>
 	
+	<select id="retrieveScheduleDetail" resultType="MData">
+		<![CDATA[
+		 SELECT /* RetrieveScheduleDetail */
+		        SCH_ID                    AS "scheduleID"
+		      , "day"                     AS "scheduleDay"
+		      , SEQNO                     AS "seqNo"
+		   FROM FRST.SCHED_DETAIL 
+		  WHERE SCH_ID = #{scheduleID}
+		    AND "day" = #{scheduleDay}
+		    AND SEQNO = #{seqNo}
+		  LIMIT 1
+		]]>
+	</select>
+	
 	<insert id="registerScheduleDetail">
 		<![CDATA[
 		INSERT /* RegisterScheduleDetail */
@@ -85,17 +99,21 @@
 		]]>
 	</insert>
 
-	<update id="updateSubjectInformationss">
+	<update id="updateScheduleDetail">
 		<![CDATA[
 		UPDATE /* UpdateSubjectInformation */
-		       FRST.SUBJ_INFO 
-		   SET SUB_NM = COALESCE(#{subjectName}, SUB_NM)
-		     , SUB_DESC = COALESCE(#{subjectDesc}, SUB_DESC)
+		       FRST.SCHED_DETAIL 
+		   SET TCH_ID = COALESCE(#{teacherID}, TCH_ID)
+		     , SUB_ID = COALESCE(#{subjectID}, SUB_ID)
+		     , RM_ID = COALESCE(#{roomID}, RM_ID)
+		     , STA_TIME = COALESCE(#{startTime}, STA_TIME)
+		     , END_TIME = COALESCE(#{endTime}, END_TIME)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
-		 WHERE CLS_ID = #{classID}
-		   AND SUB_ID = #{subjectID}
+		 WHERE SCH_ID = #{scheduleID}
+		   AND "day" = #{scheduleDay}
+		   AND SEQNO = #{seqNo}
 		]]>
 	</update>
 

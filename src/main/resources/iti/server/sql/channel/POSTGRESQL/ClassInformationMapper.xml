@@ -14,6 +14,7 @@
 		     , B.DEPT_NM                    AS "departmentName"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
+		     , A.CLS_TYPE                   AS "classType"
 		     , A.C_YEAR                     AS "year"
 		     , A.SEMESTER                   AS "semester"
 		     , A.GENR                       AS "generation"
@@ -28,11 +29,11 @@
 		   AND B.STCD <> '02'
 		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
-		   AND ('' = #{departmentID} OR A.DEPT_ID = #{departmentID})
-		   AND ('' = #{year} OR A.C_YEAR = #{year})
-		   AND ('' = #{generation} OR A.GENR = #{generation})
-		   AND ('' = #{semester} OR A.SEMESTER = #{semester})
-		   AND ('' = #{classID} OR A.CLS_ID = #{classID})
+		   AND (A.CLS_ID ILIKE '%' || COALESCE(#{classID}, '') || '%')
+		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
+		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{classType}, '') OR A.CLS_TYPE = #{classType})
 		   AND A.STCD <> '02'
 		 ORDER BY A.STCD
 		        , A.DEPT_ID 
@@ -54,11 +55,11 @@
 		   AND B.STCD <> '02'
 		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
-		   AND ('' = #{departmentID} OR A.DEPT_ID = #{departmentID})
-		   AND ('' = #{year} OR A.C_YEAR = #{year})
-		   AND ('' = #{generation} OR A.GENR = #{generation})
-		   AND ('' = #{semester} OR A.SEMESTER = #{semester})
-		   AND ('' = #{classID} OR A.CLS_ID = #{classID})
+		   AND (A.CLS_ID ILIKE '%' || COALESCE(#{classID}, '') || '%')
+		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
+		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{classType}, '') OR A.CLS_TYPE = #{classType})
 		   AND A.STCD <> '02'
 		]]>
 	</select>
@@ -71,6 +72,7 @@
 		     , B.DEPT_NM                    AS "departmentName"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
+		     , A.CLS_TYPE                   AS "classType"
 		     , C_YEAR                       AS "year"
 		     , GENR                         AS "generation"
 		     , SEMESTER                     AS "semester"
@@ -85,11 +87,11 @@
 		   AND B.STCD <> '02'
 		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
-		   AND ('' = #{departmentID} OR A.DEPT_ID = #{departmentID})
-		   AND ('' = #{year} OR A.C_YEAR = #{year})
-		   AND ('' = #{generation} OR A.GENR = #{generation})
-		   AND ('' = #{semester} OR A.SEMESTER = #{semester})
-		   AND ('' = #{classID} OR A.CLS_ID = #{classID})
+		   AND (A.CLS_ID ILIKE '%' || COALESCE(#{classID}, '') || '%')
+		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
+		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{classType}, '') OR A.CLS_TYPE = #{classType})
 		   AND A.STCD <> '02'
 		 ORDER BY A.STCD
 		        , A.DEPT_ID 
@@ -108,6 +110,7 @@
 		     , A.GENR                       AS "generation"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
+		     , A.CLS_TYPE                   AS "classType"
 		     , B.STD_ID                     AS "studentID"
 		     , C.FRST_NM                    AS "firstName"
 		     , C.LAST_NM                    AS "lastName"
@@ -145,6 +148,11 @@
 		     , CLS_INFO_ID                  AS "classInfoID"
 		     , C_YEAR                       AS "year"
 		     , SEMESTER                     AS "semester"
+		     , DEPT_ID                      AS "departmentID"
+		     , CLS_NM                       AS "className"
+		     , CLS_DESC                     AS "classDesc"
+		     , CLS_TYPE                     AS "classType"
+		     , GENR                         AS "generation"
 		  FROM FRST.CLS_INFO A
 		 WHERE CLS_INFO_ID = #{classID}
 		   AND STCD <> '02'
@@ -160,13 +168,14 @@
 		     , A.CLS_INFO_ID                AS "classInfoID"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
+		     , A.CLS_TYPE                   AS "classType"
 		     , A.C_YEAR                     AS "classYear"
 		     , A.SEMESTER                   AS "semester"
 		     , A.GENR                       AS "generation"
 		     , A.STCD                       AS "statusCode"
 		  FROM FRST.CLS_INFO A
 		 WHERE A.CLS_ID = #{classID}
-		   AND A.C_YEAR = #{cyear}
+		   AND A.C_YEAR = #{year}
 		   AND A.SEMESTER = #{semester}
 		]]>
 	</select>
@@ -182,6 +191,7 @@
 		     , DEPT_ID 
 		     , CLS_NM 
 		     , CLS_DESC 
+		     , CLS_TYPE 
 		     , STCD
 		     , GENR
 		     , FRST_REG_DT
@@ -196,6 +206,7 @@
 		     , #{departmentID}
 		     , COALESCE(#{className}, '')
 		     , COALESCE(#{classDesc}, '')
+		     , COALESCE(#{classType}, '')
 		     , COALESCE(#{statusCode}, '')
 		     , COALESCE(#{generation}, '')
 		     , COALESCE(#{firstRegisterDate}, '')
@@ -212,6 +223,7 @@
 		   SET DEPT_ID = COALESCE(#{departmentID}, DEPT_ID)
 		     , CLS_NM = COALESCE(#{className}, CLS_NM)
 		     , CLS_DESC = COALESCE(#{classDesc}, CLS_DESC)
+		     , CLS_TYPE = COALESCE(#{classType}, CLS_TYPE)
 		     , C_YEAR = COALESCE(#{cyear}, C_YEAR)
 		     , GENR = COALESCE(#{generation}, GENR)
 		     , SEMESTER = COALESCE(#{semester}, SEMESTER)
@@ -219,7 +231,7 @@
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE CLS_ID = #{classID}
-		   AND C_YEAR = #{cyear}
+		   AND C_YEAR = #{year}
 		   AND SEMESTER = #{semester}
 		]]>
 	</update>

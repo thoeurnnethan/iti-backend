@@ -3,6 +3,8 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -132,10 +134,28 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 			
 			for(MData data : validateDate.getMMultiData("scheduleList").toListMData()) {
 				data.setString("scheduleDay", data.getString("schDay"));
-				data.setString("statusCode", StatusCode.ACTIVE.getValue());
-				scheduleDetailMapper.registerScheduleDetail(data);
+				boolean isExist = this.isScheduleDetailExist(data);
+				if(isExist) {
+					scheduleDetailMapper.updateScheduleDetail(data);
+				}else {
+					data.setString("statusCode", StatusCode.ACTIVE.getValue());
+					scheduleDetailMapper.registerScheduleDetail(data);
+				}
 			}
 			return param;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+	
+	private boolean isScheduleDetailExist(MData param) {
+		try {
+			scheduleDetailMapper.retrieveScheduleDetail(param);
+			return true;
+		} catch (MNotFoundException e) {
+			return false;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -173,6 +193,7 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 			
 			MMultiData validateScheduleList = new MMultiData();
 			MMultiData scheduleList = param.getMMultiData("scheduleList");
+			
 			for(MData scheduleInfo : scheduleList.toListMData()) {
 				MValidatorUtil.validate(scheduleInfo, "schDay","seqNo","teacherID","subjectID","roomID","startTime","endTime");
 				scheduleInfo.setString("scheduleYear", scheduleYear);
@@ -211,6 +232,18 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
+	}
+	
+	private static boolean isDuplicateStartTime(MMultiData scheduleList) {
+		return scheduleList.stream().map(schedule -> schedule.get("startTime"))
+				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).values().stream()
+				.anyMatch(count -> count > 1);
+	}
+	
+	private static boolean isDuplicateEndTime(MMultiData scheduleList) {
+		return scheduleList.stream().map(schedule -> schedule.get("endTime"))
+				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).values().stream()
+				.anyMatch(count -> count > 1);
 	}
 	
 	private boolean checkDuplicateTeacher(MData teacherInfo) {

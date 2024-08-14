@@ -24,7 +24,9 @@ public enum ErrorCode {
 	DUPLICATE_TEACHER_ID					("ER013", "You have added duplicate Teacher"),
 	ALREADY_ADDED_TEACHER					("ER014", "Teacher Already added to Department"),
 	DUPLICATE_MANAGER_ID					("ER015", "You have added duplicate Manager"),
-	DUPLICATE_STUDENT_ID					("ER016", "You have added duplicate Student");
+	DUPLICATE_STUDENT_ID					("ER016", "You have added duplicate Student"),
+	CLASS_ALREADY_EXIST						("ER017", "New Class Information record found in our systems"),
+	CLASS_INVALID_UPGRADE					("ER018", "New Class and Old class Information are the same");
 	
 	private String value;
 	private String description;

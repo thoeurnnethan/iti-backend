@@ -7,12 +7,14 @@ import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
 import com.iti.thesis.helicopter.thesis.constant.StatusCode;
 import com.iti.thesis.helicopter.thesis.constant.UserRoleCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
+import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
 import com.iti.thesis.helicopter.thesis.db.service.TeacherDetailMapper;
 import com.iti.thesis.helicopter.thesis.db.service.TeacherQualificationHistoryMapper;
+import com.iti.thesis.helicopter.thesis.service.DepartmentManagementService;
 import com.iti.thesis.helicopter.thesis.service.TeacherDetailService;
 import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
@@ -24,6 +26,8 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 	private TeacherDetailMapper					teacherDetailMapper;
 	@Autowired
 	private TeacherQualificationHistoryMapper	teacherQualificationHistoryMapper;
+	@Autowired
+	private DepartmentManagementService			departmentManagementService;
 	
 	@Override
 	public MData registerTeacherDetail(MData param) {
@@ -34,6 +38,16 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 			
 			// Register Teacher Detail
 			teacherDetailMapper.registerTeacherDetail(param);
+			
+			if(!MStringUtil.isEmpty(param.getString("departmentID"))) {
+				MMultiData teacherList = new MMultiData();
+				param.setString("roleCode", param.getString("roleID").equals("03") ? "02" : "01");
+				teacherList.addMData(param);
+				MData teacherClassMappingParam = new MData();
+				teacherClassMappingParam.setString("departmentID", param.getString("departmentID"));
+				teacherClassMappingParam.setMMultiData("teacherList", teacherList);
+				departmentManagementService.registerDepartmentManagement(teacherClassMappingParam, true);
+			}
 			
 			// Register Teacher Detail
 			int qualSeqNo = 0;
