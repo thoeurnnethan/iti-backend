@@ -235,16 +235,21 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 				oldClassInfo = classInformationMapper.retrieveClassInformationDetailByClassInfoID(oldClassInfo);
 				
 				MData newClassInfo = new MData();
-				newClassInfo.setString("classID", param.getString("classID") + param.getString("newYear") + param.getString("newSemester"));
+				newClassInfo.setString("classID", param.getString("classID"));
+				newClassInfo.setString("cyear", param.getString("newYear"));
+				newClassInfo.setString("semester", param.getString("newSemester"));
 				boolean isExist = this.checkNewClassExist(newClassInfo);
+				String classInfoID = param.getString("classID") + param.getString("newYear") + param.getString("newSemester");
 				if(isExist) {
-					throw new MException(ErrorCode.CLASS_ALREADY_EXIST.getValue(), ErrorCode.CLASS_ALREADY_EXIST.getDescription());
+					newClassInfo.setString("year", newClassInfo.getString("cyear"));
+					newClassInfo.setString("statusCode", StatusCode.ACTIVE.getValue());
+					classInformationMapper.updateClassInformation(newClassInfo);
 				}else {
 					MData classInfo = new MData();
 					classInfo.setString("classID", param.getString("classID"));
 					classInfo.setString("cyear", param.getString("newYear"));
 					classInfo.setString("semester", param.getString("newSemester"));
-					classInfo.setString("classInfoID", newClassInfo.getString("classID"));
+					classInfo.setString("classInfoID", classInfoID);
 					classInfo.setString("departmentID", oldClassInfo.getString("departmentID"));
 					classInfo.setString("className", oldClassInfo.getString("className"));
 					classInfo.setString("classDesc", oldClassInfo.getString("classDesc"));
@@ -252,26 +257,25 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 					classInfo.setString("generation", oldClassInfo.getString("generation"));
 					classInfo.setString("statusCode", StatusCode.ACTIVE.getValue());
 					classInformationMapper.registerClassInformation(classInfo);
-					
-					MMultiData studentListOldClass = classInformationMapper.retrieveClassInformationStudentList(oldClassInfo);
-					if(studentListOldClass.size() > 0) {
-						MMultiData studentListNewClass = new MMultiData();
-						for(MData oldStudentInfo : studentListOldClass.toListMData()) {
-							oldStudentInfo.setString("classYear", param.getString("newYear"));
-							oldStudentInfo.setString("semester", param.getString("newSemester"));
-							studentListNewClass.addMData(oldStudentInfo);
-						}
-						
-						outputData.setString("classID", param.getString("classID"));
-						outputData.setString("classYear", param.getString("newYear"));
-						outputData.setString("semester", param.getString("newSemester"));
-						outputData.setMMultiData("studentList", studentListNewClass);
-						
-						newClassInfo.setString("classInfoID", newClassInfo.getString("classID"));
-						newClassInfo.setMMultiData("studentList", studentListNewClass);
-						this.registerStudentToClassInformation(newClassInfo, true);
+				}
+				
+				MMultiData studentListOldClass = classInformationMapper.retrieveClassInformationStudentList(oldClassInfo);
+				if(studentListOldClass.size() > 0) {
+					MMultiData studentListNewClass = new MMultiData();
+					for(MData oldStudentInfo : studentListOldClass.toListMData()) {
+						oldStudentInfo.setString("classYear", param.getString("newYear"));
+						oldStudentInfo.setString("semester", param.getString("newSemester"));
+						studentListNewClass.addMData(oldStudentInfo);
 					}
 					
+					outputData.setString("classID", param.getString("classID"));
+					outputData.setString("classYear", param.getString("newYear"));
+					outputData.setString("semester", param.getString("newSemester"));
+					outputData.setMMultiData("studentList", studentListNewClass);
+					
+					newClassInfo.setString("classInfoID", classInfoID);
+					newClassInfo.setMMultiData("studentList", studentListNewClass);
+					this.registerStudentToClassInformation(newClassInfo, true);
 				}
 			}
 			
@@ -303,7 +307,7 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 	
 	private boolean checkNewClassExist(MData newClassInfo) {
 		try {
-			classInformationMapper.retrieveClassInformationDetailByClassInfoID(newClassInfo);
+			classInformationMapper.retrieveClassInformationDetail(newClassInfo);
 			return true;
 		} catch (MNotFoundException e) {
 			return false;

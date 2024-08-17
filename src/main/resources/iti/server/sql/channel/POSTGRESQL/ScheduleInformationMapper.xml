@@ -12,6 +12,7 @@
 		     , C.CLS_ID                          AS "classID"
 		     , C.CLS_NM                          AS "className"
 		     , C.C_YEAR                          AS "classYear"
+		     , C.CLS_TYPE                        AS "classType"
 		     , C.SEMESTER                        AS "semester"
 		     , C.GENR                            AS "generation"
 		     , C.DEPT_ID                         AS "departmentID"
@@ -36,19 +37,19 @@
 		  JOIN FRST.SCHED_DETAIL B
 		    ON A.SCH_ID = B.SCH_ID 
 		   AND B.STCD <> '02'
-		  LEFT JOIN FRST.CLS_INFO C
+		  JOIN FRST.CLS_INFO C
 		    ON A.CLS_INFO_ID = C.CLS_INFO_ID 
 		   AND C.STCD <> '02'
-		  LEFT JOIN FRST.USER_INFO D
+		  JOIN FRST.USER_INFO D
 		    ON B.TCH_ID = D.SPEC_ID 
 		   AND D.STCD <> '02'
-		  LEFT JOIN FRST.SUBJ_INFO E
+		  JOIN FRST.SUBJ_INFO E
 		    ON B.SUB_ID = E.SUB_ID 
 		   AND E.STCD <> '02'
-		  LEFT JOIN FRST.RM_INFO F
+		  JOIN FRST.RM_INFO F
 		    ON B.RM_ID = F.RM_ID 
 		   AND F.STCD <> '02'
-		  LEFT JOIN FRST.DEPT_INFO H
+		  JOIN FRST.DEPT_INFO H
 		    ON C.DEPT_ID = H.DEPT_ID 
 		   AND H.STCD <> '02'
 		 WHERE ('' = #{departmentID} OR H.DEPT_ID = #{departmentID})

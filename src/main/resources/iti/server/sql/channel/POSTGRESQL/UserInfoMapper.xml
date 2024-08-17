@@ -23,6 +23,7 @@
 		     , PASSWD                      AS "passwd"
 		     , IMG_URL                     AS "imageUrl"
 		     , STCD                        AS "statusCode"
+		     , LOGIN_BY_USER_YN            AS "loginByUserYn"
 		  FROM FRST.USER_INFO 
 		 WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR LAST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
@@ -79,6 +80,7 @@
 		     , PASSWD                      AS "passwd"
 		     , IMG_URL                     AS "imageUrl"
 		     , STCD                        AS "statusCode"
+		     , LOGIN_BY_USER_YN            AS "loginByUserYn"
 		  FROM FRST.USER_INFO 
 		 WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR LAST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'

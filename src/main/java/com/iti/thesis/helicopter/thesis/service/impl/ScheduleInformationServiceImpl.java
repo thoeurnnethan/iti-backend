@@ -45,6 +45,7 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 				if(isRetrieveForSpecificClass(param)) {
 					response.setString("scheduleYear", schedule.getString("scheduleYear"));
 					response.setString("className", schedule.getString("className"));
+					response.setString("classType", schedule.getString("classType"));
 					response.setString("classYear", schedule.getString("classYear"));
 					response.setString("semester", schedule.getString("semester"));
 					response.setString("generation", schedule.getString("generation"));

@@ -13,6 +13,7 @@ import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.service.UserInfoService;
+import com.iti.thesis.helicopter.thesis.util.MResponseUtil;
 
 import lombok.extern.slf4j.Slf4j;;
 
@@ -56,7 +57,7 @@ public class UserInfoInquiryList extends BaseTemplate {
 		response.setInt("totalCount", userCount.getInt("totalCount"));
 		response.setInt("totalMale", userCount.getInt("totalMale"));
 		response.setInt("totalFemale", userCount.getInt("totalFemale"));
-		response.setMMultiData("userList", userList);
+		response.setMMultiData("userList", MResponseUtil.removeKey(userList, "loginByUserYn"));
 		return response;
 	}
 

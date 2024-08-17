@@ -1,5 +1,7 @@
 package com.iti.thesis.helicopter.thesis.service.impl;
 
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -45,7 +47,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public MMultiData retrieveUserInfoList(MData param) throws MException {
 		try {
-			return userInfoMapper.retrieveUserInfoList(param);
+			
+			MMultiData userList = userInfoMapper.retrieveUserInfoList(param);
+			MMultiData filterList = userList.toListMData().stream()
+					.map(data ->{
+						MData user = data;
+						String loginYn = data.getString("loginByUserYn");
+						if(!MStringUtil.isEmpty(loginYn) && YnTypeCode.YES.getValue().equalsIgnoreCase(loginYn)) {
+							user.setString("passwd", MStringUtil.EMPTY);
+						}
+						return user;
+					}).collect(Collectors.toCollection(MMultiData::new));
+			return filterList;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -139,6 +152,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				userInfo.setString("userID", userID);
 				userInfo.setString("passwd", passwd);
 				userInfo.setString("statusCode", StatusCode.ACTIVE.getValue());
+				userInfo.setString("loginByUserYn", YnTypeCode.NO.getValue());
 				
 				// Register User Information
 				userInfoMapper.registerUserInfoDetail(userInfo);
@@ -216,7 +230,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 			// Retrieve User Info 
 			MData	userInfo	= userInfoMapper.retrieveUserInfoDetail(param);
 			String	roleID		= userInfo.getString("roleID");
-			
 			
 			// Update User Info
 			param.setString("specificID", userInfo.getString("specificID"));
