@@ -33,5 +33,56 @@
 		        , C.SUB_ID ASC 
 		]]>
 	</select>
+	
+	<select id="retrieveScoreInformation" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveScoreInformation */
+		       A.CLS_INFO_ID               AS "classInfoID"
+		     , A.STD_ID                    AS "studentID"
+		     , A.SCR_ID                    AS "scoreID"
+		     , B.SUB_ID                    AS "subjectID"
+		     , B.SCORE                     AS "score"
+		  FROM FRST.STD_CLS_MAP A
+		  JOIN FRST.SCORE_INFO B
+		    ON A.SCR_ID = B.SCR_ID 
+		 WHERE B.SCR_ID = #{scoreID}
+		   AND B.SUB_ID = #{subjectID}
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<insert id="registerScoreInformation">
+		<![CDATA[
+		INSERT /* RegisterScoreInformation */
+		  INTO FRST.SCORE_INFO 
+		     ( SCR_ID 
+		     , SUB_ID 
+		     , SCORE 
+		     , FRST_REG_DT
+		     , FRST_REG_TIME
+		     , LAST_CHNG_DT
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{scoreID}
+		     , #{subjectID}
+		     , COALESCE(#{score}, 0.00)
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateScoreInformation">
+		<![CDATA[
+		UPDATE /* UpdateScoreInformation */
+		       FRST.SCORE_INFO 
+		   SET SCORE = COALESCE(#{score}, SCORE)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE SCR_ID = #{scoreID}
+		   AND SUB_ID = #{subjectID}
+		]]>
+	</update>
 
 </mapper>

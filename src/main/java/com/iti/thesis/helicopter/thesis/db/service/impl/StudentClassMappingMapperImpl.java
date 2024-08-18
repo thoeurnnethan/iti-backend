@@ -23,5 +23,10 @@ public class StudentClassMappingMapperImpl implements StudentClassMappingMapper 
 	public int updateStudentClassMappingInfo(MData student) throws MException {
 		return channelDBDao.update("updateStudentClassMappingInfo", student);
 	}
+
+	@Override
+	public MData retrieveStudentClassMappingInfo(MData data) throws MException {
+		return channelDBDao.selectOne("retrieveStudentClassMappingInfo", data);
+	}
 	
 }

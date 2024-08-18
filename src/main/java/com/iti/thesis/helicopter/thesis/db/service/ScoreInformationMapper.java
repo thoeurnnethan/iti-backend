@@ -7,5 +7,11 @@ import com.iti.thesis.helicopter.thesis.core.exception.MException;
 public interface ScoreInformationMapper {
 
 	public MMultiData retrieveStudentScoreList(MData param) throws MException;
+
+	public MData retrieveScoreInformation(MData studentClassInfo) throws MException;
+
+	public int updateScoreInformation(MData studentClassInfo) throws MException;
+
+	public int registerScoreInformation(MData studentClassInfo) throws MException;
 	
 }

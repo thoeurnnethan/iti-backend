@@ -5,6 +5,19 @@
 
 <mapper namespace="com.iti.thesis.helicopter.thesis.db.service.StudentClassMappingMapper">
 	
+	<select id="retrieveStudentClassMappingInfo" resultType="MData">
+		<![CDATA[
+		SELECT /* UpdateStudentClassMappingInfo */
+		       CLS_INFO_ID                          AS "classInfoID"
+		     , STD_ID                               AS "studentID"
+		     , SCR_ID                               AS "scoreID"
+		  FROM FRST.STD_CLS_MAP 
+		 WHERE CLS_INFO_ID = #{classInfoID}
+		   AND STD_ID = #{studentID}
+		   AND STCD <> '02'
+		]]>
+	</select>
+	
 	<insert id="registerStudentClassMappingInfo">
 		<![CDATA[
 		INSERT /* RegisterStudentClassMappingInfo */
