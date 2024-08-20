@@ -25,6 +25,7 @@
 		     , A.GENDER                AS "gender"
 		     , B.DEPT_ID               AS "departmentID"
 		     , B.DEPT_ROLE_CD          AS "userRoleInDpm"
+		     , B.STCD                  AS "statusCode"
 		  FROM TMP A
 		  LEFT JOIN FRST.DEPT_MNGT B
 		    ON A.SPEC_ID = B.TCH_ID 

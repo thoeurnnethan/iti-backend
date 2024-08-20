@@ -122,7 +122,9 @@ public class DepartmentManagementServiceImpl implements DepartmentManagementServ
 			MData response = new MData();
 			response.setString("successYn", !isNotValid ? YnTypeCode.YES.getValue() : YnTypeCode.NO.getValue());
 			response.setString("departmentID", param.getString("departmentID"));
-			response.setMMultiData("teacherList", resList);
+			MMultiData responseList = this.retrieveDepartmentManagementList(response);
+			response.setInt("totalCount", responseList.size());
+			response.setMMultiData("teacherList", this.retrieveDepartmentManagementList(response));
 			return response;
 		} catch (MException e) {
 			throw e;
