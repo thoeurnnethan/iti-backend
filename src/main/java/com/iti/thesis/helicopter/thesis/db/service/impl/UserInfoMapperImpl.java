@@ -59,5 +59,10 @@ public class UserInfoMapperImpl implements UserInfoMapper {
 	public int updateUserInfoResetPassword(MData param) throws MException {
 		return channelDBDao.update("updateUserInfoResetPassword", param);
 	}
+
+	@Override
+	public int updateUserPassword(MData param) throws MException {
+		return channelDBDao.update("updateUserPassword", param);
+	}
 	
 }

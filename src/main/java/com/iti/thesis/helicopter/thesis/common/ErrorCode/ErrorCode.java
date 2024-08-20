@@ -27,7 +27,10 @@ public enum ErrorCode {
 	DUPLICATE_STUDENT_ID					("ER016", "You have added duplicate Student"),
 	CLASS_ALREADY_EXIST						("ER017", "New Class Information record found in our systems"),
 	CLASS_INVALID_UPGRADE					("ER018", "New Class and Old class Information are the same"),
-	STUDENT_NOT_IN_CLASS					("ER019", "Some students do not exist in Class");
+	STUDENT_NOT_IN_CLASS					("ER019", "Some students do not exist in Class"),
+	USER_NOT_ACTIVE							("ER020", "User Status not Active"),
+	ALREADY_LOGIN							("ER021", "Already Login and Change password"),
+	OLD_PASSWORD_NOT_MATCH					("ER022", "Old Password not match");
 	
 	private String value;
 	private String description;

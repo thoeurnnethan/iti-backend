@@ -193,6 +193,19 @@
 		]]>
 	</update>
 	
+	<update id="updateUserPassword">
+		<![CDATA[
+		UPDATE /* UpdateUserPassword */
+		       FRST.USER_INFO
+		   SET PASSWD = COALESCE(#{newPasswd}, PASSWD)
+		     , LOGIN_BY_USER_YN = COALESCE(#{loginByUserYn}, LOGIN_BY_USER_YN)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME  = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE USER_ID = #{userID}
+		   AND ROLE_ID = #{roleID}
+		]]>
+	</update>
+	
 	<insert id="registerUserInfoDetail">
 		<![CDATA[
 		INSERT /* registerUserInfoDetail */

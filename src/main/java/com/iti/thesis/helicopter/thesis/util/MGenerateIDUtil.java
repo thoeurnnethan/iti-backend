@@ -9,7 +9,7 @@ import lombok.experimental.UtilityClass;
 public class MGenerateIDUtil {
 	
 	private final String ID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	private final String PASSWORD_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
+	private final String PASSWORD_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$&";
 	private final int ID_LENGTH = 10;
 	private final int PASSWORD_LENGTH = 12;
 	

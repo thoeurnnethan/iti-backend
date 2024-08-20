@@ -64,7 +64,6 @@
 		 WHERE A.DEPT_ID = #{departmentID}
 		   AND ('' = COALESCE(#{teacherID}, '') OR B.TCH_ID = #{teacherID})
 		   AND ('' = COALESCE(#{departmentRoleCode}, '') OR B.DEPT_ROLE_CD = #{departmentRoleCode})
-		   AND A.STCD <> '02'
 		 LIMIT 1
 		]]>
 	</select>

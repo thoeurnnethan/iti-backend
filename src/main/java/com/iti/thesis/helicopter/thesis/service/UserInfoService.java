@@ -15,5 +15,6 @@ public interface UserInfoService {
 	public int updateUserLoginInfo(MData param) throws MException;
 	public MData updateUserInfoResetPassword(MData param) throws MException;
 	public MMultiData retrieveUserInfoListForDownload(MData param) throws MException;
+	public MData changePassword(MData param) throws MException;
 	
 }

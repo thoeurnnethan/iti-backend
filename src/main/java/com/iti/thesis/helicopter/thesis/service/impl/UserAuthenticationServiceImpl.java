@@ -126,11 +126,10 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				updateData.setString("lockDateTime", MStringUtil.EMPTY);
 				updateData.setString("lastLoginDate", MDateUtil.getCurrentDate());
 				// Update in case login first time
-				if(MStringUtil.isEmpty(loginByUserYn) && !YnTypeCode.YES.getValue().equals(loginByUserYn)) {
-					updateData.setString("loginByUserYn", YnTypeCode.YES.getValue());
+				if(!MStringUtil.isEmpty(loginByUserYn) && !YnTypeCode.YES.getValue().equals(loginByUserYn)) {
 					updateData.setString("firstLoginDate", MDateUtil.getCurrentDate());
-					String encryptedPassword = MPasswordUtil.oneWayEnc(userInfo.getString("passwd"), MStringUtil.EMPTY);
-					updateData.setString("newPassword", encryptedPassword);
+					updateData.setString("loginByUserYn", YnTypeCode.NO.getValue());
+					updateData.setString("newPassword", userInfo.getString("passwd"));
 				}
 				userInfoService.updateUserLoginInfo(updateData);
 			}

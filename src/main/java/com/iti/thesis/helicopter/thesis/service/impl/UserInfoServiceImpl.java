@@ -1,5 +1,7 @@
 package com.iti.thesis.helicopter.thesis.service.impl;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import com.iti.thesis.helicopter.thesis.service.TeacherDetailService;
 import com.iti.thesis.helicopter.thesis.service.UserInfoService;
 import com.iti.thesis.helicopter.thesis.util.MGUIDUtil;
 import com.iti.thesis.helicopter.thesis.util.MGenerateIDUtil;
+import com.iti.thesis.helicopter.thesis.util.MPasswordUtil;
 import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
@@ -336,6 +339,39 @@ public class UserInfoServiceImpl implements UserInfoService {
 			return false;
 		} catch (MNotFoundException e) {
 			return true;
+		}
+	}
+
+	@Override
+	public MData changePassword(MData param) throws MException {
+		try {
+			MValidatorUtil.validate(param, "userID","oldPasswd", "newPasswd");
+			MData	userInfo		= userInfoMapper.retrieveUserInfoDetail(param);
+			String	loginByUserYn	= userInfo.getString("loginByUserYn");
+			String	statusCode		= userInfo.getString("statusCode");
+			if(StatusCode.INACTIVE.getValue().equals(statusCode)) {
+				throw new MException(ErrorCode.USER_NOT_ACTIVE.getValue(),ErrorCode.USER_NOT_ACTIVE.getDescription());
+			}
+			if(YnTypeCode.YES.getValue().equals(loginByUserYn)) {
+				throw new MException(ErrorCode.ALREADY_LOGIN.getValue(),ErrorCode.ALREADY_LOGIN.getDescription());
+			}
+			String oldPassword	= URLDecoder.decode(userInfo.getString("passwd"), StandardCharsets.UTF_8.toString());
+			String password		= URLDecoder.decode(param.getString("oldPasswd"), StandardCharsets.UTF_8.toString());
+			if(!oldPassword.equals(password)) {
+				throw new MException(ErrorCode.OLD_PASSWORD_NOT_MATCH.getValue(),ErrorCode.OLD_PASSWORD_NOT_MATCH.getDescription());
+			}
+			String newPasswd	= URLDecoder.decode(param.getString("newPasswd"), StandardCharsets.UTF_8.toString());
+			String encPasswd	= MPasswordUtil.oneWayEnc(newPasswd, MStringUtil.EMPTY);
+			param.setString("roleID", userInfo.getString("roleID"));
+			param.setString("loginByUserYn", YnTypeCode.YES.getValue());
+			param.setString("newPasswd", encPasswd);
+			userInfoMapper.updateUserPassword(param);
+			return param;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
 		}
 	}
 	
