@@ -7,7 +7,7 @@
 	
 	<select id="retrieveStudentClassMappingInfo" resultType="MData">
 		<![CDATA[
-		SELECT /* UpdateStudentClassMappingInfo */
+		SELECT /* RetrieveStudentClassMappingInfo */
 		       CLS_INFO_ID                          AS "classInfoID"
 		     , STD_ID                               AS "studentID"
 		     , SCR_ID                               AS "scoreID"

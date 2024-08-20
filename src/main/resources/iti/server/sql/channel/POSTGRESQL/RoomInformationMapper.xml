@@ -92,7 +92,6 @@
 		SELECT /* RetrieveLastRoomID */
 		       RM_ID                    AS "roomID"
 		  FROM FRST.RM_INFO
-		 WHERE STCD <> '02'
 		 ORDER BY RM_ID DESC 
 		 LIMIT 1
 		]]>

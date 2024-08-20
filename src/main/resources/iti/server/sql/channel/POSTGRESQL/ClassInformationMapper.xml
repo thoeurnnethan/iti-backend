@@ -127,6 +127,7 @@
 		 WHERE ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
 		   AND ('' = COALESCE(#{studentID}, '') OR B.STD_ID = #{studentID})
 		   AND A.STCD <> '02'
+		   AND B.STCD <> '02'
 		 ORDER BY (C.FRST_NM, C.LAST_NM)
 		]]>
 	</select>
