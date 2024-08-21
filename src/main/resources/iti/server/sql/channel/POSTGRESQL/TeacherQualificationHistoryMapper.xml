@@ -16,7 +16,7 @@
 		     , CERT_DT               AS "certificatedDate"
 		  FROM FRST.TCH_QUF_HIS
 		 WHERE TCH_ID = #{teacherID}
-		   AND STRT_DT <> '09'
+		   AND STCD <> '02'
 		 ORDER BY SEQNO 
 		]]>
 	</select>
@@ -33,7 +33,7 @@
 		  FROM FRST.TCH_QUF_HIS
 		 WHERE TCH_ID = #{teacherID}
 		   AND SEQNO = #{seqNo}
-		   AND STRT_DT <> '09'
+		   AND STCD <> '02'
 		 LIMIT 1
 		]]>
 	</select>

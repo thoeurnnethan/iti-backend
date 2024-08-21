@@ -8,5 +8,6 @@ public interface StudentClassMappingMapper {
 	public int registerStudentClassMappingInfo(MData param) throws MException;
 	public int updateStudentClassMappingInfo(MData student) throws MException;
 	public MData retrieveStudentClassMappingInfo(MData data)throws MException;
+	public MData retrieveStudentInClass(MData data)throws MException;
 	
 }

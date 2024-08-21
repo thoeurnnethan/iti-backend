@@ -18,6 +18,19 @@
 		]]>
 	</select>
 	
+	<select id="retrieveStudentInClass" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveStudentInClass */
+		       CLS_INFO_ID                          AS "classInfoID"
+		     , STD_ID                               AS "studentID"
+		     , SCR_ID                               AS "scoreID"
+		     , STCD                                 AS "statusCode"
+		  FROM FRST.STD_CLS_MAP 
+		 WHERE CLS_INFO_ID = #{classInfoID}
+		   AND STD_ID = #{studentID}
+		]]>
+	</select>
+	
 	<insert id="registerStudentClassMappingInfo">
 		<![CDATA[
 		INSERT /* RegisterStudentClassMappingInfo */

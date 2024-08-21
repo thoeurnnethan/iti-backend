@@ -28,5 +28,10 @@ public class StudentClassMappingMapperImpl implements StudentClassMappingMapper 
 	public MData retrieveStudentClassMappingInfo(MData data) throws MException {
 		return channelDBDao.selectOne("retrieveStudentClassMappingInfo", data);
 	}
+
+	@Override
+	public MData retrieveStudentInClass(MData data) throws MException {
+		return channelDBDao.selectOne("retrieveStudentInClass", data);
+	}
 	
 }

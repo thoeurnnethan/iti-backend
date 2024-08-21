@@ -180,16 +180,26 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 					student.setString("classInfoID", param.getString("classInfoID"));
 					String	messageText		= MStringUtil.EMPTY;
 					String	alreadyExist	= YnTypeCode.NO.getValue();
-					MMultiData studentExist = this.retrieveClassInformationStudentList(student);
-					if(studentExist.size() > 0) {
+					String	statusCode		= student.getString("statusCode");
+					boolean isExist = this.isStudentExistInClass(student);
+					if(isExist) {
 						if(isRegister) {
 							isNotValid		= true;
 							messageText		= "Already Register";
 							alreadyExist	= YnTypeCode.YES.getValue();
+							if(StatusCode.DELETE.getValue().equals(student.getString("statusCode"))) {
+								student.setString("statusCode", StatusCode.ACTIVE.getValue());
+								student.setString("scoreID", param.getString("classInfoID") + student.getString("studentID"));
+								studentClassMappingMapper.updateStudentClassMappingInfo(student);
+								isNotValid		= true;
+								messageText		= "";
+								alreadyExist	= YnTypeCode.YES.getValue();
+							}
 						}else {
+							student.setString("statusCode", statusCode);
 							studentClassMappingMapper.updateStudentClassMappingInfo(student);
 						}
-					}else if(!isRegister) {
+					} else if(!isRegister) {
 						student.setString("statusCode", StatusCode.ACTIVE.getValue());
 						student.setString("scoreID", param.getString("classInfoID") + student.getString("studentID"));
 						studentClassMappingMapper.registerStudentClassMappingInfo(student);
@@ -209,7 +219,9 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 			MData response = new MData();
 			response.setString("successYn", !isNotValid ? YnTypeCode.YES.getValue() : YnTypeCode.NO.getValue());
 			response.setString("classInfoID", param.getString("classInfoID"));
-			response.setMMultiData("studentList", resList);
+			MMultiData stdResList = this.retrieveClassInformationStudentList(param);
+			response.setInt("totalCount", stdResList.size());
+			response.setMMultiData("studentList", stdResList);
 			return response;
 		} catch (MNotFoundException e) {
 			throw new MException(ErrorCode.CLASS_NOT_FOUND.getValue(), ErrorCode.CLASS_NOT_FOUND.getDescription());
@@ -217,6 +229,20 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 			throw e;
 		} catch (Exception e){
 			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+	
+	private boolean isStudentExistInClass(MData data) {
+		try {
+			MData resData = studentClassMappingMapper.retrieveStudentInClass(data);
+			data.appendFrom(resData);
+			return true;
+		} catch (MNotFoundException e) {
+			return false;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 	}
