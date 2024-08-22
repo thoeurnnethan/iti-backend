@@ -206,6 +206,7 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 				boolean isDuplicateTime = this.checkDuplicateTime(scheduleInfo);
 				if(isDuplicateTime) {
 					scheduleInfo.setString("duplicateTimeYn", YnTypeCode.YES.getValue());
+					throw new MException("0000","Duplicate time");
 				}else {
 					scheduleInfo.setString("duplicateTimeYn", YnTypeCode.NO.getValue());
 				}
@@ -213,6 +214,7 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 				boolean isDuplicateTeacher = this.checkDuplicateTeacher(scheduleInfo);
 				if(isDuplicateTeacher) {
 					scheduleInfo.setString("duplicateTeacherYn", YnTypeCode.YES.getValue());
+					throw new MException("0000","Duplicate teacher");
 				}else {
 					scheduleInfo.setString("duplicateTeacherYn", YnTypeCode.NO.getValue());
 				}

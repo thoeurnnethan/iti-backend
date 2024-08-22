@@ -49,32 +49,38 @@ public class MHttpRequestUtil {
 	public static JsonAdaptorObject createSession(MData param) {
 		try {
 			HttpServletRequest	request			= MHttpRequestUtil.getCurrentRequest();
-			HttpSession			session			= request.getSession(true); 
 			
-//			MHttpRequestUtil.checkAuthentication(request, session, param);
+			String				requestUri		= request.getRequestURI();
+			request.setAttribute("JSESSIONID", param.getMData("header").getString("login_session_id"));
+			
+			boolean				isLoginRequest	= requestUri.contains("/login");
+			HttpSession			session			= request.getSession(isLoginRequest ? true : false); 
+			
+			MHttpRequestUtil.checkAuthentication(request, session, param);
 			
 			JsonAdaptorObject	obj				= new JsonAdaptorObject();
 			MHttpRequestUtil.initMetaData(obj);
-			String				sessionID		= session.getId();
-			Long				date			= session.getCreationTime();
-			String				requestUri		= request.getRequestURI();
-			boolean				isLoginRequest	= requestUri.contains("/login");
+			String				sessionID		= MStringUtil.EMPTY;
+			String				date			= param.getMData("header").getString("created_datetime");
+			try {
+				sessionID = isLoginRequest ? session.getId() : param.getMData("header").getString("login_session_id");
+			} catch (Exception e) {
+				throw new MException("401", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+			}
 			JsonNode			jsonNode	= (ObjectNode)obj.get(JsonAdaptorObject.TYPE.META);
 			JsonUtil.putValue((ObjectNode) jsonNode, "id", sessionID);
-			JsonUtil.putValue((ObjectNode) jsonNode, "created_datetime", date.toString());
+			JsonUtil.putValue((ObjectNode) jsonNode, "created_datetime", date);
 			JsonUtil.putValue((ObjectNode) jsonNode, "requestUri", requestUri);
 			obj.put(JsonAdaptorObject.TYPE.META, jsonNode);
 			obj.put(JsonAdaptorObject.TYPE.REQUEST, convertMDataToJsonNode(param));
-			if(!isLoginRequest && SessionUtil.isLoggedin()) {
-				MData sessionData = MHttpRequestUtil.getSessionAttribute(sessionID);
-				JsonUtil.putValue((ObjectNode) jsonNode, "loginUserId", sessionData.getString("loginUserId"));
-				JsonUtil.putValue((ObjectNode) jsonNode, "userRoleId", sessionData.getString("userRoleId"));
-				obj.put(JsonAdaptorObject.TYPE.META, jsonNode);
-				MContextParameter.setContext(obj);
-				SessionUtil.updateSession(convertJsonNodeToMData(jsonNode));
-			}else {
-//				throw new MException(ErrorCode.INVALID_ACCESS.getValue(), ErrorCode.INVALID_ACCESS.getDescription());
-			}
+//			if(!isLoginRequest) {
+//				MData sessionData = MHttpRequestUtil.getSessionAttribute(sessionID);
+//				JsonUtil.putValue((ObjectNode) jsonNode, "loginUserId", sessionData.getString("loginUserId"));
+//				JsonUtil.putValue((ObjectNode) jsonNode, "userRoleId", sessionData.getString("userRoleId"));
+//				obj.put(JsonAdaptorObject.TYPE.META, jsonNode);
+//				MContextParameter.setContext(obj);
+//				SessionUtil.updateSession(convertJsonNodeToMData(jsonNode));
+//			}
 			return obj;
 		} catch (MException e) {
 			throw new MException(e.getMCode(), e.getMMessage());
@@ -86,14 +92,11 @@ public class MHttpRequestUtil {
 	
 	private static void checkAuthentication(HttpServletRequest request, HttpSession session, MData param) {
 		String	requestUri		= request.getRequestURI();
-		String	sessionID		= session.getId();
 		String	userSessionID	= param.getMData("header").getString("login_session_id");
 		boolean	isLoginRequest	= requestUri.contains("/login") ? true : false;
 		if(!isLoginRequest) {
-			if(!MStringUtil.isEmpty(userSessionID) && !MStringUtil.isEmpty(sessionID)) {
-				if(!userSessionID.equals(sessionID)) {
-					throw new MException("401", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-				}
+			if(MStringUtil.isEmpty(userSessionID)) {
+				throw new MException("401", HttpStatus.UNAUTHORIZED.getReasonPhrase());
 			}
 		}
 	}
@@ -116,6 +119,7 @@ public class MHttpRequestUtil {
 	
 	public static MData getSessionAttribute(String sessionID) {
 		HttpServletRequest	request			= MHttpRequestUtil.getCurrentRequest();
+		request.setAttribute("JSESSIONID", sessionID);
 		HttpSession			session			= request.getSession(false);
 		return (MData) session.getAttribute("prefix_" + sessionID);
 	}
@@ -151,9 +155,34 @@ public class MHttpRequestUtil {
 		}
 	}
 	
+//	private static boolean AllowAccessAllRole() {
+//		return Arrays.asList(
+//				AdminUriAccessConst.USER_LOGIN
+//				).contains( MContextUtil.getRequestUri() ); 
+//	}
+	
 	private static boolean AdminAccessUri() {
 		return Arrays.asList(
-				AdminUriAccessConst.USER_LOGIN
+				AdminUriAccessConst.USER_LOGIN,
+				
+				AdminUriAccessConst.DEPARTMENT_LIST,
+				AdminUriAccessConst.DEPARTMENT_DOWNLOAD,
+				AdminUriAccessConst.DEPARTMENT_REGISTER,
+				AdminUriAccessConst.DEPARTMENT_UDPATE,
+				
+				AdminUriAccessConst.CLASS_LIST,
+				AdminUriAccessConst.CLASS_DOWNLOAD,
+				AdminUriAccessConst.CLASS_LIST_STUDENT,
+				AdminUriAccessConst.CLASS_REGISTER,
+				AdminUriAccessConst.CLASS_REGISTER_STUDENT,
+				AdminUriAccessConst.CLASS_UDPATE,
+				AdminUriAccessConst.CLASS_UPDATE_STUDENT,
+				AdminUriAccessConst.CLASS_UPGRADE,
+				
+				AdminUriAccessConst.SUBJECT_LIST,
+				AdminUriAccessConst.SUBJECT_DOWNLOAD,
+				AdminUriAccessConst.SUBJECT_REGISTER,
+				AdminUriAccessConst.SUBJECT_UDPATE
 				).contains( MContextUtil.getRequestUri() ); 
 	}
 	

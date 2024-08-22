@@ -79,7 +79,11 @@ public abstract class BaseTemplate {
 			MContextParameter.setSessionContext(convertPojoToMData(metaNode));
 		}
 		try {
-//			MHttpRequestUtil.checkAuthorization(responseBody);
+			MData requestInfo = objectMapper.convertValue(metaNode, MData.class);
+			String url = requestInfo.getString("requestUri");
+			if(!url.contains("/login")) {
+//				MHttpRequestUtil.checkAuthorization(responseBody);
+			}
 			
 			responseBody = onExecute(requestBody);
 			JsonNode response = prepareResponse(requestMessage, responseBody);

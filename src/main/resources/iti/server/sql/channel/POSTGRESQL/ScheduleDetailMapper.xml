@@ -47,7 +47,6 @@
 		   AND C.C_YEAR = #{classYear}
 		   AND C.SEMESTER = #{semester}
 		   AND B.TCH_ID = #{teacherID}
-		   AND ('' = #{departmentID} OR C.DEPT_ID = #{departmentID}) 
 		]]>
 	</select>
 	

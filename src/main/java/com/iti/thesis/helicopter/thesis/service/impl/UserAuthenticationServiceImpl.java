@@ -1,5 +1,8 @@
 package com.iti.thesis.helicopter.thesis.service.impl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -140,6 +143,16 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		String currentDateTime = MDateUtil.getCurrentDateTime();
 		String lockDateTimeAfterAdd5Mn = MDateUtil.addTime(lockDateTime, 0, userLockTime, 0);
 		return MDateUtil.compareTo(lockDateTimeAfterAdd5Mn, currentDateTime) > 0;
+	}
+
+	@Override
+	public MData userLogout(MData param) throws MException {
+		HttpServletRequest request = MHttpRequestUtil.getCurrentRequest();
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+		return param;
 	}
 
 }
