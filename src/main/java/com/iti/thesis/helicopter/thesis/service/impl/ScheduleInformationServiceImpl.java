@@ -3,8 +3,6 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +20,7 @@ import com.iti.thesis.helicopter.thesis.db.service.ScheduleDetailMapper;
 import com.iti.thesis.helicopter.thesis.db.service.ScheduleInformationMapper;
 import com.iti.thesis.helicopter.thesis.service.ClassInformationService;
 import com.iti.thesis.helicopter.thesis.service.ScheduleInformationService;
+import com.iti.thesis.helicopter.thesis.util.MDateUtil;
 import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
@@ -139,6 +138,12 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 				if(isExist) {
 					scheduleDetailMapper.updateScheduleDetail(data);
 				}else {
+					if(YnTypeCode.YES.getValue().equalsIgnoreCase(data.getString("duplicateTimeYn"))) {
+						throw new MException(ErrorCode.DUPLICATE_TIME.getValue(), ErrorCode.DUPLICATE_TIME.getDescription());
+					}
+					if(YnTypeCode.YES.getValue().equalsIgnoreCase(data.getString("duplicateTeacherYn"))) {
+						throw new MException(ErrorCode.DUPLICATE_TEACHER.getValue(), ErrorCode.DUPLICATE_TEACHER.getDescription());
+					}
 					data.setString("statusCode", StatusCode.ACTIVE.getValue());
 					scheduleDetailMapper.registerScheduleDetail(data);
 				}
@@ -206,7 +211,6 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 				boolean isDuplicateTime = this.checkDuplicateTime(scheduleInfo);
 				if(isDuplicateTime) {
 					scheduleInfo.setString("duplicateTimeYn", YnTypeCode.YES.getValue());
-					throw new MException("0000","Duplicate time");
 				}else {
 					scheduleInfo.setString("duplicateTimeYn", YnTypeCode.NO.getValue());
 				}
@@ -214,7 +218,6 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 				boolean isDuplicateTeacher = this.checkDuplicateTeacher(scheduleInfo);
 				if(isDuplicateTeacher) {
 					scheduleInfo.setString("duplicateTeacherYn", YnTypeCode.YES.getValue());
-					throw new MException("0000","Duplicate teacher");
 				}else {
 					scheduleInfo.setString("duplicateTeacherYn", YnTypeCode.NO.getValue());
 				}
@@ -237,44 +240,27 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 		}
 	}
 	
-	private static boolean isDuplicateStartTime(MMultiData scheduleList) {
-		return scheduleList.stream().map(schedule -> schedule.get("startTime"))
-				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).values().stream()
-				.anyMatch(count -> count > 1);
-	}
-	
-	private static boolean isDuplicateEndTime(MMultiData scheduleList) {
-		return scheduleList.stream().map(schedule -> schedule.get("endTime"))
-				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).values().stream()
-				.anyMatch(count -> count > 1);
-	}
-	
 	private boolean checkDuplicateTeacher(MData teacherInfo) {
 		try {
 			MValidatorUtil.validate(teacherInfo, "scheduleYear","cyear","semester","teacherID");
 			MData	checkParam	= new MData();
 			boolean	duplicate	= false;
 			checkParam.setString("scheduleYear", teacherInfo.getString("scheduleYear"));
-			checkParam.setString("classYear", teacherInfo.getString("cyear"));
 			checkParam.setString("semester", teacherInfo.getString("semester"));
 			checkParam.setString("teacherID", teacherInfo.getString("teacherID"));
 			checkParam.setString("departmentID", MStringUtil.EMPTY);
 			
 			MMultiData	teacherList	= scheduleDetailMapper.selectCheckDuplicateTeacher(checkParam);
-			if(teacherList.size() > 0) {
-				for(MData teacher : teacherList.toListMData()) {
-					if(teacherInfo.getString("teacherID").equals(teacher.getString("teacherID"))) {
-						if(teacherInfo.getString("schDay").equals(teacher.getString("scheduleDay")))
-							if(teacherInfo.getString("startTime").equals(teacher.getString("startTime")) || teacherInfo.getString("endTime").equals(teacher.getString("endTime"))) {
-								duplicate = true;
+			for(MData teacher : teacherList.toListMData()) {
+				if(teacherInfo.getString("teacherID").equals(teacher.getString("teacherID"))) {
+					if(teacherInfo.getString("schDay").equals(teacher.getString("scheduleDay"))) {
+						if(teacherInfo.getString("startTime").equals(teacher.getString("startTime")) || teacherInfo.getString("endTime").equals(teacher.getString("endTime"))) {
+							duplicate = true;
 						}
 					}
-					
 				}
 			}
 			return duplicate;
-		} catch (MNotFoundException e) {
-			return false;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -284,18 +270,33 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 	
 	private boolean checkDuplicateTime(MData scheduleDetail) {
 		try {
-			MData	checkParam	= new MData();
 			boolean	duplicate	= false;
+			MData	checkParam	= new MData();
 			checkParam.setString("scheduleID", scheduleDetail.getString("scheduleID"));
 			checkParam.setString("scheduleDay", scheduleDetail.getString("schDay"));
-			
+			MMultiData	dayList	= scheduleDetailMapper.selectCheckDuplicateTime(checkParam);
+			int totalSize = dayList.size();
 			String startTime	= scheduleDetail.getString("startTime");
 			String endTime		= scheduleDetail.getString("endTime");
-			MMultiData	dayList	= scheduleDetailMapper.selectCheckDuplicateTime(checkParam);
+			String lastEndTime	= MStringUtil.EMPTY;
+			
+			if(dayList.size() > 0){
+				lastEndTime = dayList.getMData(dayList.size() - 1).getString("endTime");
+			}
 			
 			for(MData day : dayList.toListMData()) {
-				if(day.getString("startTime").equals(startTime) || day.getString("endTime").equals(endTime)) {
+				String dbStartTime	= day.getString("startTime");
+				String dbEndTime	= day.getString("endTime");
+				if(dbStartTime.equals(startTime) || dbEndTime.equals(endTime)) {
 					duplicate = true;
+					break;
+				}else {
+					int scheduleSeqNo = scheduleDetail.getInt("seqNo");
+					if(totalSize < scheduleSeqNo){
+						if(MDateUtil.compareTime(startTime, lastEndTime))
+						duplicate = true;
+						break;
+					}
 				}
 			}
 			return duplicate;

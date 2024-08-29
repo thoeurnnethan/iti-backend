@@ -20,7 +20,7 @@ public enum ErrorCode {
 	ONLY_ADMIN_CAN_UPDATE					("ER009", "Only Admin user can reset password but not for other Admin"),
 	CANNOT_RESET_ADMIN_PASS					("ER010", "Cannot reset password for Admin user"),
 	INVALID_ACCESS							("ER011", "Invalid Access"),
-	NEED_PERMISSION							("ER012", "You don't have enough permission for this request !"),
+	NEED_PERMISSION							("ER012", "You don't have enough permission for this request!"),
 	DUPLICATE_TEACHER_ID					("ER013", "You have added duplicate Teacher"),
 	ALREADY_ADDED_TEACHER					("ER014", "Teacher Already added to Department"),
 	DUPLICATE_MANAGER_ID					("ER015", "You have added duplicate Manager"),
@@ -30,7 +30,9 @@ public enum ErrorCode {
 	STUDENT_NOT_IN_CLASS					("ER019", "Some students do not exist in Class"),
 	USER_NOT_ACTIVE							("ER020", "User Status not Active"),
 	ALREADY_LOGIN							("ER021", "Already Login and Change password"),
-	OLD_PASSWORD_NOT_MATCH					("ER022", "Old Password not match");
+	OLD_PASSWORD_NOT_MATCH					("ER022", "Old Password not match"),
+	DUPLICATE_TEACHER						("ER023", "Duplicate Teacher to register schedule"),
+	DUPLICATE_TIME							("ER024", "Duplicate Time to register schedule");
 	
 	private String value;
 	private String description;

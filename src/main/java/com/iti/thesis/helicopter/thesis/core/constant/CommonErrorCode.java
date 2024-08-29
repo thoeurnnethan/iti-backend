@@ -15,7 +15,7 @@ public enum CommonErrorCode {
 	DUPLICATED_DATA           ("000004", "Duplicated data to Register to database"),
 	UPDATE_NOT_AFFECT         ("000006", "Update Not Affect Error"),
 	CODE                      ("000007", "Code Error"),
-	DATE                      ("000008", "Date Error"),
+	DATE                      ("000008", "Date Time Error"),
 	CURRENCY                  ("000009", "Currency Mismatch Error"),
 	TOO_MANY_ROWS             ("000010", "Too Many Rows Error"),
 	UPDATE                    ("000011", "There are problems while Update data in Database"),

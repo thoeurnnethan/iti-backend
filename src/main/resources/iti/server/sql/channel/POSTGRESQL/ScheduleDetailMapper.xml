@@ -44,7 +44,6 @@
 		  JOIN FRST.CLS_INFO C
 		    ON C.CLS_INFO_ID = A.CLS_INFO_ID 
 		 WHERE A."year" = #{scheduleYear}
-		   AND C.C_YEAR = #{classYear}
 		   AND C.SEMESTER = #{semester}
 		   AND B.TCH_ID = #{teacherID}
 		]]>

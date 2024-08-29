@@ -1,5 +1,6 @@
 package com.iti.thesis.helicopter.thesis.service.impl;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -48,8 +49,7 @@ public class ScoreInformationServiceImpl implements ScoreInformationService {
 							newData.setString("subjectName", data.getString("subjectName"));
 							return newData;
 						}).collect(Collectors.toCollection(MMultiData::new));
-				MMultiData studentScore = new MMultiData();
-				studentScore = this.transformScoreList(studentScoreList, keyValueSubject);
+				MMultiData studentScore = this.transformScoreList(studentScoreList, keyValueSubject);
 				outputData.put("subjects", keyValueSubject);
 				outputData.setInt("totalCount", studentScore.size());
 				outputData.setMMultiData("data", studentScore);
@@ -82,23 +82,35 @@ public class ScoreInformationServiceImpl implements ScoreInformationService {
 				
 				// Initialize all subjects with a default score of 0
 				for (MData subject : keyValueSubject.toListMData()) {
-					studentData.setFloat(subject.getString("subjectName"), 0.00F);
+					studentData.setDouble(subject.getString("subjectName"), 0.00D);
 				}
 				
 				// Subject subjectScoreList
+				Double totalScore = Double.valueOf(0D);
 				for (MData subjectScore : subjectScoreList.toListMData()) {
 					String	subjectName		= subjectScore.getString("subjectName");
-					float	scoreOfSubject	= subjectScore.getFloat("score");
+					Double	scoreOfSubject	= subjectScore.getDouble("score");
 					if(!MStringUtil.isEmpty(subjectName)) {
-						studentData.setFloat(subjectName, MStringUtil.isEmpty(scoreOfSubject+MStringUtil.EMPTY) ? 0.00F : scoreOfSubject);
+						scoreOfSubject = MStringUtil.isEmpty(scoreOfSubject+MStringUtil.EMPTY) ? 0.00D : scoreOfSubject;
+						totalScore += scoreOfSubject;
+						studentData.setDouble(subjectName, scoreOfSubject);
 					}
 				}
+				studentData.setDouble("totalScore", totalScore);
+				studentData.setDouble("average", totalScore / (subjectScoreList.size()));
 			}
 			transformedList.add(studentData);
 		}
-		return transformedList;
+		
+		MMultiData finalData = transformedList.toListMData().stream()
+				.sorted(Comparator.comparingDouble((MData map) -> map.getDouble("average")).reversed())
+				.collect(Collectors.toCollection(MMultiData::new));
+		// Assign grades
+		for (int i = 0; i < finalData.size(); i++) {
+			finalData.get(i).put("grade", i + 1);
+		}
+		return finalData;
 	}
-
 	
 	@Override
 	public MData registerStudentScore(MData param) throws MException {
