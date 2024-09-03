@@ -6,10 +6,14 @@ import com.iti.thesis.helicopter.thesis.core.exception.MException;
 
 public interface ClassInformationMapper {
 
-	public MMultiData retrieveClassInformationList(MData param) throws MException;
 	public int registerClassInformation(MData param) throws MException;
-	public MData retrieveClassInformationDetail(MData param) throws MException;
-	public MData retrieveLastNewsEventID(MData param) throws MException;
-	public MData retrieveClassInformationTotalCount(MData param) throws MException;
 	public int updateClassInformation(MData param) throws MException;
+	public MData retrieveClassInformationDetail(MData param) throws MException;
+	public MData retrieveLastClassID(MData param) throws MException;
+	public MData retrieveClassInformationTotalCount(MData param) throws MException;
+	public MData retrieveClassInformationDetailByClassInfoID(MData param) throws MException;
+	public MMultiData retrieveClassInformationListForDownload(MData param) throws MException;
+	public MMultiData retrieveClassInformationStudentList(MData param) throws MException;
+	public MMultiData retrieveClassInformationList(MData param) throws MException;
+	
 }

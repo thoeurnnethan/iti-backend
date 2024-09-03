@@ -31,7 +31,7 @@ public class TeacherDetailMapperImpl implements TeacherDetailMapper {
 	}
 
 	@Override
-	public MData retrieveEmployeeDetail(MData param) throws MException {
+	public MData retrieveTeacherDetail(MData param) throws MException {
 		return channelDBDao.selectOne("retrieveEmployeeDetail", param);
 	}
 

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.StudentClassMappingMapper">
+	
+	<select id="retrieveStudentClassMappingInfo" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveStudentClassMappingInfo */
+		       CLS_INFO_ID                          AS "classInfoID"
+		     , STD_ID                               AS "studentID"
+		     , SCR_ID                               AS "scoreID"
+		  FROM FRST.STD_CLS_MAP 
+		 WHERE CLS_INFO_ID = #{classInfoID}
+		   AND STD_ID = #{studentID}
+		   AND STCD <> '02'
+		]]>
+	</select>
+	
+	<select id="retrieveStudentInClass" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveStudentInClass */
+		       CLS_INFO_ID                          AS "classInfoID"
+		     , STD_ID                               AS "studentID"
+		     , SCR_ID                               AS "scoreID"
+		     , STCD                                 AS "statusCode"
+		  FROM FRST.STD_CLS_MAP 
+		 WHERE CLS_INFO_ID = #{classInfoID}
+		   AND STD_ID = #{studentID}
+		]]>
+	</select>
+	
+	<insert id="registerStudentClassMappingInfo">
+		<![CDATA[
+		INSERT /* RegisterStudentClassMappingInfo */
+		  INTO FRST.STD_CLS_MAP 
+		     ( CLS_INFO_ID 
+		     , STD_ID
+		     , SCR_ID 
+		     , STCD
+		     , FRST_REG_DT
+		     , FRST_REG_TIME 
+		     , LAST_CHNG_DT 
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{classInfoID}
+		     , #{studentID}
+		     , COALESCE(#{scoreID}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+	
+	<update id="updateStudentClassMappingInfo">
+		<![CDATA[
+		UPDATE /* UpdateStudentClassMappingInfo */
+		       FRST.STD_CLS_MAP 
+		   SET STD_ID = COALESCE(#{studentID}, STD_ID)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE CLS_INFO_ID = #{classInfoID}
+		   AND STD_ID = #{studentID}
+		]]>
+	</update>
+	
+</mapper>

@@ -9,8 +9,9 @@ import lombok.Getter;
 public enum UserStatusCode {
 
 	ACTIVE("01", "Active"),
-	LOCK("02", "Lock"),
-	INACTIVE("09", "InActive");
+	DELETE("02", "Delete"),
+	LOCK("03", "Lock"),
+	INACTIVE("09", "Inactive");
 	
 	private String value;
 	private String description;

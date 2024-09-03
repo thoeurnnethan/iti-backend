@@ -7,4 +7,6 @@ public interface UserAuthenticationService {
 	
 	public MData userLogin(MData param) throws MException;
 
+	public MData userLogout(MData param) throws MException;
+
 }

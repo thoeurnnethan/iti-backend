@@ -21,6 +21,34 @@
 		 ORDER BY SEQNO
 		]]>
 	</select>
+
+	<select id="retrieveStudentParentDetail" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveStudentParentDetail */
+		       STD_ID                      AS "studentID"
+		     , SEQNO                       AS "seqNo"
+		     , FRST_NM                     AS "firstName"
+		     , LAST_NM                     AS "lastName"
+		     , GENDER                      AS "gender"
+		     , JOB                         AS "job"
+		     , ADDR                        AS "address"
+		     , PHONE                       AS "phone"
+		  FROM FRST.STD_PRNT_DETAIL
+		 WHERE STD_ID = #{studentID}
+		   AND SEQNO = #{seqNo}
+		]]>
+	</select>
+
+	<select id="retrieveLatestParentSeqNo" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveLatestParentSeqNo */
+		       SEQNO                       AS "seqNo"
+		  FROM FRST.STD_PRNT_DETAIL
+		 WHERE STD_ID = #{studentID}
+		 ORDER BY SEQNO DESC 
+		 LIMIT 1
+		]]>
+	</select>
 	
 	<insert id="registerStudentParentDetail">
 		<![CDATA[
@@ -54,15 +82,18 @@
 		]]>
 	</insert>
 
-	<update id="updateNewsEventff">
+	<update id="updateStudentParentDetail">
 		<![CDATA[
-		UPDATE /* UpdateNewsEvent */
-		       FRST.NEWS_EVENT 
-		   SET TITLE = COALESCE(#{title}, TITLE)
-		     , CONTENT_HTML = COALESCE(#{contentHtml}, CONTENT_HTML)
-		     , CONTENT_DESC = COALESCE(#{contentDesc}, CONTENT_DESC)
-		     , STCD = COALESCE(#{statusCode}, STCD)
-		 WHERE NEVNT_ID = #{newsEventID}
+		UPDATE /* UpdateStudentParentDetail */
+		       FRST.STD_PRNT_DETAIL 
+		   SET FRST_NM = COALESCE(#{firstName}, FRST_NM)
+		     , LAST_NM = COALESCE(#{lastName}, LAST_NM)
+		     , GENDER = COALESCE(#{gender}, GENDER)
+		     , JOB = COALESCE(#{job}, JOB)
+		     , ADDR = COALESCE(#{address}, ADDR)
+		     , PHONE = COALESCE(#{phone}, PHONE)
+		 WHERE STD_ID = #{studentID}
+		   AND SEQNO = #{seqNo}
 		]]>
 	</update>
 

@@ -8,4 +8,7 @@ public interface StudentParentDetailMapper {
 	
 	public int registerStudentParentDetail(MData param) throws MException;
 	public MMultiData retrieveStudentParentDetailList(MData param) throws MException;
+	public MData retrieveStudentParentDetail(MData param) throws MException;
+	public int updateStudentParentDetail(MData parent) throws MException;
+	public MData retrieveLatestParentSeqNo(MData param) throws MException;
 }

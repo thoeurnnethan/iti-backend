@@ -26,6 +26,16 @@ public class ClassInformationMapperImpl implements ClassInformationMapper {
 	}
 
 	@Override
+	public MMultiData retrieveClassInformationListForDownload(MData param) throws MException {
+		return channelDBDao.selectList("retrieveClassInformationListForDownload", param);
+	}
+
+	@Override
+	public MMultiData retrieveClassInformationStudentList(MData param) throws MException {
+		return channelDBDao.selectList("retrieveClassInformationStudentList", param);
+	}
+
+	@Override
 	public int registerClassInformation(MData param) throws MException {
 		return channelDBDao.insert("registerClassInformation", param);
 	}
@@ -36,13 +46,18 @@ public class ClassInformationMapperImpl implements ClassInformationMapper {
 	}
 
 	@Override
-	public MData retrieveLastNewsEventID(MData param) throws MException {
-		return channelDBDao.selectOne("retrieveLastNewsEventID", param);
+	public MData retrieveLastClassID(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveLastClassID", param);
 	}
 
 	@Override
 	public int updateClassInformation(MData param) throws MException {
 		return channelDBDao.update("updateClassInformation", param);
+	}
+
+	@Override
+	public MData retrieveClassInformationDetailByClassInfoID(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveClassInformationDetailByClassInfoID", param);
 	}
 	
 }

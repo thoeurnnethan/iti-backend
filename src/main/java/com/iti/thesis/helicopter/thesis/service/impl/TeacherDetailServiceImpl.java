@@ -3,6 +3,9 @@ package com.iti.thesis.helicopter.thesis.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.iti.thesis.helicopter.thesis.constant.ConstantCodePrefix;
+import com.iti.thesis.helicopter.thesis.constant.StatusCode;
+import com.iti.thesis.helicopter.thesis.constant.UserRoleCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
@@ -10,105 +13,147 @@ import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
 import com.iti.thesis.helicopter.thesis.db.service.TeacherDetailMapper;
+import com.iti.thesis.helicopter.thesis.db.service.TeacherQualificationHistoryMapper;
+import com.iti.thesis.helicopter.thesis.service.DepartmentManagementService;
 import com.iti.thesis.helicopter.thesis.service.TeacherDetailService;
+import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Service
-@Slf4j
 public class TeacherDetailServiceImpl implements TeacherDetailService {
 	
 	@Autowired
-	private TeacherDetailMapper			teacherDetailMapper;
-	
-	@Override
-	public MMultiData retrieveEmployeeList(MData param) throws MException {
-		MMultiData outputData = new MMultiData();
-		try {
-			outputData = teacherDetailMapper.retrieveEmployeeList(param);
-		} catch (MException e) {
-			log.error(e.getMessage(), e);
-			throw e;
-		} catch (Exception e){
-			throw e;
-		}
-		return outputData;
-	}
-
-	@Override
-	public MData retrieveEmployeeTotalCount(MData param) throws MException {
-		try {
-			return teacherDetailMapper.retrieveEmployeeTotalCount(param);
-		} catch (MException e) {
-			log.error(e.getMessage(), e);
-			throw e;
-		} catch (Exception e){
-			throw e;
-		}
-	}
+	private TeacherDetailMapper					teacherDetailMapper;
+	@Autowired
+	private TeacherQualificationHistoryMapper	teacherQualificationHistoryMapper;
+	@Autowired
+	private DepartmentManagementService			departmentManagementService;
 	
 	@Override
 	public MData registerTeacherDetail(MData param) {
 		try {
-			int lastTeacherID = this.setTeacherID(param);
-			param.setInt("teacherID", lastTeacherID);
+			MValidatorUtil.validate(param, "qualificationList");
+			String tacherID = this.getLastTeacherID(param);
+			param.setString("teacherID", tacherID);
+			
+			// Register Teacher Detail
 			teacherDetailMapper.registerTeacherDetail(param);
+			
+			if(!MStringUtil.isEmpty(param.getString("departmentID"))) {
+				MMultiData teacherList = new MMultiData();
+				param.setString("roleCode", param.getString("roleID").equals("03") ? "02" : "01");
+				teacherList.addMData(param);
+				MData teacherClassMappingParam = new MData();
+				teacherClassMappingParam.setString("departmentID", param.getString("departmentID"));
+				teacherClassMappingParam.setMMultiData("teacherList", teacherList);
+				departmentManagementService.registerDepartmentManagement(teacherClassMappingParam, true);
+			}
+			
+			// Register Teacher Detail
+			int qualSeqNo = 0;
+			for(MData qual : param.getMMultiData("qualificationList").toListMData()) {
+				qualSeqNo ++;
+				qual.setString("teacherID", tacherID);
+				qual.setInt("seqNo", qualSeqNo);
+				qual.setString("statusCode", StatusCode.ACTIVE.getValue());
+				teacherQualificationHistoryMapper.registerTeacherQualificationHistory(qual);
+			}
 			return param;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
 	}
 	
-	private int setTeacherID(MData param) {
-		int result = 0;
+	private String getLastTeacherID(MData param) {
+		String	prefix = MStringUtil.EMPTY;
+		int		result = 0;
 		try {
-			MData lastTeacherID	= teacherDetailMapper.retrieveLastTeacherID(param);
-			result				= lastTeacherID.getInt("lastTeacherID");
-			result++;
+			String userRole = param.getString("roleID");
+			if(UserRoleCode.ADMIN.getValue().equals(userRole)) {
+				prefix = ConstantCodePrefix.ADMIN.getValue();
+			}else if(UserRoleCode.DEP_MANAGER.getValue().equals(userRole)) {
+				prefix = ConstantCodePrefix.DEPARTENT_MGT.getValue();
+			}else {
+				prefix = ConstantCodePrefix.TEACHER.getValue();
+			}
+			param.setString("prefix", prefix);
+			MData	lastTeacherID	= teacherDetailMapper.retrieveLastTeacherID(param);
+			String	teacherID		= lastTeacherID.getString("teacherID");
+			teacherID = teacherID.substring(prefix.length(), teacherID.length());
+			result			= Integer.valueOf(teacherID);
+			result ++;
 		} catch (MNotFoundException e) {
 			result = 1001;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
-		return result;
+		return prefix + String.valueOf(String.format("%04d", result));
 	}
 
 	@Override
-	public MData retrieveEmployeeDetail(MData param) throws MException {
-		MData outputData = new MData();
+	public MData retrieveTeacherDetail(MData param) throws MException {
 		try {
-			outputData = teacherDetailMapper.retrieveEmployeeDetail(param);
+			MData outputData = new MData();
+			MValidatorUtil.validate(param, "teacherID");
+			outputData.setMMultiData("qualificationList", teacherQualificationHistoryMapper.retrieveListTeacherQualificationHistory(param));
+			return outputData;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
-		return outputData;
 	}
 
 	@Override
-	public int updateEmployee(MData param) throws MException {
+	public void updateTeacherDetail(MData param) throws MException {
 		try {
-			MValidatorUtil.validate(param, "studentID");
-			MData employeeInfo = this.retrieveEmployeeDetail(param);
-			if(!employeeInfo.isEmpty()) {
-				return teacherDetailMapper.updateEmployee(param);
+			MValidatorUtil.validate(param, "teacherID");
+			for(MData qual : param.getMMultiData("qualificationList").toListMData()) {
+				qual.setString("teacherID", param.getString("teacherID"));
+				boolean isExist = this.isQualificationExist(qual);
+				if(isExist) {
+					teacherQualificationHistoryMapper.updateTeacherQualification(qual);
+				}else {
+					qual.setInt("seqNo", this.retrieveLastedSeqNo(param));
+					teacherQualificationHistoryMapper.registerTeacherQualificationHistory(qual);
+				}
 			}
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		}
-		return 0;
+	}
+	
+	private boolean isQualificationExist(MData param) {
+		try {
+			teacherQualificationHistoryMapper.retrieveTeacherQualificationHistoryDetail(param);
+			return true;
+		} catch (MNotFoundException e) {
+			return false;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+	
+	private int retrieveLastedSeqNo(MData param) {
+		try {
+			MData	seqNo	= teacherQualificationHistoryMapper.retrieveLatestQualifySeqNo(param);
+			int		result	= seqNo.getInt("seqNo");
+			return ++result;
+		} catch (MNotFoundException e) {
+			return 1;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
 	}
 
 }

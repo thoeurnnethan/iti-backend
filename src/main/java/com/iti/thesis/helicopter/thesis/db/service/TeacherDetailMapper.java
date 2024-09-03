@@ -8,7 +8,7 @@ public interface TeacherDetailMapper {
 
 	public MMultiData retrieveEmployeeList(MData param) throws MException;
 	public int registerTeacherDetail(MData param) throws MException;
-	public MData retrieveEmployeeDetail(MData param) throws MException;
+	public MData retrieveTeacherDetail(MData param) throws MException;
 	public MData retrieveLastTeacherID(MData param) throws MException;
 	public MData retrieveEmployeeTotalCount(MData param) throws MException;
 	public int updateEmployee(MData param) throws MException;

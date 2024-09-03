@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.RoomInformationMapper">
+	
+	<select id="retrieveRoomInformationList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveRoomInformationList */
+		       RM_ID                    AS "roomID"
+		     , RM_NM                    AS "roomName"
+		     , RM_DESC                  AS "roomDesc"
+		     , BUILDING                 AS "building"
+		     , FLOOR                    AS "floor"
+		     , STCD                     AS "statusCode"
+		     , FRST_REG_DT              AS "firstRegisterDate"
+		     , FRST_REG_TIME            AS "firstRegisterTime"
+		     , LAST_CHNG_DT             AS "lastChangeDate"
+		     , LAST_CHNG_TIME           AS "lastChangeTime"
+		  FROM FRST.RM_INFO
+		 WHERE (RM_NM ILIKE '%' || #{searchKey} || '%'
+		    OR RM_ID ILIKE '%' || #{searchKey} || '%'
+		    OR RM_DESC ILIKE '%' || #{searchKey} || '%'
+		    OR BUILDING ILIKE '%' || #{searchKey} || '%'
+		    OR FLOOR ILIKE '%' || #{searchKey} || '%')
+		   AND STCD <> '02'
+		 ORDER BY STCD 
+		        , RM_ID DESC 
+		 LIMIT #{limit}
+		OFFSET #{offset}
+		]]>
+	</select>
+	
+	<select id="retrieveRoomInformationTotalCount" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveRoomInformationTotalCount */
+		       COUNT(*)                   AS "totalCount"
+		  FROM FRST.RM_INFO
+		 WHERE (RM_NM ILIKE '%' || #{searchKey} || '%'
+		    OR RM_ID ILIKE '%' || #{searchKey} || '%'
+		    OR RM_DESC ILIKE '%' || #{searchKey} || '%'
+		    OR BUILDING ILIKE '%' || #{searchKey} || '%'
+		    OR FLOOR ILIKE '%' || #{searchKey} || '%')
+		   AND STCD <> '02'
+		]]>
+	</select>
+	
+	<select id="retrieveRoomInformationListForDownload" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveRoomInformationListForDownload */
+		       RM_ID                    AS "roomID"
+		     , RM_NM                    AS "roomName"
+		     , RM_DESC                  AS "roomDesc"
+		     , BUILDING                 AS "building"
+		     , FLOOR                    AS "floor"
+		     , STCD                     AS "statusCode"
+		     , FRST_REG_DT              AS "firstRegisterDate"
+		     , FRST_REG_TIME            AS "firstRegisterTime"
+		     , LAST_CHNG_DT             AS "lastChangeDate"
+		     , LAST_CHNG_TIME           AS "lastChangeTime"
+		  FROM FRST.RM_INFO
+		 WHERE (RM_NM ILIKE '%' || #{searchKey} || '%'
+		    OR RM_ID ILIKE '%' || #{searchKey} || '%'
+		    OR RM_DESC ILIKE '%' || #{searchKey} || '%'
+		    OR BUILDING ILIKE '%' || #{searchKey} || '%'
+		    OR FLOOR ILIKE '%' || #{searchKey} || '%')
+		   AND STCD <> '02'
+		 ORDER BY STCD 
+		        , RM_ID DESC 
+		]]>
+	</select>
+	
+	<select id="retrieveRoomInformationDetail" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveRoomInformationDetail */
+		       RM_ID                         AS "roomID"
+		     , RM_NM                         AS "roomName"
+		     , RM_DESC                       AS "roomDesc"
+		     , BUILDING                      AS "building"
+		     , FLOOR                         AS "floor"
+		     , STCD                          AS "statusCode"
+		  FROM FRST.RM_INFO 
+		 WHERE RM_ID = #{roomID}
+		   AND STCD <> '02'
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<select id="retrieveLastRoomID" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveLastRoomID */
+		       RM_ID                    AS "roomID"
+		  FROM FRST.RM_INFO
+		 ORDER BY RM_ID DESC 
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<insert id="registerRoomInformation">
+		<![CDATA[
+		INSERT /* RegisterRoomInformation */
+		  INTO FRST.RM_INFO 
+		     ( RM_ID 
+		     , RM_NM 
+		     , RM_DESC 
+		     , BUILDING 
+		     , FLOOR 
+		     , STCD 
+		     , FRST_REG_DT 
+		     , FRST_REG_TIME
+		     , LAST_CHNG_DT
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{roomID}
+		     , COALESCE(#{roomName}, '')
+		     , COALESCE(#{roomDesc}, '')
+		     , COALESCE(#{building}, '')
+		     , COALESCE(#{floor}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateRoomInformation">
+		<![CDATA[
+		UPDATE /* UpdateRoomInformation */
+		       FRST.RM_INFO 
+		   SET RM_NM = COALESCE(#{roomName}, RM_NM)
+		     , RM_DESC = COALESCE(#{roomDesc}, RM_DESC)
+		     , BUILDING = COALESCE(#{building}, BUILDING)
+		     , FLOOR = COALESCE(#{floor}, FLOOR)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE RM_ID = #{roomID}
+		]]>
+	</update>
+
+</mapper>

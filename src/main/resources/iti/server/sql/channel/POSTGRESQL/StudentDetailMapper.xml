@@ -62,7 +62,6 @@
 		SELECT /* GetLastStudentID */
 		       STD_ID                      AS "studentID"
 		  FROM FRST.STD_DETAIL
-		 WHERE STCD <> '09'
 		 ORDER BY STD_ID DESC
 		 LIMIT 1
 		]]>
@@ -73,36 +72,12 @@
 		INSERT /* RegisterStudentDetail */
 		  INTO FRST.STD_DETAIL
 		     ( STD_ID 
-		     , FRST_NM 
-		     , LAST_NM 
-		     , NICK_NM 
-		     , GENDER 
-		     , DOB 
-		     , POB 
-		     , ADDR 
-		     , PHONE 
-		     , EMAIL 
-		     , PASSWD 
-		     , IMG_URL 
-		     , STCD 
 		     , FRST_REG_DT
 		     , FRST_REG_TIME 
 		     , LAST_CHNG_DT 
 		     , LAST_CHNG_TIME)
 		VALUES 
 		     ( #{studentID}
-		     , COALESCE(#{firstName}, '')
-		     , COALESCE(#{lastName}, '')
-		     , COALESCE(#{nickname}, '')
-		     , COALESCE(#{gender}, '')
-		     , COALESCE(#{dateOfBirth}, '')
-		     , COALESCE(#{placeOfBirth}, '')
-		     , COALESCE(#{address}, '')
-		     , COALESCE(#{phone}, '')
-		     , COALESCE(#{email}, '')
-		     , COALESCE(#{passwd}, '')
-		     , COALESCE(#{imageUrl}, '')
-		     , COALESCE(#{statusCode}, '')
 		     , COALESCE(#{firstRegisterDate}, '')
 		     , COALESCE(#{firstRegisterTime}, '')
 		     , COALESCE(#{lastChangeDate}, '')

@@ -1,5 +1,8 @@
 package com.iti.thesis.helicopter.thesis.service.impl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import com.iti.thesis.helicopter.thesis.constant.UserStatusCode;
 import com.iti.thesis.helicopter.thesis.constant.YnTypeCode;
 import com.iti.thesis.helicopter.thesis.context.builder.SessionDataBuilder;
 import com.iti.thesis.helicopter.thesis.context.parameter.MContextParameter;
+import com.iti.thesis.helicopter.thesis.context.util.MHttpRequestUtil;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
@@ -22,9 +26,6 @@ import com.iti.thesis.helicopter.thesis.util.MPasswordUtil;
 import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Service
 public class UserAuthenticationServiceImpl implements UserAuthenticationService {
 
@@ -40,8 +41,9 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		MData	response				= new MData();
 		MData	userInfo				= new MData();
 		int		userPasswdErrorCount	= 0;
-		boolean isIncorrectPasswd		= false;
-		boolean isUserLock				= false;
+		boolean	isIncorrectPasswd		= false;
+		boolean	isUserLock				= false;
+		String	loginByUserYn			= MStringUtil.EMPTY;
 		try {
 			MValidatorUtil.validate(param, "userID", "password");
 			
@@ -50,11 +52,12 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			String statusCode		= userInfo.getString("statusCode");
 			String lockDateTime		= userInfo.getString("lockDateTime");
 			userPasswdErrorCount	= userInfo.getInt("userPasswordErrorCount");
+			loginByUserYn			= userInfo.getString("loginByUserYn");
 			String	userPwd			= userInfo.getString("passwd");
 			String	password		= param.getString("password");
 			
 			// If user is already login, then password need to encrypt
-			if(YnTypeCode.YES.getValue().equals(userInfo.getString("loginByUserYn"))) {
+			if(!MStringUtil.isEmpty(loginByUserYn) && YnTypeCode.YES.getValue().equals(loginByUserYn)) {
 				password	= MPasswordUtil.oneWayEnc(password, MStringUtil.EMPTY);
 			}
 			
@@ -87,105 +90,69 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				}
 				throw new MBizException(ErrorCode.INCORRECT_PASSWORD.getValue(), ErrorCode.INCORRECT_PASSWORD.getDescription());
 			} else {
-				if(MStringUtil.isEmpty(userInfo.getString("firstLoginDate"))) {
-					userInfo.setString("firstLoginDate", MDateUtil.getCurrentDate());
-				}
-//				updateSessionInfoData(param);
-				userInfo.setString("lastLoginDate", MDateUtil.getCurrentDate());
-				userInfoService.updateUserInfoDetail(userInfo);
-				response.appendFrom(userInfo);
 				// Change Context data
-				log.error(MContextParameter.getSessionContext().toString());
 				MData sessionData = SessionDataBuilder.create()
 						.loginUserId(userInfo.getString("userID"))
 						.userRoleID(userInfo.getString("roleID"))
 						.build();
 				// Update session data
 				MContextParameter.setSessionContext(sessionData);
-				log.error(MContextParameter.getSessionContext().toString());
 				SessionUtil.updateSession(sessionData);
-				log.error(SessionUtil.getSessionId());
-				log.error(SessionUtil.isLoggedin()+"");
-				MData session = MContextParameter.getSessionContext();
-				response.setMData("session", session);
+				MHttpRequestUtil.setSessionAttribute(sessionData);
 				response.appendFrom(userInfo);
 			}
-			
+			return response;
+		} catch (MNotFoundException e) {
+			throw new MBizException(ErrorCode.USER_NOT_FOUND.getValue(), ErrorCode.USER_NOT_FOUND.getDescription());
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
 		} finally {
-			MData errorData = new MData();
-			errorData.setString("userID", userInfo.getString("userID"));
-			errorData.setString("roleID", userInfo.getString("roleID"));
-			errorData.setString("lockDateTime", userInfo.getString("lockDateTime"));
-			errorData.setString("statusCode", userInfo.getString("statusCode"));
+			MData updateData = new MData();
+			updateData.setString("userID", userInfo.getString("userID"));
+			updateData.setString("roleID", userInfo.getString("roleID"));
+			updateData.setString("lockDateTime", userInfo.getString("lockDateTime"));
+			updateData.setString("statusCode", userInfo.getString("statusCode"));
+			updateData.setInt("userPasswordErrorCount", 0);
+			// Update Login fail
 			if(isIncorrectPasswd){
-				errorData.setInt("userPasswordErrorCount", userPasswdErrorCount);
+				updateData.setInt("userPasswordErrorCount", userPasswdErrorCount);
 				if(isUserLock) {
-					errorData.setString("lockDateTime", MDateUtil.getCurrentDateTime());
-					errorData.setString("statusCode", UserStatusCode.LOCK.getValue());
+					updateData.setString("lockDateTime", MDateUtil.getCurrentDateTime());
+					updateData.setString("statusCode", UserStatusCode.LOCK.getValue());
 				}
+				userInfoService.updateUserLoginInfo(updateData);
 			}
-			userInfoService.updateUserInfoDetail(errorData);
-		}
-		return response;
-	}
-	
-	private MData updateSessionInfoData(MData param) {
-		MData sessionMData = new MData();
-		try {
-			MValidatorUtil.validate(param, "userID");
-			MData	userLoginInfoMData	= new MData();
-			try {
-				userLoginInfoMData	= userInfoService.retrieveUserInfoDetail(param);
-			} catch (MNotFoundException e) {
-				userLoginInfoMData	= new MData();
+			// Update Login Success
+			else {
+				updateData.setString("lockDateTime", MStringUtil.EMPTY);
+				updateData.setString("lastLoginDate", MDateUtil.getCurrentDate());
+				// Update in case login first time
+				if(!MStringUtil.isEmpty(loginByUserYn) && !YnTypeCode.YES.getValue().equals(loginByUserYn)) {
+					updateData.setString("firstLoginDate", MDateUtil.getCurrentDate());
+					updateData.setString("loginByUserYn", YnTypeCode.NO.getValue());
+					updateData.setString("newPassword", userInfo.getString("passwd"));
+				}
+				userInfoService.updateUserLoginInfo(updateData);
 			}
-			
-			//=========================================================
-			//# Start Creating Session
-			//=========================================================
-			String userID = param.getString("userID");
-			sessionMData = SessionDataBuilder.create()
-					.loginUserId(userID)
-					.build();
-			//change context data
-			MContextParameter.setSessionContext(sessionMData);
-			//update session data
-			SessionUtil.updateSession(sessionMData);
-			log.info("Write SessionID>>>{}", SessionUtil.getSessionId());
-			log.info("Write Data>>>{}", sessionMData);
-			
-			/* kill duplicated session */
-			String	sessionId = userLoginInfoMData.getString("loginUuID");
-			log.info("Trying Read SesionID <<< {}", sessionId);
-			//#########################################################
-			//# End Creating Session
-			//#########################################################
-			
-			MData	userLoginInfo			= new MData();
-//			MData	userLoginInfoForUpdate	= retrieveUserLoginInfoForUpdate(param);
-			userLoginInfo.setString("userID", param.getString("userID"));
-			userLoginInfo.setString("deviceID", param.getString("deviceID"));
-			userLoginInfo.setString("loginUuID", SessionUtil.getSessionId());
-			userLoginInfo.setString("lastLoginDate", MDateUtil.getCurrentDate());
-			userLoginInfo.setString("lastLoginTime", MDateUtil.getCurrentTime());
-			
-		} catch (MException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new MBizException("00017", "Create Session Uncaught Exception Error");
 		}
-		
-		return sessionMData;
 	}
 	
 	private boolean isInLockTime(String lockDateTime) {
 		String currentDateTime = MDateUtil.getCurrentDateTime();
 		String lockDateTimeAfterAdd5Mn = MDateUtil.addTime(lockDateTime, 0, userLockTime, 0);
 		return MDateUtil.compareTo(lockDateTimeAfterAdd5Mn, currentDateTime) > 0;
+	}
+
+	@Override
+	public MData userLogout(MData param) throws MException {
+		HttpServletRequest request = MHttpRequestUtil.getCurrentRequest();
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+		return param;
 	}
 
 }

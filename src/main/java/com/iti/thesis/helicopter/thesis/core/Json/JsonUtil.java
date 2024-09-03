@@ -19,65 +19,26 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.POJONode;
 import com.iti.thesis.helicopter.thesis.util.StringUtil;
 
+
+
+@SuppressWarnings("deprecation")
 public abstract class JsonUtil {
-   private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 
-   public JsonUtil() {
-   }
+	public JsonUtil() {
+	}
 
-   public static ObjectMapper getObjectMapper() {
-      return objectMapper;
-   }
+	public static ObjectMapper getObjectMapper() {
+		return objectMapper;
+	}
 
-   public static JsonNodeFactory getNodeFactory() {
-      return objectMapper.getNodeFactory();
-   }
+	public static JsonNodeFactory getNodeFactory() {
+		return objectMapper.getNodeFactory();
+	}
 
-   public static ObjectNode objectNode() {
-      return getNodeFactory().objectNode();
-   }
-
-//   public static String toJson(Map<String, Object> map) {
-//      StringWriter out = new StringWriter();
-//
-//      String var3;
-//      try {
-//         objectMapper.writeValue(out, map);
-//         String var2 = out.toString();
-//         return var2;
-//      } catch (Exception var7) {
-//         var3 = "{}";
-//      } finally {
-//         IOUtil.closeQuietly(out);
-//      }
-//
-//      return var3;
-//   }
-
-//   public static String toJson(Object pojo) {
-//      return toJson(pojo, false);
-//   }
-
-//   public static String toJson(Object pojo, boolean prettyPrint) {
-//      StringWriter sw = new StringWriter();
-//
-//      String var4;
-//      try {
-//         JsonGenerator jg = objectMapper.getJsonFactory().createJsonGenerator(sw);
-//         if (prettyPrint) {
-//            jg.useDefaultPrettyPrinter();
-//         }
-//
-//         objectMapper.writeValue(jg, pojo);
-//         return sw.toString();
-//      } catch (Exception var8) {
-//         var4 = "{}";
-//      } finally {
-//         IOUtil.closeQuietly(sw);
-//      }
-//
-//      return var4;
-//   }
+	public static ObjectNode objectNode() {
+		return getNodeFactory().objectNode();
+	}
 
 	public static <T> T toObject(String json, Class<T> clazz) throws IOException {
 		try {
@@ -187,7 +148,7 @@ public abstract class JsonUtil {
 			if (path.length < 2) {
 				return baseNode.path(path[0]);
 			} else {
-				ArrayList<String> list = new ArrayList(path.length);
+				ArrayList<String> list = new ArrayList<>(path.length);
 				String[] var3 = path;
 				int var4 = path.length;
 				for(int var5 = 0; var5 < var4; ++var5) {

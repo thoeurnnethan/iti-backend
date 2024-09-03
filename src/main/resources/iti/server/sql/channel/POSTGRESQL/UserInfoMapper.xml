@@ -5,11 +5,12 @@
 
 <mapper namespace="com.iti.thesis.helicopter.thesis.db.service.StudentDetailMapper">
 
-	<select id="registerUserInfoList" resultType="MData">
+	<select id="retrieveUserInfoList" resultType="MData">
 		<![CDATA[
-		SELECT /* RegisterUserInfoList */
+		SELECT /* RetrieveUserInfoList */
 		       USER_ID                     AS "userID"
 		     , ROLE_ID                     AS "roleID"
+		     , SPEC_ID                     AS "specificID"
 		     , FRST_NM                     AS "firstName"
 		     , LAST_NM                     AS "lastName"
 		     , NICK_NM                     AS "nickName"
@@ -21,19 +22,76 @@
 		     , EMAIL                       AS "email"
 		     , PASSWD                      AS "passwd"
 		     , IMG_URL                     AS "imageUrl"
-		     , FRST_LOGIN_DT               AS "firstLoginDate"
-		     , LAST_LOGIN_DT               AS "lastLoginDate"
-		     , SEC_KEY                     AS "secretKey"
 		     , STCD                        AS "statusCode"
+		     , LOGIN_BY_USER_YN            AS "loginByUserYn"
 		  FROM FRST.USER_INFO 
-		 WHERE FRST_NM ILIKE '%' || COALESCE(#{firstName}, '') || '%'
-		   AND LAST_NM ILIKE '%' || COALESCE(#{lastName}, '') || '%'
-		   AND NICK_NM ILIKE '%' || COALESCE(#{nickName}, '') || '%'
-		   AND PHONE ILIKE '%' || COALESCE(#{phone}, '') || '%'
-		   AND STCD <> '09'
-		 ORDER BY (FRST_NM,LAST_NM) ASC
+		 WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR LAST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR NICK_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
+		   AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
+		   AND ('' = COALESCE(#{userID}, '') OR SPEC_ID = #{userID})
+		   AND STCD <> '02'
+		 ORDER BY (FRST_REG_DT,FRST_REG_TIME) DESC
+		        , ROLE_ID DESC
+		        , SPEC_ID DESC 
 		 LIMIT #{limit}
 		OFFSET #{offset}
+		]]>
+	</select>
+	
+	<select id="retrieveUserInfoTotalCount" resultType="MData">
+		<![CDATA[
+		    WITH FilteredUsers AS (
+		  SELECT *
+		    FROM FRST.USER_INFO
+		   WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		      OR LAST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		      OR NICK_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		      OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		     AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
+		     AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
+		     AND STCD <> '02'
+		)
+		SELECT /* RetrieveUserInfoTotalCount */
+		       COUNT(*)                                         AS "totalCount"
+		     , SUM(CASE WHEN GENDER = 'M' THEN 1 ELSE 0 END)    AS "totalMale"
+		     , SUM(CASE WHEN GENDER = 'F' THEN 1 ELSE 0 END)    AS "totalFemale"
+		  FROM FilteredUsers
+		]]>
+	</select>
+	
+	<select id="retrieveUserInfoListForDownload" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveUserInfoListForDownload */
+		       USER_ID                     AS "userID"
+		     , ROLE_ID                     AS "roleID"
+		     , SPEC_ID                     AS "specificID"
+		     , FRST_NM                     AS "firstName"
+		     , LAST_NM                     AS "lastName"
+		     , NICK_NM                     AS "nickName"
+		     , GENDER                      AS "gender"
+		     , DOB                         AS "dateOfBirth"
+		     , POB                         AS "placeOfBirth"
+		     , ADDR                        AS "address"
+		     , PHONE                       AS "phone"
+		     , EMAIL                       AS "email"
+		     , PASSWD                      AS "passwd"
+		     , IMG_URL                     AS "imageUrl"
+		     , STCD                        AS "statusCode"
+		     , LOGIN_BY_USER_YN            AS "loginByUserYn"
+		  FROM FRST.USER_INFO 
+		 WHERE (FRST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR LAST_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR NICK_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
+		   AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
+		   AND STCD <> '02'
+		 ORDER BY (FRST_REG_DT,FRST_REG_TIME) DESC
+		        , ROLE_ID DESC
+		        , SPEC_ID DESC 
 		]]>
 	</select>
 	
@@ -56,47 +114,99 @@
 		     , IMG_URL                     AS "imageUrl"
 		     , FRST_LOGIN_DT               AS "firstLoginDate"
 		     , LAST_LOGIN_DT               AS "lastLoginDate"
-		     , SEC_KEY                     AS "secretKey"
-		     , PASSWD_ERR_CT               AS "userPasswordErrorCount"
+		     , PASS_ERR_CT                 AS "userPasswordErrorCount"
 		     , LOCK_DT                     AS "lockDateTime"
 		     , LOGIN_BY_USER_YN            AS "loginByUserYn"
 		     , STCD                        AS "statusCode"
 		  FROM FRST.USER_INFO 
 		 WHERE USER_ID = #{userID}
-		   AND STCD <> '09'
+		   AND STCD <> '02'
 		]]>
 	</select>
 	
-	<select id="retrieveUserInfoDetailByUserIDAndRoleID" resultType="MData">
+	<select id="retrieveUserInfoAllStatus" resultType="MData">
 		<![CDATA[
-		SELECT /* RetrieveUserInfoDetailByUserID */
+		SELECT /* RetrieveUserInfoAllStatus */
 		       USER_ID                     AS "userID"
 		     , ROLE_ID                     AS "roleID"
 		  FROM FRST.USER_INFO 
 		 WHERE USER_ID = #{userID}
-		   AND ROLE_ID = #{roleID}
 		]]>
 	</select>
 	
-	<update id="updateUserInfoDetail">
+	<update id="updateUserInfo">
 		<![CDATA[
-		UPDATE /* UpdateUserInfoDetail */
+		UPDATE /* UpdateUserInfo */
 		       FRST.USER_INFO
-		   SET PASSWD_ERR_CT = COALESCE(#{userPasswordErrorCount}, PASSWD_ERR_CT)
+		   SET FRST_NM = COALESCE(#{firstName}, FRST_NM)
+		     , LAST_NM = COALESCE(#{lastName}, LAST_NM)
+		     , NICK_NM = COALESCE(#{nickName}, NICK_NM)
+		     , GENDER = COALESCE(#{gender}, GENDER)
+		     , DOB = COALESCE(#{dateOfBirth}, DOB)
+		     , POB = COALESCE(#{placeOfBirth}, POB)
+		     , ADDR = COALESCE(#{address}, ADDR)
+		     , PHONE = COALESCE(#{phone}, PHONE)
+		     , EMAIL = COALESCE(#{address}, EMAIL)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME  = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE USER_ID = #{userID}
+		   AND SPEC_ID = #{specificID}
+		]]>
+	</update>
+	
+	<update id="updateUserLoginInfo">
+		<![CDATA[
+		UPDATE /* UpdateUserLoginInfo */
+		       FRST.USER_INFO
+		   SET PASS_ERR_CT = COALESCE(#{userPasswordErrorCount}, PASS_ERR_CT)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LOCK_DT = COALESCE(#{lockDateTime}, LOCK_DT)
 		     , FRST_LOGIN_DT = COALESCE(#{firstLoginDate}, FRST_LOGIN_DT)
 		     , LAST_LOGIN_DT = COALESCE(#{lastLoginDate}, LAST_LOGIN_DT)
+		     , LOGIN_BY_USER_YN = COALESCE(#{loginByUserYn}, LOGIN_BY_USER_YN)
+		     , PASSWD = COALESCE(#{newPassword}, PASSWD)
 		     , SPEC_ID = COALESCE(#{specificID}, SPEC_ID)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME  = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE USER_ID = #{userID}
 		   AND ROLE_ID = #{roleID}
-		   AND STCD <> '09'
 		]]>
 	</update>
 	
-	<update id="registerUserInfoDetail">
+	<update id="updateUserInfoResetPassword">
+		<![CDATA[
+		UPDATE /* UpdateUserInfoResetPassword */
+		       FRST.USER_INFO
+		   SET USER_ID = COALESCE(#{newUserID}, USER_ID)
+		     , PASSWD = COALESCE(#{newUserPasword}, PASSWD)
+		     , PASS_ERR_CT = COALESCE(#{userPasswordErrorCount}, PASS_ERR_CT)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LOCK_DT = COALESCE(#{lockDateTime}, LOCK_DT)
+		     , FRST_LOGIN_DT = COALESCE(#{firstLoginDate}, FRST_LOGIN_DT)
+		     , LAST_LOGIN_DT = COALESCE(#{lastLoginDate}, LAST_LOGIN_DT)
+		     , LOGIN_BY_USER_YN = COALESCE(#{loginByUserYn}, LOGIN_BY_USER_YN)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME  = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE USER_ID = #{userID}
+		   AND ROLE_ID = #{roleID}
+		]]>
+	</update>
+	
+	<update id="updateUserPassword">
+		<![CDATA[
+		UPDATE /* UpdateUserPassword */
+		       FRST.USER_INFO
+		   SET PASSWD = COALESCE(#{newPasswd}, PASSWD)
+		     , LOGIN_BY_USER_YN = COALESCE(#{loginByUserYn}, LOGIN_BY_USER_YN)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME  = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE USER_ID = #{userID}
+		   AND ROLE_ID = #{roleID}
+		]]>
+	</update>
+	
+	<insert id="registerUserInfoDetail">
 		<![CDATA[
 		INSERT /* registerUserInfoDetail */
 		  INTO FRST.USER_INFO
@@ -114,9 +224,11 @@
 		     , EMAIL 
 		     , PASSWD 
 		     , IMG_URL 
-		     , SEC_KEY
+		     , PASS_ERR_CT 
 		     , FRST_LOGIN_DT
 		     , LAST_LOGIN_DT 
+		     , LOGIN_BY_USER_YN 
+		     , LOCK_DT 
 		     , STCD 
 		     , FRST_REG_DT 
 		     , FRST_REG_TIME 
@@ -128,7 +240,7 @@
 		     , COALESCE(#{specificID}, '')
 		     , COALESCE(#{firstName}, '')
 		     , COALESCE(#{lastName}, '')
-		     , COALESCE(#{nickname}, '')
+		     , COALESCE(#{nickName}, '')
 		     , COALESCE(#{gender}, '')
 		     , COALESCE(#{dateOfBirth}, '')
 		     , COALESCE(#{placeOfBirth}, '')
@@ -137,15 +249,17 @@
 		     , COALESCE(#{email}, '')
 		     , COALESCE(#{passwd}, '')
 		     , COALESCE(#{imageUrl}, '')
-		     , COALESCE(#{secretKey}, '')
+		     , COALESCE(#{userPasswordErrorCount}, 0)
 		     , COALESCE(#{firstLoginDate}, '')
 		     , COALESCE(#{lastLoginDate}, '')
+		     , COALESCE(#{loginByUserYn}, '')
+		     , COALESCE(#{lockDate}, '')
 		     , COALESCE(#{statusCode}, '')
 		     , COALESCE(#{firstRegisterDate}, '')
 		     , COALESCE(#{firstRegisterTime}, '')
 		     , COALESCE(#{lastChangeDate}, '')
 		     , COALESCE(#{lastChangeTime}, ''))
 		]]>
-	</update>
+	</insert>
 
 </mapper>

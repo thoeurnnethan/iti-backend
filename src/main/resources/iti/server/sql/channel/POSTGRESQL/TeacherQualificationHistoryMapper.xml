@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.TeacherQualificationHistoryMapper">
+
+	<select id="retrieveListTeacherQualificationHistory" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveListTeacherQualificationHistory */
+		       TCH_ID                AS "teacherID"
+		     , SEQNO                 AS "seqNo"
+		     , QUAL_NM               AS "qualificationName"
+		     , QUAL_DESC             AS "qualificationDesc"
+		     , STRT_DT               AS "startDate"
+		     , END_DT                AS "endDate"
+		     , CERT_DT               AS "certificatedDate"
+		  FROM FRST.TCH_QUF_HIS
+		 WHERE TCH_ID = #{teacherID}
+		   AND STCD <> '02'
+		 ORDER BY SEQNO 
+		]]>
+	</select>
+
+	<select id="retrieveTeacherQualificationHistoryDetail" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveTeacherQualificationHistoryDetail */
+		       TCH_ID                AS "teacherID"
+		     , SEQNO                 AS "seqNo"
+		     , QUAL_NM               AS "qualificationName"
+		     , QUAL_DESC             AS "qualificationDesc"
+		     , STRT_DT               AS "startDate"
+		     , END_DT                AS "endDate"
+		  FROM FRST.TCH_QUF_HIS
+		 WHERE TCH_ID = #{teacherID}
+		   AND SEQNO = #{seqNo}
+		   AND STCD <> '02'
+		 LIMIT 1
+		]]>
+	</select>
+
+	<select id="retrieveLatestQualifySeqNo" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveLatestQualifySeqNo */
+		      SEQNO                 AS "seqNo"
+		  FROM FRST.TCH_QUF_HIS
+		 WHERE TCH_ID = #{teacherID}
+		   AND STRT_DT <> '09'
+		 ORDER BY SEQNO DESC
+		 LIMIT 1
+		]]>
+	</select>
+
+	<insert id="registerTeacherQualificationHistory">
+		<![CDATA[
+		INSERT /* RegisterTeacherQualificationHistory */
+		  INTO FRST.TCH_QUF_HIS 
+		     ( TCH_ID
+		     , SEQNO 
+		     , QUAL_NM
+		     , QUAL_DESC 
+		     , STRT_DT
+		     , END_DT 
+		     , CERT_DT
+		     , STCD 
+		     , FRST_REG_DT
+		     , FRST_REG_TIME 
+		     , LAST_CHNG_DT 
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{teacherID}
+		     , #{seqNo}
+		     , COALESCE(#{qualificationName}, '')
+		     , COALESCE(#{qualificationDesc}, '')
+		     , COALESCE(#{startDate}, '')
+		     , COALESCE(#{endDate}, '')
+		     , COALESCE(#{certificatedDate}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateTeacherQualification">
+		<![CDATA[
+		 UPDATE /* UpdateTeacherQualification */
+		       FRST.TCH_QUF_HIS
+		   SET QUAL_NM = COALESCE(#{qualificationName}, QUAL_NM)
+		     , QUAL_DESC = COALESCE(#{qualificationDesc}, QUAL_DESC)
+		     , STRT_DT = COALESCE(#{startDate}, STRT_DT)
+		     , END_DT = COALESCE(#{endDate}, END_DT)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE TCH_ID = #{teacherID}
+		   AND SEQNO = #{seqNo}
+		]]>
+	</update>
+
+</mapper>

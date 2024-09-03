@@ -8,18 +8,38 @@
 	<select id="retrieveClassInformationList" resultType="MData">
 		<![CDATA[
 		SELECT /* RetrieveClassInformationList */
-		       CLS_ID                     AS "classID"
-		     , DEPT_ID                    AS "departmentID"
-		     , CLS_NM                     AS "className"
-		     , CLS_DESC                   AS "classDesc"
-		     , YEAR_LV                    AS "yearLevel"
-		     , STCD                       AS "statusCode"
-		  FROM FRST.CLS_INFO
-		 WHERE ('' = COALESCE(#{classID}, '') OR CLS_ID = #{classID})
-		   AND ('' = COALESCE(#{departmentID}, '') OR DEPT_ID = #{departmentID})
-		   AND STCD <> '09'
-		 ORDER BY LAST_CHNG_DT DESC 
-		        , LAST_CHNG_TIME DESC 
+		       A.CLS_ID                     AS "classID"
+		     , A.CLS_INFO_ID                AS "classInfoID"
+		     , A.DEPT_ID                    AS "departmentID"
+		     , B.DEPT_NM                    AS "departmentName"
+		     , A.CLS_NM                     AS "className"
+		     , A.CLS_DESC                   AS "classDesc"
+		     , A.CLS_TYPE                   AS "classType"
+		     , A.C_YEAR                     AS "year"
+		     , A.SEMESTER                   AS "semester"
+		     , A.GENR                       AS "generation"
+		     , A.STCD                       AS "statusCode"
+		     , A.FRST_REG_DT                AS "firstRegisterDate"
+		     , A.FRST_REG_TIME              AS "firstRegisterTime"
+		     , A.LAST_CHNG_DT               AS "lastChangeDate"
+		     , A.LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.CLS_INFO A
+		  JOIN FRST.DEPT_INFO B
+		    ON A.DEPT_ID = B.DEPT_ID 
+		   AND B.STCD <> '02'
+		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND (A.CLS_ID ILIKE '%' || COALESCE(#{classID}, '') || '%')
+		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
+		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{classType}, '') OR A.CLS_TYPE = #{classType})
+		   AND A.STCD <> '02'
+		 ORDER BY A.STCD
+		        , A.DEPT_ID 
+		        , A.CLS_ID DESC
+		        , A.C_YEAR DESC 
+		        , A.SEMESTER DESC 
 		 LIMIT #{limit}
 		OFFSET #{offset}
 		]]>
@@ -28,11 +48,116 @@
 	<select id="retrieveClassInformationTotalCount" resultType="MData">
 		<![CDATA[
 		SELECT /* RetrieveClassInformationTotalCount */
-		       COUNT(*)                   AS "totalCount"
-		  FROM FRST.CLS_INFO
-		 WHERE ('' = COALESCE(#{classID}, '') OR CLS_ID = #{classID})
-		   AND ('' = COALESCE(#{departmentID}, '') OR DEPT_ID = #{departmentID})
-		   AND STCD <> '09'
+		       COUNT(*)                      AS "totalCount"
+		  FROM FRST.CLS_INFO A
+		  JOIN FRST.DEPT_INFO B
+		    ON A.DEPT_ID = B.DEPT_ID 
+		   AND B.STCD <> '02'
+		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND (A.CLS_ID ILIKE '%' || COALESCE(#{classID}, '') || '%')
+		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
+		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{classType}, '') OR A.CLS_TYPE = #{classType})
+		   AND A.STCD <> '02'
+		]]>
+	</select>
+	
+	<select id="retrieveClassInformationListForDownload" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveClassInformationListForDownload */
+		       A.CLS_ID                     AS "classID"
+		     , A.DEPT_ID                    AS "departmentID"
+		     , B.DEPT_NM                    AS "departmentName"
+		     , A.CLS_NM                     AS "className"
+		     , A.CLS_DESC                   AS "classDesc"
+		     , A.CLS_TYPE                   AS "classType"
+		     , C_YEAR                       AS "year"
+		     , GENR                         AS "generation"
+		     , SEMESTER                     AS "semester"
+		     , A.STCD                       AS "statusCode"
+		     , A.FRST_REG_DT                AS "firstRegisterDate"
+		     , A.FRST_REG_TIME              AS "firstRegisterTime"
+		     , A.LAST_CHNG_DT               AS "lastChangeDate"
+		     , A.LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.CLS_INFO A
+		  JOIN FRST.DEPT_INFO B
+		    ON A.DEPT_ID = B.DEPT_ID 
+		   AND B.STCD <> '02'
+		 WHERE (CLS_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR CLS_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND (A.CLS_ID ILIKE '%' || COALESCE(#{classID}, '') || '%')
+		   AND ('' = COALESCE(#{departmentID}, '') OR A.DEPT_ID = #{departmentID})
+		   AND ('' = COALESCE(#{year}, '') OR A.C_YEAR = #{year})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		   AND ('' = COALESCE(#{classType}, '') OR A.CLS_TYPE = #{classType})
+		   AND A.STCD <> '02'
+		 ORDER BY A.STCD
+		        , A.DEPT_ID 
+		        , A.CLS_ID DESC
+		        , A.C_YEAR DESC 
+		        , A.SEMESTER DESC 
+		]]>
+	</select>
+	
+	<select id="retrieveClassInformationStudentList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveClassInformationStudentList */
+		       A.CLS_ID                     AS "classID"
+		     , A.C_YEAR                     AS "classYear"
+		     , A.SEMESTER                   AS "semester"
+		     , A.GENR                       AS "generation"
+		     , A.CLS_NM                     AS "className"
+		     , A.CLS_DESC                   AS "classDesc"
+		     , A.CLS_TYPE                   AS "classType"
+		     , B.STD_ID                     AS "studentID"
+		     , C.FRST_NM                    AS "firstName"
+		     , C.LAST_NM                    AS "lastName"
+		     , C.DOB                        AS "dateOfBirth"
+		     , C.GENDER                     AS "gender"
+		     , C.PHONE                      AS "phoneNumber"
+		     , B.STCD                       AS "statusCode"
+		  FROM FRST.CLS_INFO A
+		 RIGHT JOIN FRST.STD_CLS_MAP B
+		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
+		  LEFT JOIN FRST.USER_INFO C
+		    ON B.STD_ID = C.SPEC_ID 
+		   AND C.STCD <> '02'
+		 WHERE ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		   AND ('' = COALESCE(#{studentID}, '') OR B.STD_ID = #{studentID})
+		   AND A.STCD <> '02'
+		   AND B.STCD <> '02'
+		 ORDER BY (C.FRST_NM, C.LAST_NM)
+		]]>
+	</select>
+	
+	<select id="retrieveLastClassID" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveLastClassID */
+		       CLS_ID                AS "classID"
+		  FROM FRST.CLS_INFO A
+		 ORDER BY CLS_ID DESC
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<select id="retrieveClassInformationDetailByClassInfoID" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveClassInformationDetailByClassInfoID */
+		       CLS_ID                       AS "classID"
+		     , CLS_INFO_ID                  AS "classInfoID"
+		     , C_YEAR                       AS "year"
+		     , SEMESTER                     AS "semester"
+		     , DEPT_ID                      AS "departmentID"
+		     , CLS_NM                       AS "className"
+		     , CLS_DESC                     AS "classDesc"
+		     , CLS_TYPE                     AS "classType"
+		     , GENR                         AS "generation"
+		  FROM FRST.CLS_INFO A
+		 WHERE CLS_INFO_ID = #{classID}
+		   AND STCD <> '02'
+		 LIMIT 1
 		]]>
 	</select>
 	
@@ -41,14 +166,18 @@
 		SELECT /* RetrieveClassInformationDetail */
 		       A.CLS_ID                     AS "classID"
 		     , A.DEPT_ID                    AS "departmentID"
+		     , A.CLS_INFO_ID                AS "classInfoID"
 		     , A.CLS_NM                     AS "className"
 		     , A.CLS_DESC                   AS "classDesc"
-		     , A.YEAR_LV                    AS "yearLevel"
+		     , A.CLS_TYPE                   AS "classType"
+		     , A.C_YEAR                     AS "classYear"
+		     , A.SEMESTER                   AS "semester"
+		     , A.GENR                       AS "generation"
 		     , A.STCD                       AS "statusCode"
 		  FROM FRST.CLS_INFO A
 		 WHERE A.CLS_ID = #{classID}
-		   AND A.DEPT_ID = #{departmentID}
-		   AND A.STCD <> '09'
+		   AND A.C_YEAR = #{cyear}
+		   AND A.SEMESTER = #{semester}
 		]]>
 	</select>
 	
@@ -57,22 +186,30 @@
 		INSERT /* RegisterClassInformation */
 		  INTO FRST.CLS_INFO
 		     ( CLS_ID
+		     , C_YEAR
+		     , SEMESTER
+		     , CLS_INFO_ID
 		     , DEPT_ID 
 		     , CLS_NM 
 		     , CLS_DESC 
-		     , YEAR_LV 
+		     , CLS_TYPE 
 		     , STCD
+		     , GENR
 		     , FRST_REG_DT
 		     , FRST_REG_TIME
 		     , LAST_CHNG_DT
 		     , LAST_CHNG_TIME)
 		VALUES 
 		     ( #{classID}
+		     , #{cyear}
+		     , #{semester}
+		     , #{classInfoID}
 		     , #{departmentID}
 		     , COALESCE(#{className}, '')
 		     , COALESCE(#{classDesc}, '')
-		     , COALESCE(#{yearLevel}, '')
+		     , COALESCE(#{classType}, '')
 		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{generation}, '')
 		     , COALESCE(#{firstRegisterDate}, '')
 		     , COALESCE(#{firstRegisterTime}, '')
 		     , COALESCE(#{lastChangeDate}, '')
@@ -84,16 +221,19 @@
 		<![CDATA[
 		UPDATE /* UpdateClassInformation */
 		       FRST.CLS_INFO 
-		   SET CLS_ID = COALESCE(#{classID}, CLS_ID)
-		     , DEPT_ID = COALESCE(#{departmentID}, DEPT_ID)
+		   SET DEPT_ID = COALESCE(#{departmentID}, DEPT_ID)
 		     , CLS_NM = COALESCE(#{className}, CLS_NM)
 		     , CLS_DESC = COALESCE(#{classDesc}, CLS_DESC)
-		     , YEAR_LV = COALESCE(#{yearLevel}, YEAR_LV)
+		     , CLS_TYPE = COALESCE(#{classType}, CLS_TYPE)
+		     , C_YEAR = COALESCE(#{cyear}, C_YEAR)
+		     , GENR = COALESCE(#{generation}, GENR)
+		     , SEMESTER = COALESCE(#{semester}, SEMESTER)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE CLS_ID = #{classID}
-		   AND DEPT_ID = #{departmentID}
+		   AND C_YEAR = #{year}
+		   AND SEMESTER = #{semester}
 		]]>
 	</update>
 

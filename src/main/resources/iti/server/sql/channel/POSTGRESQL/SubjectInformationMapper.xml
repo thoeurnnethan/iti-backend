@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iti.thesis.helicopter.thesis.db.service.SubjectInformationMapper">
+	
+	<select id="retrieveSubjectInformationList" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveSubjectInformationList */
+		       A.CLS_ID                     AS "classID"
+		     , A.CLS_INFO_ID                AS "classInfoID"
+		     , A.CLS_NM                     AS "className"
+		     , A.C_YEAR                     AS "year"
+		     , A.SEMESTER                   AS "semester"
+		     , B.SUB_ID                     AS "subjectID"
+		     , B.SUB_NM                     AS "subjectName"
+		     , B.SUB_DESC                   AS "subjectDesc"
+		     , B.STCD                       AS "statusCode"
+		     , B.FRST_REG_DT                AS "firstRegisterDate"
+		     , B.FRST_REG_TIME              AS "firstRegisterTime"
+		     , B.LAST_CHNG_DT               AS "lastChangeDate"
+		     , B.LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.CLS_INFO A
+		  LEFT JOIN FRST.SUBJ_INFO B
+		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
+		   AND B.STCD <> '02'
+		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
+		   AND ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		   AND ('' = COALESCE(#{classYear}, '') OR A.C_YEAR = #{classYear})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		   AND (B.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR B.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND A.STCD <> '02'
+		 ORDER BY A.C_YEAR DESC 
+		        , A.SEMESTER DESC 
+		        , A.CLS_ID DESC 
+		        , B.SUB_ID
+		        , B.STCD 
+		]]>
+	</select>
+	
+	<select id="retrieveSubjectInformationListForDownload" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveSubjectInformationListForDownload */
+		       A.CLS_ID                     AS "classID"
+		     , A.CLS_INFO_ID                AS "classInfoID"
+		     , A.CLS_NM                     AS "className"
+		     , A.C_YEAR                     AS "year"
+		     , A.SEMESTER                   AS "semester"
+		     , B.SUB_ID                     AS "subjectID"
+		     , B.SUB_NM                     AS "subjectName"
+		     , B.SUB_DESC                   AS "subjectDesc"
+		     , B.STCD                       AS "statusCode"
+		     , B.FRST_REG_DT                AS "firstRegisterDate"
+		     , B.FRST_REG_TIME              AS "firstRegisterTime"
+		     , B.LAST_CHNG_DT               AS "lastChangeDate"
+		     , B.LAST_CHNG_TIME             AS "lastChangeTime"
+		  FROM FRST.CLS_INFO A
+		  LEFT JOIN FRST.SUBJ_INFO B
+		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
+		   AND B.STCD <> '02'
+		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
+		   AND ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		   AND ('' = COALESCE(#{classYear}, '') OR A.C_YEAR = #{classYear})
+		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
+		   AND (B.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR B.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND A.STCD <> '02'
+		 ORDER BY A.C_YEAR DESC 
+		        , A.SEMESTER DESC 
+		        , A.CLS_ID DESC 
+		        , B.SUB_ID
+		        , B.STCD 
+		]]>
+	</select>
+	
+	<select id="retrieveSubjectIsExist" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveSubjectIsExist */
+		       CLS_INFO_ID                     AS "classID"
+		     , SUB_ID                          AS "subjectID"
+		     , SUB_NM                          AS "subjectName"
+		     , SUB_DESC                        AS "subjectDesc"
+		     , STCD                            AS "statusCode"
+		  FROM FRST.SUBJ_INFO
+		 WHERE CLS_INFO_ID = #{classID}
+		   AND ('' = COALESCE(#{subjectID}, '') OR SUB_ID = #{subjectID})
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<insert id="registerSubjectInformation">
+		<![CDATA[
+		INSERT /* RegisterSubjectInformation */
+		  INTO FRST.SUBJ_INFO 
+		     ( CLS_INFO_ID 
+		     , SUB_ID 
+		     , SUB_NM 
+		     , SUB_DESC 
+		     , STCD
+		     , FRST_REG_DT
+		     , FRST_REG_TIME
+		     , LAST_CHNG_DT
+		     , LAST_CHNG_TIME)
+		VALUES 
+		     ( #{classID}
+		     , #{subjectID}
+		     , COALESCE(#{subjectName}, '')
+		     , COALESCE(#{subjectDesc}, '')
+		     , COALESCE(#{statusCode}, '')
+		     , COALESCE(#{firstRegisterDate}, '')
+		     , COALESCE(#{firstRegisterTime}, '')
+		     , COALESCE(#{lastChangeDate}, '')
+		     , COALESCE(#{lastChangeTime}, ''))
+		]]>
+	</insert>
+
+	<update id="updateSubjectInformation">
+		<![CDATA[
+		UPDATE /* UpdateSubjectInformation */
+		       FRST.SUBJ_INFO 
+		   SET SUB_NM = COALESCE(#{subjectName}, SUB_NM)
+		     , SUB_DESC = COALESCE(#{subjectDesc}, SUB_DESC)
+		     , STCD = COALESCE(#{statusCode}, STCD)
+		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
+		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
+		 WHERE CLS_INFO_ID = #{classID}
+		   AND SUB_ID = #{subjectID}
+		]]>
+	</update>
+
+</mapper>

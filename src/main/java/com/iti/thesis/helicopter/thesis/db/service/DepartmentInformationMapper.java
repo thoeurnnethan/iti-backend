@@ -9,7 +9,8 @@ public interface DepartmentInformationMapper {
 	public MMultiData retrieveDepartmentInformationList(MData param) throws MException;
 	public int registerDepartmentInformation(MData param) throws MException;
 	public MData retrieveDepartmentInformationDetail(MData param) throws MException;
-	public MData retrieveLastNewsEventID(MData param) throws MException;
 	public MData retrieveDepartmentInformationTotalCount(MData param) throws MException;
 	public int updateDepartmentInformation(MData param) throws MException;
+	public MData retrieveLastDepartmentID(MData param) throws MException;
+	public MMultiData retrieveDepartmentInformationListForDownload(MData param) throws MException;
 }

@@ -41,6 +41,25 @@ public class MResponseUtil {
 		
 		return outputData;
 	}
+	
+	public MMultiData removeKey(MMultiData MMultiData, String... param) {
+		MMultiData outputData = new MMultiData();
+		
+		for(MData data : MMultiData.toListMData()) {
+			for (String key : param) {
+				
+				if (data.containsKey(key)) {
+					data.remove(key);
+				} else {
+					data.set(key, StringUtils.EMPTY);
+				}
+				
+			}
+			outputData.addMData(data);
+		}
+		
+		return outputData;
+	}
 
 	public static MMultiData responseEmptyKey(MMultiData list, String ...keys) {
 		MMultiData	resList		= new MMultiData();

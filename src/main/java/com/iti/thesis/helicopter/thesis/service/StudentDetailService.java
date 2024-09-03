@@ -11,5 +11,6 @@ public interface StudentDetailService {
 	public MData retrieveStudentDetail(MData userInfo) throws MException;
 	public MMultiData retrieveStudentDetailList(MData param) throws MException;
 	public MData retrieveTotalCountStudentDetailList(MData param) throws MException;
+	public void updateStudentDetail(MData param) throws MException;
 	
 }

@@ -8,5 +8,6 @@ public interface StudentAcademicHistoryService {
 	
 	public MData registerStudentAcademicHistory(MData param) throws MException;
 	public MMultiData retrieveStudentAcademicHistoryList(MData param) throws MException;
+	public void updateStudentAcademicHistoryDetail(MData param) throws MException;
 	
 }

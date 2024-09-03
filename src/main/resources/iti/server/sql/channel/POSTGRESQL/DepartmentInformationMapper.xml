@@ -15,25 +15,22 @@
 		     , A.FRST_REG_DT                AS "firstRegisterDate"
 		     , A.LAST_CHNG_DT               AS "lastChangeDate"
 		     , B.TCH_ID                     AS "teacherID"
-		     , B.DEPT_ROLE_CD               AS "departmentRoleCode" 
-		     , C.DEPT_ROLE_NM               AS "departmentRoleName"
-		     , C.DEPT_ROLE_DESC             AS "departmentRoleDesc"
 		     , D.FRST_NM                    AS "firstName"
 		     , D.LAST_NM                    AS "lastName"
-		     , D.NICK_NM                    AS "nickName"
 		  FROM FRST.DEPT_INFO A
 		  LEFT JOIN FRST.DEPT_MNGT B
 		    ON A.DEPT_ID = B.DEPT_ID 
-		   AND B.DEPT_ROLE_CD = '101' --Manager
-		   AND B.STCD <> '09'
-		  LEFT JOIN FRST.DEPT_ROLE_MNGT C
-		    ON B.DEPT_ROLE_CD = C.DEPT_ROLE_CD
-		   AND C.STCD <> '09'
-		  LEFT JOIN FRST.TCH_DETAIL D 
-		    ON B.TCH_ID = D.TCH_ID 
-		   AND D.STCD <> '09'
-		 WHERE A.DEPT_NM ILIKE '%' || COALESCE(#{departmentName}, '') || '%'
-		 ORDER BY A.DEPT_ID ASC
+		   AND B.DEPT_ROLE_CD = '01' --Manager
+		   AND B.STCD <> '02'
+		  LEFT JOIN FRST.USER_INFO D 
+		    ON B.TCH_ID = D.SPEC_ID 
+		   AND D.STCD <> '02'
+		   AND D.ROLE_ID = '02'  -- Department Manager
+		 WHERE (A.DEPT_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR A.DEPT_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND A.STCD <> '02'
+		 ORDER BY A.STCD 
+		        , A.DEPT_ID DESC 
 		 LIMIT #{limit}
 		OFFSET #{offset}
 		]]>
@@ -46,15 +43,44 @@
 		  FROM FRST.DEPT_INFO A
 		  LEFT JOIN FRST.DEPT_MNGT B
 		    ON A.DEPT_ID = B.DEPT_ID 
-		   AND B.DEPT_ROLE_CD = '101' --Manager
-		   AND B.STCD <> '09'
-		  LEFT JOIN FRST.DEPT_ROLE_MNGT C
-		    ON B.DEPT_ROLE_CD = C.DEPT_ROLE_CD
-		   AND C.STCD <> '09'
-		  LEFT JOIN FRST.TCH_DETAIL D 
-		    ON B.TCH_ID = D.TCH_ID 
-		   AND D.STCD <> '09'
-		 WHERE A.DEPT_NM ILIKE '%' ||  COALESCE(#{departmentName},'') || '%'
+		   AND B.DEPT_ROLE_CD = '01' --Manager
+		   AND B.STCD <> '02'
+		  LEFT JOIN FRST.USER_INFO D 
+		    ON B.TCH_ID = D.SPEC_ID 
+		   AND D.STCD <> '02'
+		   AND D.ROLE_ID = '02'  -- Department Manager
+		 WHERE (A.DEPT_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR A.DEPT_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND A.STCD <> '02'
+		]]>
+	</select>
+	
+	<select id="retrieveDepartmentInformationListForDownload" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveDepartmentInformationListForDownload */
+		       A.DEPT_ID                    AS "departmentID"
+		     , A.DEPT_NM                    AS "departmentName"
+		     , A.DEPT_DESC                  AS "departmentDesc"
+		     , A.STCD                       AS "statusCode"
+		     , A.FRST_REG_DT                AS "firstRegisterDate"
+		     , A.LAST_CHNG_DT               AS "lastChangeDate"
+		     , B.TCH_ID                     AS "teacherID"
+		     , D.FRST_NM                    AS "firstName"
+		     , D.LAST_NM                    AS "lastName"
+		  FROM FRST.DEPT_INFO A
+		  LEFT JOIN FRST.DEPT_MNGT B
+		    ON A.DEPT_ID = B.DEPT_ID 
+		   AND B.DEPT_ROLE_CD = '01' --Manager
+		   AND B.STCD <> '02'
+		  LEFT JOIN FRST.USER_INFO D 
+		    ON B.TCH_ID = D.SPEC_ID 
+		   AND D.STCD <> '02'
+		   AND D.ROLE_ID = '02'  -- Department Manager
+		 WHERE (A.DEPT_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
+		    OR A.DEPT_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
+		   AND A.STCD <> '02'
+		 ORDER BY A.STCD 
+		        , A.DEPT_ID DESC 
 		]]>
 	</select>
 	
@@ -67,6 +93,17 @@
 		     , STCD                       AS "statusCode"
 		  FROM FRST.DEPT_INFO
 		 WHERE DEPT_ID = #{departmentID}
+		   AND STCD <> '02'
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<select id="retrieveLastDepartmentID" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveLastDepartmentID */
+		       DEPT_ID                    AS "departmentID"
+		  FROM FRST.DEPT_INFO
+		 ORDER BY DEPT_ID DESC 
 		 LIMIT 1
 		]]>
 	</select>

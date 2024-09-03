@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;;
 
 @Slf4j
 @RestController
-@RequestMapping("/public/api/user")
+@RequestMapping("/api/user")
 public class UserInfoRegister extends BaseTemplate {
 	
 	@Autowired

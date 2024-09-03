@@ -21,6 +21,34 @@
 		 ORDER BY SEQNO
 		]]>
 	</select>
+
+	<select id="retrieveStudentAcademicHistoryDetail" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveStudentAcademicHistoryDetail */
+		       STD_ID                        AS "studentID"
+		     , SEQNO                         AS "seqNo"
+		     , ACD_NM                        AS "academicName"
+		     , ACD_DESC                      AS "academicDesc"
+		     , STRT_DT                       AS "startDate"
+		     , END_DT                        AS "endDate"
+		     , CERT_DT                       AS "certificatedDate"
+		  FROM FRST.STD_ACD_HIS
+		 WHERE STD_ID = #{studentID}
+		   AND SEQNO = #{seqNo}
+		 LIMIT 1
+		]]>
+	</select>
+
+	<select id="retrieveLatestAcademicSeqNo" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveLatestAcademicSeqNo */
+		       SEQNO                         AS "seqNo"
+		  FROM FRST.STD_ACD_HIS
+		 WHERE STD_ID = #{studentID}
+		 ORDER BY SEQNO DESC
+		 LIMIT 1
+		]]>
+	</select>
 	
 	<insert id="registerStudentAcademicHistory">
 		<![CDATA[
@@ -54,15 +82,18 @@
 		]]>
 	</insert>
 
-	<update id="updateNewsEventaa">
+	<update id="updateStudentAcademicHistoryDetail">
 		<![CDATA[
-		UPDATE /* UpdateNewsEvent */
-		       FRST.NEWS_EVENT 
-		   SET TITLE = COALESCE(#{title}, TITLE)
-		     , CONTENT_HTML = COALESCE(#{contentHtml}, CONTENT_HTML)
-		     , CONTENT_DESC = COALESCE(#{contentDesc}, CONTENT_DESC)
+		UPDATE /* UpdateStudentAcademicHistoryDetail */
+		       FRST.STD_ACD_HIS 
+		   SET ACD_NM = COALESCE(#{academicName}, ACD_NM)
+		     , ACD_DESC = COALESCE(#{academicDesc}, ACD_DESC)
+		     , STRT_DT = COALESCE(#{startDate}, STRT_DT)
+		     , END_DT = COALESCE(#{endDate}, END_DT)
+		     , CERT_DT = COALESCE(#{certificatedDate}, CERT_DT)
 		     , STCD = COALESCE(#{statusCode}, STCD)
-		 WHERE NEVNT_ID = #{newsEventID}
+		 WHERE STD_ID = #{studentID}
+		   AND SEQNO = #{seqNo}
 		]]>
 	</update>
 

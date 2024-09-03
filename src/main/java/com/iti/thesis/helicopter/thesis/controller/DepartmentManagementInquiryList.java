@@ -12,7 +12,8 @@ import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
-import com.iti.thesis.helicopter.thesis.service.DepartmentManagementService;;
+import com.iti.thesis.helicopter.thesis.service.DepartmentManagementService;
+import com.iti.thesis.helicopter.thesis.util.MResponseUtil;;
 
 @RestController
 @RequestMapping("/api/department-mngt")
@@ -37,8 +38,7 @@ public class DepartmentManagementInquiryList extends BaseTemplate {
 	public MData onExecute(MData param) throws MException {
 		try {
 			MMultiData	depList		= departmentManagementService.retrieveDepartmentManagementList(param);
-			MData		resCount	= departmentManagementService.retrieveDepartmentManagementTotalCount(param);
-			return prepareResponse(depList, resCount);
+			return prepareResponse(depList);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -46,10 +46,11 @@ public class DepartmentManagementInquiryList extends BaseTemplate {
 		}
 	}
 	
-	private MData prepareResponse(MMultiData depList, MData resCount) {
+	private MData prepareResponse(MMultiData depList) {
 		MData response = new MData();
-		response.setInt("totalCount", resCount.getInt("totalCount"));
-		response.setMMultiData("departmentList", depList);
+		String[] emptyKey = {"departmentID", "userRoleInDpm"};
+		response.setInt("totalCount", depList.size());
+		response.setMMultiData("departmentList", MResponseUtil.responseEmptyKey(depList, emptyKey));
 		return response;
 	}
 

@@ -48,8 +48,9 @@
 	<select id="retrieveLastTeacherID" resultType="MData">
 		<![CDATA[
 		SELECT /* RetrieveLastTeacherID */
-		       TCH_ID                  AS "lastTeacherID"
+		       TCH_ID                  AS "teacherID"
 		  FROM FRST.TCH_DETAIL
+		 WHERE TCH_ID LIKE #{prefix} || '%'
 		 ORDER BY TCH_ID DESC 
 		 LIMIT 1
 		]]>
@@ -60,34 +61,12 @@
 		INSERT /* RegisterTeacherDetail */
 		  INTO FRST.TCH_DETAIL
 		     ( TCH_ID
-		     , FRST_NM 
-		     , LAST_NM 
-		     , NICK_NM 
-		     , GENDER 
-		     , DOB 
-		     , POB 
-		     , CUR_ADDR 
-		     , PHONE 
-		     , EMAIL 
-		     , IMG_URL 
-		     , STCD 
 		     , FRST_REG_DT
 		     , FRST_REG_TIME 
 		     , LAST_CHNG_DT 
 		     , LAST_CHNG_TIME)
 		VALUES 
 		     ( #{teacherID}
-		     , COALESCE(#{firstName}, '')
-		     , COALESCE(#{lastName}, '')
-		     , COALESCE(#{nickName}, '')
-		     , COALESCE(#{gender}, '')
-		     , COALESCE(#{dateOfBirth}, '')
-		     , COALESCE(#{placeOfBirth}, '')
-		     , COALESCE(#{address}, '')
-		     , COALESCE(#{phone}, '')
-		     , COALESCE(#{email}, '')
-		     , COALESCE(#{imageUrl}, '')
-		     , COALESCE(#{statusCode}, '')
 		     , COALESCE(#{firstRegisterDate}, '')
 		     , COALESCE(#{firstRegisterTime}, '')
 		     , COALESCE(#{lastChangeDate}, '')

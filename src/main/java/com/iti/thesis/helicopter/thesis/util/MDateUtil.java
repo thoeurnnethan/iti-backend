@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -1573,6 +1574,34 @@ public class MDateUtil {
 			
 			SimpleDateFormat sdf = new SimpleDateFormat( FORMAT_DATE );
 			return sdf.format( cal.getTime() );
+		} catch (Exception e) {
+			throw new MException(CommonErrorCode.DATE.getCode());
+		}
+	}
+	
+	public static LocalTime formatTime(String time) throws MException {
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmm");
+			return LocalTime.parse(time, formatter);
+		} catch (Exception e) {
+			throw new MException(CommonErrorCode.DATE.getCode());
+		}
+	}
+	
+	public static boolean compareTime(String compareTime, String timeToCompare) throws MException {
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmm");
+			LocalTime localTime1 = LocalTime.parse(compareTime, formatter);
+			LocalTime localTime2 = LocalTime.parse(timeToCompare, formatter);
+			return localTime1.isBefore(localTime2);
+		} catch (Exception e) {
+			throw new MException(CommonErrorCode.DATE.getCode());
+		}
+	}
+	
+	public static boolean compareTime(LocalTime compareTime, LocalTime timeToCompare) throws MException {
+		try {
+			return compareTime.isBefore(timeToCompare);
 		} catch (Exception e) {
 			throw new MException(CommonErrorCode.DATE.getCode());
 		}

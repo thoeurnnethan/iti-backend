@@ -12,12 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iti.thesis.helicopter.thesis.common.SessionUtil;
 import com.iti.thesis.helicopter.thesis.context.MContextHolder;
 import com.iti.thesis.helicopter.thesis.context.parameter.MContextParameter;
-import com.iti.thesis.helicopter.thesis.context.util.MContextUtil;
 import com.iti.thesis.helicopter.thesis.context.util.MHttpRequestUtil;
 import com.iti.thesis.helicopter.thesis.core.Json.JsonAdaptorObject;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
+import com.iti.thesis.helicopter.thesis.util.MCryptoUtil;
 import com.iti.thesis.helicopter.thesis.util.MGUIDUtil;
 import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 
@@ -35,13 +35,19 @@ public abstract class BaseTemplate {
 	public final JsonNode onProcess(MData param) {
 		
 		//======================================================
-		//# create session data
-		//======================================================
-		JsonAdaptorObject obj = MHttpRequestUtil.createSession(param);
-		//======================================================
 		//# initialize context
 		//======================================================
 		MContextParameter.initMContextParameter();
+		//======================================================
+		//# create session data
+		//======================================================
+		JsonAdaptorObject obj = new JsonAdaptorObject();
+		try {
+			obj = MHttpRequestUtil.createSession(param);
+		} catch (MException e) {
+			MContextHolder.clear();
+			return makeFailResponse(param, e.getMCode(), e.getMMessage());
+		}
 		//======================================================
 		//# initialize default transaction
 		//======================================================
@@ -66,33 +72,35 @@ public abstract class BaseTemplate {
 		//======================================================
 		// keep request object
 		MContextParameter.setContext(obj);
-		log.error(MContextParameter.getContext()+"");
 		// keep header into context 
 		MContextParameter.setRequestHeader(requestHeader);
 		// init session context
-		log.error(SessionUtil.getSessionId());
 		if (!"Unknown".equals(SessionUtil.getSessionId())) {
 			MContextParameter.setSessionContext(convertPojoToMData(metaNode));
-			log.error(MContextParameter.getSessionContext()+"");
-			log.error(MContextUtil.getLoginUserId()+"");
 		}
 		try {
+			MData requestInfo = objectMapper.convertValue(metaNode, MData.class);
+			String url = requestInfo.getString("requestUri");
+			if(!url.contains("/login")) {
+//				MHttpRequestUtil.checkAuthorization(responseBody);
+			}
+			
 			responseBody = onExecute(requestBody);
 			JsonNode response = prepareResponse(requestMessage, responseBody);
 			txManager.commit(txStatus);
 			log.info("Commit Transaction :: {}", transactionName);
-			JsonNode j= makeResponse(requestMessage, response);
+			JsonNode j = makeResponse(requestMessage, response, false);
 			return j;
 		} catch (MException e) {
 			txManager.rollback(txStatus);
 			log.info("Rollback Transaction :: {}", transactionName);
-			log.error(e.getMessage(), e);
+			log.error(e.getLocalizedMessage() + ": {}", e.getMMessage(), e);
 			adapterErrorCode	= e.getMCode();
 			adapterErrorMessage	= e.getMMessage();
 		} catch(Exception e){
 			txManager.rollback(txStatus);
 			log.info("Rollback Transaction :: {}", transactionName);
-			log.error(e.getMessage(), e);
+			log.error(e.getLocalizedMessage() + ": {}", e.getMessage(), e);
 			adapterErrorCode	= CommonErrorCode.UNCAUGHT.getCode();
 			adapterErrorMessage	= CommonErrorCode.UNCAUGHT.getDescription();
 		} finally {
@@ -134,7 +142,13 @@ public abstract class BaseTemplate {
 		return toJsonNode(resObj);
 	}
 	
-	public final JsonNode makeResponse(MData resObj,JsonNode response) {
+	public final JsonNode makeResponse(MData resObj,JsonNode response, boolean isEncrypted) throws Exception {
+		if(isEncrypted) {
+			String	encData	= MCryptoUtil.encrypt(resObj);
+			MData	encRes	= new MData();
+			encRes.setString("encBody", encData);
+			return toJsonNode(encRes);
+		}
 		return response;
 	}
 	
@@ -153,18 +167,5 @@ public abstract class BaseTemplate {
 		JsonNode	rootNode	= obj.get(JsonAdaptorObject.TYPE.REQUEST);
 		return new MData(convertPojoToMData(rootNode));
 	}
-	
-//	private boolean getListAllowUrl(String url) {
-//		return ListAllowUrlConst.getListAllowUrl().contains(url) ? true : false;
-//	}
-//	
-//	private String getUrlPath(JsonAdaptorObject obj) {
-//		try {
-//			String urlPath = obj.get(JsonAdaptorObject.TYPE.META).get("urlPath").textValue();
-//			return urlPath;
-//		} catch (Exception e) {
-//			return MStringUtil.EMPTY;
-//		}
-//	}
 	
 }

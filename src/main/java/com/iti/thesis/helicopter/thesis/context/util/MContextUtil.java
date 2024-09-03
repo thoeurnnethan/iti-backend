@@ -16,18 +16,6 @@ public class MContextUtil {
 		return MContextParameter.getRequestHeader().getString("info_text");
 	}
 	
-	public static String getHeaderLanguageCode() {
-		return MContextParameter.getRequestHeader().getString("language_code");
-	}
-	
-	public static String getHeaderTimestamps() {
-		return MContextParameter.getRequestHeader().getString("timestamps");
-	}
-	
-	public static String getHeaderUuid() {
-		return MContextParameter.getRequestHeader().getString("uuid");
-	}
-	
 	public static String getHeaderLoginSessionId() {
 		return MContextParameter.getRequestHeader().getString("login_session_id");
 	}
@@ -41,6 +29,9 @@ public class MContextUtil {
 	
 	public static String getUserRoleId() {
 		return (String)MContextParameter.getSessionContext().getOrDefault("userRoleId", Strings.EMPTY);
+	}
+	public static String getRequestUri() {
+		return (String)MContextParameter.getSessionContext().getOrDefault("requestUri", Strings.EMPTY);
 	}
 	
 }

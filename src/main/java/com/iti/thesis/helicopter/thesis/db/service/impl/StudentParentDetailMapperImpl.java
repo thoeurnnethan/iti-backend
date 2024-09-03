@@ -24,5 +24,20 @@ public class StudentParentDetailMapperImpl implements StudentParentDetailMapper 
 	public MMultiData retrieveStudentParentDetailList(MData param) throws MException {
 		return channelDBDao.selectList("retrieveStudentParentDetailList", param);
 	}
+
+	@Override
+	public MData retrieveStudentParentDetail(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveStudentParentDetail", param);
+	}
+
+	@Override
+	public int updateStudentParentDetail(MData parent) throws MException {
+		return channelDBDao.update("updateStudentParentDetail", parent);
+	}
+
+	@Override
+	public MData retrieveLatestParentSeqNo(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveLatestParentSeqNo", param);
+	}
 	
 }
