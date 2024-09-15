@@ -13,6 +13,7 @@
 		     , A.FRST_NM
 		     , A.LAST_NM
 		     , A.GENDER
+		     , A.PHONE
 		  FROM FRST.USER_INFO A
 		 WHERE A.ROLE_ID IN ('03', '02')
 		   AND A.STCD <> '02'
@@ -23,6 +24,7 @@
 		     , A.FRST_NM               AS "firstName"
 		     , A.LAST_NM               AS "lastName"
 		     , A.GENDER                AS "gender"
+		     , A.PHONE                 AS "phone"
 		     , B.DEPT_ID               AS "departmentID"
 		     , B.DEPT_ROLE_CD          AS "userRoleInDpm"
 		     , B.STCD                  AS "statusCode"
@@ -64,6 +66,25 @@
 		 WHERE A.DEPT_ID = #{departmentID}
 		   AND ('' = COALESCE(#{teacherID}, '') OR B.TCH_ID = #{teacherID})
 		   AND ('' = COALESCE(#{departmentRoleCode}, '') OR B.DEPT_ROLE_CD = #{departmentRoleCode})
+		 LIMIT 1
+		]]>
+	</select>
+	
+	<select id="retrieveDepartmentManager" resultType="MData">
+		<![CDATA[
+		SELECT /* RetrieveDepartmentManager */
+		       B.TCH_ID                     AS "teacherID"
+		     , A.DEPT_ID                    AS "departmentID"
+		     , A.DEPT_NM                    AS "departmentName"
+		     , A.DEPT_DESC                  AS "departmentDesc"
+		     , B.STCD                       AS "statusCode"
+		  FROM FRST.DEPT_INFO A
+		  JOIN FRST.DEPT_MNGT B
+		    ON A.DEPT_ID = B.DEPT_ID
+		 WHERE A.DEPT_ID = #{departmentID}
+		   AND ('' = COALESCE(#{teacherID}, '') OR B.TCH_ID = #{teacherID})
+		   AND B.DEPT_ROLE_CD = '01' --01: Manager
+		   AND B.STCD = '01' --01: Active
 		 LIMIT 1
 		]]>
 	</select>

@@ -1,5 +1,6 @@
 package com.iti.thesis.helicopter.thesis.service.impl;
 
+import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -96,8 +97,9 @@ public class ScoreInformationServiceImpl implements ScoreInformationService {
 						studentData.setDouble(subjectName, scoreOfSubject);
 					}
 				}
-				studentData.setDouble("totalScore", totalScore);
-				studentData.setDouble("average", totalScore / (subjectScoreList.size()));
+				Double average = totalScore / (keyValueSubject.size());
+				studentData.setDouble("totalScore", totalScore <= 0 ? 0 : Double.valueOf(new DecimalFormat("###.##").format(totalScore)));
+				studentData.setDouble("average", totalScore <= 0 ? 0 : Double.valueOf(new DecimalFormat("###.##").format(average)));
 			}
 			transformedList.add(studentData);
 		}

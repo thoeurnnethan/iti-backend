@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.iti.thesis.helicopter.thesis.common.ErrorCode.ErrorCode;
+import com.iti.thesis.helicopter.thesis.constant.DepartmentRoleCode;
 import com.iti.thesis.helicopter.thesis.constant.StatusCode;
+import com.iti.thesis.helicopter.thesis.constant.UserRoleCode;
 import com.iti.thesis.helicopter.thesis.constant.YnTypeCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.collection.MMultiData;
@@ -71,6 +73,17 @@ public class DepartmentManagementServiceImpl implements DepartmentManagementServ
 					throw new MException(ErrorCode.DUPLICATE_TEACHER_ID.getValue(), ErrorCode.DUPLICATE_TEACHER_ID.getDescription());
 				}
 				
+				MMultiData filterList = new MMultiData();
+				for(MData teacher : teacherList.toListMData()) {
+					if(UserRoleCode.TEACHER.getValue().equals(teacher.getString("roleCode"))) {
+						teacher.setString("roleCode", DepartmentRoleCode.TEACHER.getValue());
+					}else if(UserRoleCode.DEP_MANAGER.getValue().equals(teacher.getString("roleCode"))) {
+						teacher.setString("roleCode", DepartmentRoleCode.MANAGER.getValue());
+					}
+					filterList.addMData(teacher);
+				}
+				
+				teacherList = filterList;
 				boolean isDuplicateManager = isRoleCodeDuplicate(teacherList, "01");
 				if(isDuplicateManager) {
 					throw new MException(ErrorCode.DUPLICATE_MANAGER_ID.getValue(), ErrorCode.DUPLICATE_MANAGER_ID.getDescription());
@@ -78,6 +91,7 @@ public class DepartmentManagementServiceImpl implements DepartmentManagementServ
 				
 				for(MData teacher : teacherList.toListMData()) {
 					teacher.setString("departmentID", param.getString("departmentID"));
+					isNotValid = false;
 					String	messageText		= MStringUtil.EMPTY;
 					String	alreadyExist	= YnTypeCode.NO.getValue();
 					MData	depManagement	= this.retrieveAndValidateDepartmentManagement(teacher);
@@ -88,6 +102,7 @@ public class DepartmentManagementServiceImpl implements DepartmentManagementServ
 							alreadyExist	= YnTypeCode.YES.getValue();
 							if(StatusCode.DELETE.getValue().equals(depManagement.getString("statusCode"))) {
 								teacher.setString("statusCode", StatusCode.ACTIVE.getValue());
+								teacher.setString("departmentRoleCode", teacher.getString("roleCode"));
 								departmentManagementMapper.updateDepartmentManagement(teacher);
 							}
 						}else {
@@ -116,9 +131,21 @@ public class DepartmentManagementServiceImpl implements DepartmentManagementServ
 				
 				if(!isNotValid && isRegister) {
 					for(MData teacher : resList.toListMData()) {
-						teacher.setString("statusCode", StatusCode.ACTIVE.getValue());
-						teacher.setString("departmentRoleCode", teacher.getString("roleCode"));
-						departmentManagementMapper.registerDepartmentManagement(teacher);
+						String teacherRoleInDpm = teacher.getString("roleCode"); 
+						if(teacherRoleInDpm.equals("01")) {
+							MData checkParam = new MData();
+							checkParam.setString("departmentID", param.getString("departmentID"));
+							checkParam.setString("departmentRoleCode", teacherRoleInDpm);
+							boolean isManagerExist = this.retrieveCheckDepartmentManager(checkParam);
+							if(isManagerExist) {
+								throw new MException(ErrorCode.DUPLICATE_MANAGER_ID.getValue(), ErrorCode.DUPLICATE_MANAGER_ID.getDescription());
+							}
+						}
+						if(!YnTypeCode.YES.getValue().equals(teacher.getString("alreadyExist"))) {
+							teacher.setString("statusCode", StatusCode.ACTIVE.getValue());
+							teacher.setString("departmentRoleCode", teacherRoleInDpm);
+							departmentManagementMapper.registerDepartmentManagement(teacher);
+						}
 					}
 				}
 				
@@ -157,6 +184,15 @@ public class DepartmentManagementServiceImpl implements DepartmentManagementServ
 			return this.retrieveDepartmentManagementDetail(param);
 		} catch (MNotFoundException e) {
 			return new MData();
+		}
+	}
+	
+	private boolean retrieveCheckDepartmentManager(MData param) {
+		try {
+			departmentManagementMapper.retrieveDepartmentManager(param);
+			return true;
+		} catch (MNotFoundException e) {
+			return false;
 		}
 	}
 	

@@ -34,6 +34,11 @@ public class DepartmentManagementMapperImpl implements DepartmentManagementMappe
 	public MData retrieveDepartmentManagementDetail(MData param) throws MException {
 		return channelDBDao.selectOne("retrieveDepartmentManagementDetail", param);
 	}
+	
+	@Override
+	public MData retrieveDepartmentManager(MData param) throws MException {
+		return channelDBDao.selectOne("retrieveDepartmentManager", param);
+	}
 
 	@Override
 	public MData retrieveLastNewsEventID(MData param) throws MException {
