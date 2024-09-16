@@ -50,7 +50,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public MMultiData retrieveUserInfoList(MData param) throws MException {
 		try {
-			
 			MMultiData userList = userInfoMapper.retrieveUserInfoList(param);
 			MMultiData filterList = userList.toListMData().stream()
 					.map(data ->{
@@ -85,7 +84,17 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public MMultiData retrieveUserInfoListForDownload(MData param) throws MException {
 		try {
-			return userInfoMapper.retrieveUserInfoListForDownload(param);
+			MMultiData userList		= userInfoMapper.retrieveUserInfoListForDownload(param);
+			MMultiData filterList	= userList.toListMData().stream()
+					.map(data ->{
+						MData user = data;
+						String loginYn = data.getString("loginByUserYn");
+						if(!MStringUtil.isEmpty(loginYn) && YnTypeCode.YES.getValue().equalsIgnoreCase(loginYn)) {
+							user.setString("passwd", MStringUtil.EMPTY);
+						}
+						return user;
+					}).collect(Collectors.toCollection(MMultiData::new));
+			return filterList;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
