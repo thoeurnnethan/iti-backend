@@ -90,6 +90,7 @@
 		     , QUAL_DESC = COALESCE(#{qualificationDesc}, QUAL_DESC)
 		     , STRT_DT = COALESCE(#{startDate}, STRT_DT)
 		     , END_DT = COALESCE(#{endDate}, END_DT)
+		     , CERT_DT = COALESCE(#{certificatedDate}, CERT_DT)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)

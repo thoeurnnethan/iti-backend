@@ -146,7 +146,7 @@
 		     , POB = COALESCE(#{placeOfBirth}, POB)
 		     , ADDR = COALESCE(#{address}, ADDR)
 		     , PHONE = COALESCE(#{phone}, PHONE)
-		     , EMAIL = COALESCE(#{address}, EMAIL)
+		     , EMAIL = COALESCE(#{email}, EMAIL)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME  = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)

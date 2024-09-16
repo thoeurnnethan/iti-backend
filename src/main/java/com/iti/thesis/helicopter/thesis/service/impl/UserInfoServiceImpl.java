@@ -102,6 +102,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 			
 			/* Retrieve Valid User for Login */
 			MData	userInfo = userInfoMapper.retrieveUserInfoDetail(param);
+			String	loginByUserYn = userInfo.getString("loginByUserYn");
+			if(!MStringUtil.isEmpty(loginByUserYn) && YnTypeCode.YES.getValue().equalsIgnoreCase(loginByUserYn)) {
+				userInfo.setString("passwd", MStringUtil.EMPTY);
+			}
 			response = userInfo;
 			
 			String userRoleCode = userInfo.getString("roleID");
