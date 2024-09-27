@@ -3,7 +3,7 @@
 .factorypath
 .vscode
 target/
-target/classes*
+target/classes/*
 
 #common ignores
 *.log
