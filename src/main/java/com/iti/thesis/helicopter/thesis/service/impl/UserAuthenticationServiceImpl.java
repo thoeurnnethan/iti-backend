@@ -19,6 +19,7 @@ import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
+import com.iti.thesis.helicopter.thesis.security.jwt.JwtUtil;
 import com.iti.thesis.helicopter.thesis.service.UserAuthenticationService;
 import com.iti.thesis.helicopter.thesis.service.UserInfoService;
 import com.iti.thesis.helicopter.thesis.util.MDateUtil;
@@ -31,6 +32,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
 	@Autowired
 	private UserInfoService		userInfoService;
+	@Autowired
+	private JwtUtil jwtUtil;
 	@Value("${max.password.error}")
 	int pwdMaxError;
 	@Value("${user.lock.time}")
@@ -90,6 +93,9 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				}
 				throw new MBizException(ErrorCode.INCORRECT_PASSWORD.getValue(), ErrorCode.INCORRECT_PASSWORD.getDescription());
 			} else {
+				String token = jwtUtil.generateToken(userInfo.getString("userID"));
+				response.setString("jwtToken", token);
+				
 				// Change Context data
 				MData sessionData = SessionDataBuilder.create()
 						.loginUserId(userInfo.getString("userID"))

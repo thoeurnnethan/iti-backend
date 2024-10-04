@@ -178,10 +178,11 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 				}
 				for(MData student : studentList.toListMData()) {
 					student.setString("classInfoID", param.getString("classInfoID"));
+					isNotValid = false;
 					String	messageText		= MStringUtil.EMPTY;
 					String	alreadyExist	= YnTypeCode.NO.getValue();
 					String	statusCode		= student.getString("statusCode");
-					boolean isExist = this.isStudentExistInClass(student);
+					boolean	isExist			= this.isStudentExistInClass(student);
 					if(isExist) {
 						if(isRegister) {
 							isNotValid		= true;
