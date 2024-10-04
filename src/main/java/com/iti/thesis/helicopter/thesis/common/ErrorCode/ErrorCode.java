@@ -32,7 +32,13 @@ public enum ErrorCode {
 	ALREADY_LOGIN							("ER021", "Already Login and Change password"),
 	OLD_PASSWORD_NOT_MATCH					("ER022", "Old Password not match"),
 	DUPLICATE_TEACHER						("ER023", "Duplicate Teacher to register schedule"),
-	DUPLICATE_TIME							("ER024", "Duplicate Time to register schedule");
+	DUPLICATE_TIME							("ER024", "Duplicate Time to register schedule"),
+	
+	// Http Custom error
+	UNCAUGHT								("ER400","Uncauge Error while authorize request, Please contact your Administrator!"),
+	UNAUTHORIZE								("ER401","Unauthorized Request!"),
+	JWT_UNCAUGHT_ERROR						("ER402","Uncauge Error while authorize request (JWT)!"),
+	BAD_CREDENTIALS							("ER403","Bad Credential to Authorize Request!");
 	
 	private String value;
 	private String description;

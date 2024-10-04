@@ -27,12 +27,16 @@ public class SecurityConfiguration {
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.csrf(csrf -> csrf.disable()).cors(withDefaults())
-				.authorizeHttpRequests(requests -> requests
-						.antMatchers("/api/user/login", "/api/user/reset-password", "/api/user/logout").permitAll()
-						.anyRequest().authenticated())
-				.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Add the JWT filter
-		return httpSecurity.build();
+		try {
+			httpSecurity.csrf(csrf -> csrf.disable()).cors(withDefaults())
+			.authorizeHttpRequests(requests -> requests
+					.antMatchers("/api/user/login", "/api/user/reset-password", "/api/user/logout").permitAll()
+					.anyRequest().authenticated())
+			.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Add the JWT filter
+			return httpSecurity.build();
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 	
 	@Bean
