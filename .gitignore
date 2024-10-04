@@ -2,7 +2,7 @@
 .classpath
 .factorypath
 .vscode
-target/
+target/**
 target/classes/*
 
 #common ignores
@@ -13,3 +13,4 @@ target/classes/*
 .DS_Store
 .idea/
 *.iml
+

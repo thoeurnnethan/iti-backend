@@ -20,7 +20,7 @@ WORKDIR /thesis
 COPY --from=builder /home/maven/thesis/target/thesis-0.0.1-SNAPSHOT.jar /thesis
 
 # Expose the application port
-EXPOSE 8081
+EXPOSE 8090
 
 # Define the entry point to run the application
 ENTRYPOINT ["java", "-jar", "/thesis/thesis-0.0.1-SNAPSHOT.jar"]

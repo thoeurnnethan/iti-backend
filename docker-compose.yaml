@@ -1,0 +1,36 @@
+version: '3.6'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_uat
+    environment:
+      POSTGRES_DB: THESIS
+      POSTGRES_USER: nethanUat
+      POSTGRES_PASSWORD: Nethan@uat!
+    ports:
+      - "5434:5432"  # Maps port 5432 in the container to port 5433 on the host
+    volumes: # Here I mount data to my local dir, Comment on this if u want to use Docker volumn
+      - D:/Industrial_Technical_Institute/Sarana/postgres_env/data/uat:/var/lib/postgresql/data
+    networks:
+      - backdb
+
+  back:
+    build:
+      # context: ./iti-backend
+      target: finalApp
+    container_name: iti-backend
+    ports:
+      - "8090:8090"
+    depends_on:
+      - db
+    environment:
+      # Set the profile here (local, uat, etc.)
+      - SPRING_PROFILES_ACTIVE=uat
+      - JAVA_OPTS=-Xmx512m
+    networks:
+      - backdb
+
+networks:
+  backdb:
+    driver: bridge
