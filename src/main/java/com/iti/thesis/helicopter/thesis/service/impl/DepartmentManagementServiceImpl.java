@@ -100,10 +100,14 @@ public class DepartmentManagementServiceImpl implements DepartmentManagementServ
 							isNotValid		= true;
 							messageText		= "Already Register";
 							alreadyExist	= YnTypeCode.YES.getValue();
+							// if Status delete then update it
 							if(StatusCode.DELETE.getValue().equals(depManagement.getString("statusCode"))) {
-								boolean isManagerExist = this.retrieveCheckDepartmentManager(teacher);
-								if(isManagerExist) {
-									throw new MException(ErrorCode.DUPLICATE_MANAGER_ID.getValue(), ErrorCode.DUPLICATE_MANAGER_ID.getDescription());
+								// Check if Manager then validate
+								if(DepartmentRoleCode.MANAGER.getValue().equals(teacher.getString("roleCode"))) {
+									boolean isManagerExist = this.retrieveCheckDepartmentManager(teacher);
+									if(isManagerExist) {
+										throw new MException(ErrorCode.DUPLICATE_MANAGER_ID.getValue(), ErrorCode.DUPLICATE_MANAGER_ID.getDescription());
+									}
 								}
 								teacher.setString("statusCode", StatusCode.ACTIVE.getValue());
 								teacher.setString("departmentRoleCode", teacher.getString("roleCode"));
