@@ -82,7 +82,6 @@
 		  JOIN FRST.DEPT_MNGT B
 		    ON A.DEPT_ID = B.DEPT_ID
 		 WHERE A.DEPT_ID = #{departmentID}
-		   AND ('' = COALESCE(#{teacherID}, '') OR B.TCH_ID = #{teacherID})
 		   AND B.DEPT_ROLE_CD = '01' --01: Manager
 		   AND B.STCD = '01' --01: Active
 		 LIMIT 1

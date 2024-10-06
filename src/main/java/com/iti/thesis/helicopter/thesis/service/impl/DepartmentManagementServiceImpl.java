@@ -101,6 +101,10 @@ public class DepartmentManagementServiceImpl implements DepartmentManagementServ
 							messageText		= "Already Register";
 							alreadyExist	= YnTypeCode.YES.getValue();
 							if(StatusCode.DELETE.getValue().equals(depManagement.getString("statusCode"))) {
+								boolean isManagerExist = this.retrieveCheckDepartmentManager(teacher);
+								if(isManagerExist) {
+									throw new MException(ErrorCode.DUPLICATE_MANAGER_ID.getValue(), ErrorCode.DUPLICATE_MANAGER_ID.getDescription());
+								}
 								teacher.setString("statusCode", StatusCode.ACTIVE.getValue());
 								teacher.setString("departmentRoleCode", teacher.getString("roleCode"));
 								departmentManagementMapper.updateDepartmentManagement(teacher);
