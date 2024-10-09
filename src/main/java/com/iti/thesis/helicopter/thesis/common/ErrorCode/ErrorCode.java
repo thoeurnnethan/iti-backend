@@ -20,7 +20,7 @@ public enum ErrorCode {
 	ONLY_ADMIN_CAN_UPDATE					("ER009", "Only Admin user can reset password but not for other Admin"),
 	CANNOT_RESET_ADMIN_PASS					("ER010", "Cannot reset password for Admin user"),
 	INVALID_ACCESS							("ER011", "Invalid Access"),
-	NEED_PERMISSION							("ER012", "You don't have enough permission for this request!"),
+	NEED_PERMISSION							("ER012", "You don't have permission for this request!"),
 	DUPLICATE_TEACHER_ID					("ER013", "You have added duplicate Teacher"),
 	ALREADY_ADDED_TEACHER					("ER014", "Teacher Already added to Department"),
 	DUPLICATE_MANAGER_ID					("ER015", "You have added duplicate Manager"),

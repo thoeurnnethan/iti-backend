@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iti.thesis.helicopter.thesis.common.ErrorCode.ErrorCode;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.security.CustomerUserDetail;
+import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -41,16 +42,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain) throws IOException {
 		try {
 			final String authorizationHeader = request.getHeader("Authorization");
-			String username = null;
-			String jwt = null;
+			String username = MStringUtil.EMPTY;
+			String jwt = MStringUtil.EMPTY;
 			
-			if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+			if (!MStringUtil.isEmpty(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
 				jwt = authorizationHeader.substring(7);
 				username = jwtUtil.extractUsername(jwt);
 			}
 			
 			// If username is present in the token and the SecurityContext is not already
-			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			if (!MStringUtil.isEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
 				UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 				if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
 					Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -77,7 +78,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 	private void handleError(HttpServletResponse response, int code, String message) throws IOException {
 		JsonNode jsonNode = this.makeFailResponse(null, code+"", message);
-		response.setStatus(HttpServletResponse.SC_ACCEPTED);
+		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");
 		response.getWriter().write(jsonNode.toString());
 		response.getWriter().flush();
