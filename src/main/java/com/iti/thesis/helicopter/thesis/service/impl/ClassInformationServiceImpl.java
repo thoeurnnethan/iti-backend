@@ -20,6 +20,7 @@ import com.iti.thesis.helicopter.thesis.db.service.ClassInformationMapper;
 import com.iti.thesis.helicopter.thesis.db.service.DepartmentInformationMapper;
 import com.iti.thesis.helicopter.thesis.db.service.StudentClassMappingMapper;
 import com.iti.thesis.helicopter.thesis.service.ClassInformationService;
+import com.iti.thesis.helicopter.thesis.service.SubjectInformationService;
 import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
@@ -35,11 +36,32 @@ public class ClassInformationServiceImpl implements ClassInformationService {
 	private DepartmentInformationMapper	departmentInformationMapper;
 	@Autowired 
 	private StudentClassMappingMapper	studentClassMappingMapper;
+	@Autowired
+	private SubjectInformationService	subjectInformationService;
 	
 	@Override
 	public MMultiData retrieveClassInformationList(MData param) throws MException {
 		try {
-			return classInformationMapper.retrieveClassInformationList(param);
+			MMultiData classList =  classInformationMapper.retrieveClassInformationList(param);
+			MMultiData newClassList = classList.toListMData().stream()
+					.map(data ->{
+						data.setBoolean("hasSubject", this.retrieveSubjectInfo(data));
+						return data;
+					}).collect(Collectors.toCollection(MMultiData::new));
+			
+			return newClassList;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+	
+	private boolean retrieveSubjectInfo(MData classInfo) {
+		try {
+			MMultiData subjectList = subjectInformationService.retrieveSubjectInformationList(classInfo);
+			return subjectList.size() > 0 ? true : false;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
