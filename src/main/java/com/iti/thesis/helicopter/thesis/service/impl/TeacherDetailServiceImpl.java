@@ -41,7 +41,6 @@ public class TeacherDetailServiceImpl implements TeacherDetailService {
 			
 			if(!MStringUtil.isEmpty(param.getString("departmentID"))) {
 				MMultiData teacherList = new MMultiData();
-//				param.setString("roleCode", param.getString("roleID").equals("03") ? "02" : "01");
 				param.setString("roleCode", param.getString("roleID"));
 				teacherList.addMData(param);
 				MData teacherClassMappingParam = new MData();

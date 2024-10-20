@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.iti.thesis.helicopter.thesis.common.ErrorCode.ErrorCode;
 import com.iti.thesis.helicopter.thesis.constant.UserRoleCode;
-import com.iti.thesis.helicopter.thesis.context.constant.StudentUriAccessConst;
 import com.iti.thesis.helicopter.thesis.context.constant.UriConst;
 import com.iti.thesis.helicopter.thesis.context.parameter.MContextParameter;
 import com.iti.thesis.helicopter.thesis.context.util.MContextUtil;
@@ -77,7 +76,7 @@ public class JwtCustomRequestFilter {
 			throw new MException(e.getMCode(), e.getMMessage());
 		} catch (Exception e) {
 			log.error(e.getLocalizedMessage());
-			throw new MException("00000", "There are problem while working with session");
+			throw new MException(HttpStatus.UNAUTHORIZED.value() + "", "There are problem while working with session");
 		}
 	}
 	
@@ -186,8 +185,11 @@ public class JwtCustomRequestFilter {
 				UriConst.SCHEDULE_REGISTER,
 				UriConst.SCHEDULE_VALIDATE,
 				
+				UriConst.SCHEDULE_LIST,
 				UriConst.SUBJECT_LIST,
-				UriConst.SUBJECT_DOWNLOAD
+				UriConst.SUBJECT_DOWNLOAD,
+				UriConst.SUBJECT_REGISTER,
+				UriConst.SUBJECT_UDPATE
 				).contains( MContextUtil.getRequestUri()); 
 	}
 	

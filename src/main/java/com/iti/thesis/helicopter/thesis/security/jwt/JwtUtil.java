@@ -15,7 +15,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtUtil {
 
 	private final String SECRET_KEY = "s3cr3tK3y1234567";
-	private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
+	private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 1 day
 	private final long EXPIRATION_TIME_REFRESH_TOKEN = 1000 * 60 * 60 * 24 * 7; // 7 Days
 
 	public String generateToken(String username, MData claims) {

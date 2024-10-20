@@ -109,11 +109,13 @@ public class DepartmentManagementServiceImpl implements DepartmentManagementServ
 										throw new MException(ErrorCode.DUPLICATE_MANAGER_ID.getValue(), ErrorCode.DUPLICATE_MANAGER_ID.getDescription());
 									}
 								}
+								teacher.setString("teacherIDforUpdate", teacher.getString("teacherID"));
 								teacher.setString("statusCode", StatusCode.ACTIVE.getValue());
 								teacher.setString("departmentRoleCode", teacher.getString("roleCode"));
 								departmentManagementMapper.updateDepartmentManagement(teacher);
 							}
 						}else {
+							teacher.setString("teacherIDforUpdate", teacher.getString("teacherID"));
 							teacher.setString("departmentRoleCode", teacher.getString("roleCode"));
 							departmentManagementMapper.updateDepartmentManagement(teacher);
 						}

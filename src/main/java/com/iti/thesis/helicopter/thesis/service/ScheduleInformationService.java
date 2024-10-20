@@ -8,5 +8,6 @@ public interface ScheduleInformationService {
 	public MData retrieveScheduleInformationList(MData param) throws MException;
 	public MData registerScheduleInformation(MData param) throws MException;
 	public MData validateScheduleInformation(MData param) throws MException;
+	public MData scheduleInformationUpdate(MData param) throws MException;
 
 }

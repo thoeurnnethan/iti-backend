@@ -119,10 +119,12 @@
 		   SET TCH_ID = COALESCE(#{teacherID}, TCH_ID)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , DEPT_ROLE_CD = COALESCE(#{departmentRoleCode}, DEPT_ROLE_CD)
+		     , FRST_REG_DT = COALESCE(#{firstRegisterDate}, FRST_REG_DT)
+		     , FRST_REG_TIME = COALESCE(#{firstRegisterTime}, FRST_REG_TIME)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)
 		 WHERE DEPT_ID = #{departmentID}
-		   AND TCH_ID = #{teacherID}
+		   AND TCH_ID = #{teacherIDforUpdate}
 		]]>
 	</update>
 

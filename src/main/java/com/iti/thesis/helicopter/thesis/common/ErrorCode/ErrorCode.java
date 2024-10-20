@@ -33,6 +33,7 @@ public enum ErrorCode {
 	OLD_PASSWORD_NOT_MATCH					("ER022", "Old Password not match"),
 	DUPLICATE_TEACHER						("ER023", "Duplicate Teacher to register schedule"),
 	DUPLICATE_TIME							("ER024", "Duplicate Time to register schedule"),
+	SCHEDULE_DETAIL_NOT_FOUND				("ER025", "Schedule detail not found !"),
 	
 	// Http Custom error
 	UNCAUGHT								("ER400","Uncauge Error while authorize request, Please contact your Administrator!"),

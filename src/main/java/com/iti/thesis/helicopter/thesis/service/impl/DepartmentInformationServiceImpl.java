@@ -15,6 +15,7 @@ import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
 import com.iti.thesis.helicopter.thesis.db.service.DepartmentInformationMapper;
 import com.iti.thesis.helicopter.thesis.db.service.DepartmentManagementMapper;
 import com.iti.thesis.helicopter.thesis.service.DepartmentInformationService;
+import com.iti.thesis.helicopter.thesis.util.MDateUtil;
 import com.iti.thesis.helicopter.thesis.util.MStringUtil;
 import com.iti.thesis.helicopter.thesis.util.MValidatorUtil;
 
@@ -114,10 +115,29 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 					department.setString("departmentRoleCode", DepartmentRoleCode.MANAGER.getValue());
 					boolean isExist = this.retrieveAndValidateDepartmentMgt(department);
 					if(isExist) {
+						MData	depInfo	= this.retrieveDepartmentManagerInfo(department);
+						String	prevID	= depInfo.getString("teacherID");
+						if(!MStringUtil.isEmpty(prevID)) {
+							depInfo.setString("teacherIDforUpdate", prevID);
+							depInfo.setString("statusCode", StatusCode.DELETE.getValue());
+							departmentManagementMapper.updateDepartmentManagement(depInfo);
+						}
+						department.setString("teacherIDforUpdate", teacherID);
+						department.setString("statusCode", StatusCode.ACTIVE.getValue());
 						departmentManagementMapper.updateDepartmentManagement(department);
 					}else {
-						department.setString("statusCode", StatusCode.ACTIVE.getValue());
-						departmentManagementMapper.registerDepartmentManagement(department);
+						MData	depInfo	= this.retrieveDepartmentManagerInfo(department);
+						String	prevID	= depInfo.getString("teacherID");
+						if(!MStringUtil.isEmpty(prevID)) {
+							department.setString("teacherIDforUpdate", prevID);
+							department.setString("statusCode", StatusCode.ACTIVE.getValue());
+							department.setString("firstRegisterDate", MDateUtil.getCurrentDate());
+							department.setString("firstRegisterTime", MDateUtil.getCurrentTime(MDateUtil.FORMAT_TIME_SHORT));
+							departmentManagementMapper.updateDepartmentManagement(department);
+						}else {
+							department.setString("statusCode", StatusCode.ACTIVE.getValue());
+							departmentManagementMapper.registerDepartmentManagement(department);
+						}
 					}
 				}
 			}
@@ -136,6 +156,20 @@ public class DepartmentInformationServiceImpl implements DepartmentInformationSe
 			return true;
 		} catch (MNotFoundException e) {
 			return false;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+	
+	private MData retrieveDepartmentManagerInfo(MData param) {
+		try {
+			MValidatorUtil.validate(param, "departmentID");
+			return departmentManagementMapper.retrieveDepartmentManager(param);
+		} catch (MNotFoundException e) {
+			return new MData();
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

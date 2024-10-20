@@ -207,6 +207,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public int updateUserLoginInfo(MData param) throws MException {
 		String subTransactionName = "TX_SUB_updateLoginErr_"+ MGUIDUtil.generateGUID();
@@ -380,6 +381,40 @@ public class UserInfoServiceImpl implements UserInfoService {
 			param.setString("newPasswd", encPasswd);
 			userInfoMapper.updateUserPassword(param);
 			return param;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
+		}
+	}
+
+	@Override
+	public MData registerUserDefault(MData param) throws MException {
+		try {
+			param.setString("userID", "Admin");
+			boolean isExist = this.isValidUserID(param);
+			if(!isExist) {
+				return param;
+			}else {
+				MData inputParam = new MData();
+				inputParam.setString("userID", "Admin");
+				inputParam.setString("passwd", "Admin");
+				inputParam.setString("firstName", "Admin");
+				inputParam.setString("lastName", "Admin");
+				inputParam.setString("roleID", UserRoleCode.ADMIN.getValue());
+				inputParam.setString("statusCode", StatusCode.ACTIVE.getValue());
+				inputParam.setString("loginByUserYn", YnTypeCode.NO.getValue());
+				inputParam.setString("gender", "M");
+				inputParam.setString("address", "NA");
+				inputParam.setString("phone", "NA");
+				inputParam.setString("email", "admin123@gmail.com");
+				inputParam.setMMultiData("qualificationList", new MMultiData());
+				MData adminInfo = teacherDetailService.registerTeacherDetail(inputParam);
+				inputParam.setString("specificID", adminInfo.getString("teacherID"));
+				userInfoMapper.registerUserInfoDetail(inputParam);
+				return inputParam;
+			}
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
