@@ -29,6 +29,7 @@
 		   AND ('' = COALESCE(#{classYear}, '') OR A.C_YEAR = #{classYear})
 		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
 		   AND ('' = COALESCE(#{classInfoID}, '') OR A.CLS_INFO_ID = #{classInfoID})
+		   AND ('' = COALESCE(#{departID}, '') OR A.DEPT_ID = #{departID})
 		   AND (B.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR B.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		   AND A.STCD <> '02'
