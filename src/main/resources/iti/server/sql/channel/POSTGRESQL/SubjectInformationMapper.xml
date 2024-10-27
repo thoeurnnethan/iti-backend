@@ -24,7 +24,6 @@
 		  FROM FRST.CLS_INFO A
 		  LEFT JOIN FRST.SUBJ_INFO B
 		    ON A.CLS_INFO_ID = B.CLS_INFO_ID 
-		   AND B.STCD <> '02'
 		 WHERE ('' = COALESCE(#{classID}, '') OR A.CLS_ID = #{classID})
 		   AND ('' = COALESCE(#{classYear}, '') OR A.C_YEAR = #{classYear})
 		   AND ('' = COALESCE(#{semester}, '') OR A.SEMESTER = #{semester})
@@ -33,6 +32,7 @@
 		   AND (B.SUB_NM ILIKE '%' || COALESCE(#{searchKey}, '') || '%'
 		    OR B.SUB_DESC ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		   AND A.STCD <> '02'
+		   AND B.STCD <> '02'
 		 ORDER BY A.C_YEAR DESC 
 		        , A.SEMESTER DESC 
 		        , A.CLS_ID DESC 
