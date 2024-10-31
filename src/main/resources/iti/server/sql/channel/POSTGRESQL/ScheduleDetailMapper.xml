@@ -45,6 +45,7 @@
 		    ON C.CLS_INFO_ID = A.CLS_INFO_ID 
 		 WHERE A."year" = #{scheduleYear}
 		   AND B.TCH_ID = #{teacherID}
+		   AND C.SEMESTER = #{semester}
 		]]>
 	</select>
 	

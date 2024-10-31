@@ -185,6 +185,9 @@ public class JwtCustomRequestFilter {
 				UriConst.SCHEDULE_REGISTER,
 				UriConst.SCHEDULE_VALIDATE,
 				
+				UriConst.SCORE_LIST,
+				UriConst.SCORE_REGISER,
+				
 				UriConst.SCHEDULE_LIST,
 				UriConst.SUBJECT_LIST,
 				UriConst.SUBJECT_DOWNLOAD,
@@ -204,6 +207,9 @@ public class JwtCustomRequestFilter {
 				
 				UriConst.ROOM_LIST,
 				UriConst.ROOM_DOWNLOAD,
+				
+				UriConst.SCORE_LIST,
+				UriConst.SCORE_REGISER,
 				
 				UriConst.CLASS_LIST,
 				UriConst.CLASS_DOWNLOAD,
@@ -226,6 +232,9 @@ public class JwtCustomRequestFilter {
 				UriConst.ROOM_LIST,
 				UriConst.ROOM_DOWNLOAD,
 				
+				UriConst.SCORE_LIST,
+				UriConst.SCORE_REGISER,
+				
 				UriConst.CLASS_LIST,
 				UriConst.CLASS_LIST_STUDENT,
 				
@@ -244,6 +253,8 @@ public class JwtCustomRequestFilter {
 				
 				UriConst.ROOM_LIST,
 				UriConst.ROOM_DOWNLOAD,
+				
+				UriConst.SCORE_LIST,
 				
 				UriConst.CLASS_LIST,
 				UriConst.CLASS_LIST_STUDENT,

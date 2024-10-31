@@ -28,7 +28,7 @@
 		 WHERE A.CLS_INFO_ID = #{classInfoID}
 		   AND ('' = COALESCE(#{studentID}, '') OR A.STD_ID = #{studentID})
 		   AND ('' = COALESCE(#{subjectID}, '') OR B.SUB_ID = #{subjectID})
-		   AND C.STCD <> '02'
+		   AND A.STCD <> '02'
 		 ORDER BY D.FRST_NM DESC 
 		        , D.LAST_NM DESC 
 		        , C.SUB_ID ASC 

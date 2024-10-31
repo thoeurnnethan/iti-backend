@@ -334,7 +334,7 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 			scheduleDetailMapper.updateScheduleDetail(scheduleInfo);
 			return scheduleInfo;
 		} catch (MNotFoundException e) {
-			throw new MException(ErrorCode.SCHEDULE_DETAIL_NOT_FOUND.getValue(), ErrorCode.SCHEDULE_DETAIL_NOT_FOUND.getDescription());
+			return new MData();
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
