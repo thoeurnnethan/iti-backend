@@ -184,6 +184,7 @@ public class JwtCustomRequestFilter {
 				UriConst.SCHEDULE_LIST,
 				UriConst.SCHEDULE_REGISTER,
 				UriConst.SCHEDULE_VALIDATE,
+				UriConst.SCHEDULE_DELETE,
 				
 				UriConst.SCORE_LIST,
 				UriConst.SCORE_REGISER,
@@ -193,10 +194,51 @@ public class JwtCustomRequestFilter {
 				UriConst.SUBJECT_DOWNLOAD,
 				UriConst.SUBJECT_REGISTER,
 				UriConst.SUBJECT_UDPATE
-				).contains( MContextUtil.getRequestUri()); 
+			).contains( MContextUtil.getRequestUri()); 
 	}
 	
 	private static boolean DepManagerAccessUri() {
+		return Arrays.asList(
+				UriConst.USER_LIST,
+				UriConst.USER_DETAIL,
+				UriConst.USER_DOWNLOAD,
+				UriConst.USER_RESET_PASSWORD,
+				
+				UriConst.DEPARTMENT_LIST,
+				UriConst.DEPARTMENT_DOWNLOAD,
+				
+				UriConst.TEACHER_MAP_LIST,
+				UriConst.TEACHER_MAP_REGISTER,
+				UriConst.TEACHER_MAP_UDPATE,
+				
+				UriConst.ROOM_LIST,
+				UriConst.ROOM_DOWNLOAD,
+				
+				UriConst.CLASS_LIST,
+				UriConst.CLASS_DOWNLOAD,
+				UriConst.CLASS_LIST_STUDENT,
+				UriConst.CLASS_REGISTER,
+				UriConst.CLASS_REGISTER_STUDENT,
+				UriConst.CLASS_UDPATE,
+				UriConst.CLASS_UPDATE_STUDENT,
+				UriConst.CLASS_UPGRADE,
+				
+				UriConst.SCHEDULE_LIST,
+				UriConst.SCHEDULE_REGISTER,
+				UriConst.SCHEDULE_VALIDATE,
+				UriConst.SCHEDULE_DELETE,
+				
+				UriConst.SCORE_LIST,
+				UriConst.SCORE_REGISER,
+				
+				UriConst.SUBJECT_LIST,
+				UriConst.SUBJECT_DOWNLOAD,
+				UriConst.SUBJECT_REGISTER,
+				UriConst.SUBJECT_UDPATE
+			).contains( MContextUtil.getRequestUri() );
+	}
+	
+	private static boolean TeacherAccessUri() {
 		return Arrays.asList(
 				UriConst.USER_LIST,
 				
@@ -208,41 +250,18 @@ public class JwtCustomRequestFilter {
 				UriConst.ROOM_LIST,
 				UriConst.ROOM_DOWNLOAD,
 				
-				UriConst.SCORE_LIST,
-				UriConst.SCORE_REGISER,
-				
 				UriConst.CLASS_LIST,
+				UriConst.CLASS_LIST_STUDENT,
 				UriConst.CLASS_DOWNLOAD,
-				UriConst.CLASS_LIST_STUDENT,
-				
-				UriConst.SCHEDULE_LIST,
-				UriConst.SUBJECT_LIST,
-				UriConst.SUBJECT_DOWNLOAD,
-				UriConst.SUBJECT_REGISTER,
-				UriConst.SUBJECT_UDPATE
-			).contains( MContextUtil.getRequestUri() ); 
-	}
-	
-	private static boolean TeacherAccessUri() {
-		return Arrays.asList(
-				UriConst.DEPARTMENT_LIST,
-				
-				UriConst.TEACHER_MAP_LIST,
-				
-				UriConst.ROOM_LIST,
-				UriConst.ROOM_DOWNLOAD,
 				
 				UriConst.SCORE_LIST,
 				UriConst.SCORE_REGISER,
-				
-				UriConst.CLASS_LIST,
-				UriConst.CLASS_LIST_STUDENT,
 				
 				UriConst.SCHEDULE_LIST,
 				
 				UriConst.SUBJECT_LIST,
 				UriConst.SUBJECT_DOWNLOAD
-			).contains( MContextUtil.getRequestUri() ); 
+			).contains( MContextUtil.getRequestUri()); 
 	}
 	
 	private static boolean StudentAccessUri() {

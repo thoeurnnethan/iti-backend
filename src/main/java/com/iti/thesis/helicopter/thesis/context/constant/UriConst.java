@@ -15,6 +15,10 @@ public class UriConst {
 	public static final String	DEPARTMENT_DOWNLOAD		= "/api/department/list/download";
 	public static final String	DEPARTMENT_REGISTER		= "/api/department/register";
 	public static final String	DEPARTMENT_UDPATE		= "/api/department/update";
+
+	public static final String	TEACHER_MAP_LIST		= "/api/department-mngt/list";
+	public static final String	TEACHER_MAP_REGISTER	= "/api/department-mngt/register";
+	public static final String	TEACHER_MAP_UDPATE		= "/api/department-mngt/update";
 	
 	public static final String	CLASS_LIST				= "/api/class-info/list";
 	public static final String	CLASS_DOWNLOAD			= "/api/class-info/list/download";
@@ -41,10 +45,7 @@ public class UriConst {
 	public static final String	SCHEDULE_LIST			= "/api/schedule/list";
 	public static final String	SCHEDULE_REGISTER		= "/api/schedule/register";
 	public static final String	SCHEDULE_VALIDATE		= "/api/schedule/register/validate";
-	
-	public static final String	TEACHER_MAP_LIST		= "/api/department-mngt/list";
-	public static final String	TEACHER_MAP_REGISTER	= "/api/department-mngt/register";
-	public static final String	TEACHER_MAP_UDPATE		= "/api/department-mngt/update";
+	public static final String	SCHEDULE_DELETE			= "/api/schedule/register/delete";
 	
 	
 }
