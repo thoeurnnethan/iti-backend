@@ -1,49 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <target>System.out</target>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>DENY</onMatch>
-            <onMismatch>ACCEPT</onMismatch>
-        </filter>
-        <encoder>
-            <!-- <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%logger{8}-%M:%line] - %msg%n</pattern> -->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%t] [%logger{0}-%M:%line] - %msg%n</pattern>
-        </encoder>
-    </appender>al
-    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
-        <target>System.err</target>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
-        </filter>
-        <encoder>
-            <!-- <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%logger{8}:%line] - %msg%n</pattern> -->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%t] [%logger{0}:%line] - %msg%n</pattern>
-        </encoder>
-    </appender>
-    
-    <springProfile name="local">
-        <root level="DEBUG">
-            <appender-ref ref="STDOUT"/>
-            <appender-ref ref="STDERR"/>
-        </root>
-        <logger name="com.iti.thesis.helicopter.thesis" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="STDERR"/>
-        </logger>
-        <logger name="org.apache.ibatis" level="DEBUG" additivity="false">
-            <appender-ref ref="STDOUT"/>
-            <appender-ref ref="STDERR"/>
-        </logger>
-        <logger name="com.zaxxer.hikari" level="ERROR" additivity="false">
-            <appender-ref ref="STDOUT"/>
-            <appender-ref ref="STDERR"/>
-        </logger>
-        <logger name="_org.springframework.web.servlet" level="ERROR" additivity="false">
-            <appender-ref ref="STDOUT"/>
-            <appender-ref ref="STDERR"/>
-        </logger>
-    </springProfile>
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<target>System.out</target>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>DENY</onMatch>
+			<onMismatch>ACCEPT</onMismatch>
+		</filter>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%t][%logger{0}-%M:%line] - %msg%n</pattern>
+		</encoder>
+	</appender>
+	al
+	<appender name="STDERR"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<target>System.err</target>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%t][%logger{0}:%line] - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<springProfile name="local">
+		<root level="DEBUG">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</root>
+		<logger name="com.iti.thesis.helicopter.thesis" level="DEBUG" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="org.apache.ibatis" level="DEBUG"
+			additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="com.zaxxer.hikari" level="ERROR" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="_org.springframework.web.servlet" level="ERROR" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+	</springProfile>
+
+	<springProfile name="sit">
+		<root level="DEBUG">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</root>
+		<logger name="com.iti.thesis.helicopter.thesis" level="DEBUG" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="org.apache.ibatis" level="DEBUG" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="com.zaxxer.hikari" level="ERROR" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="_org.springframework.web.servlet" level="ERROR" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+	</springProfile>
+
+	<springProfile name="uat">
+		<root level="DEBUG">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</root>
+		<logger name="com.iti.thesis.helicopter.thesis" level="DEBUG" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="org.apache.ibatis" level="DEBUG" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="com.zaxxer.hikari" level="ERROR"
+			additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="_org.springframework.web.servlet" level="ERROR" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+	</springProfile>
+
+	<springProfile name="prd">
+		<root level="DEBUG">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</root>
+		<logger name="com.iti.thesis.helicopter.thesis" level="DEBUG" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="org.apache.ibatis" level="DEBUG" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="com.zaxxer.hikari" level="ERROR" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+		<logger name="_org.springframework.web.servlet" level="ERROR" additivity="false">
+			<appender-ref ref="STDOUT" />
+			<appender-ref ref="STDERR" />
+		</logger>
+	</springProfile>
 
 </configuration>

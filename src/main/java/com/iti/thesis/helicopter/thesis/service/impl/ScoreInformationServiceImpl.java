@@ -1,5 +1,6 @@
 package com.iti.thesis.helicopter.thesis.service.impl;
 
+import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -96,8 +97,9 @@ public class ScoreInformationServiceImpl implements ScoreInformationService {
 						studentData.setDouble(subjectName, scoreOfSubject);
 					}
 				}
-				studentData.setDouble("totalScore", totalScore);
-				studentData.setDouble("average", totalScore / (subjectScoreList.size()));
+				Double average = totalScore / (keyValueSubject.size());
+				studentData.setDouble("totalScore", totalScore <= 0 ? 0 : Double.valueOf(new DecimalFormat("###.##").format(totalScore)));
+				studentData.setDouble("average", totalScore <= 0 ? 0 : Double.valueOf(new DecimalFormat("###.##").format(average)));
 			}
 			transformedList.add(studentData);
 		}
@@ -105,9 +107,32 @@ public class ScoreInformationServiceImpl implements ScoreInformationService {
 		MMultiData finalData = transformedList.toListMData().stream()
 				.sorted(Comparator.comparingDouble((MData map) -> map.getDouble("average")).reversed())
 				.collect(Collectors.toCollection(MMultiData::new));
+		
 		// Assign grades
+		int		lastGrade			= 1;
+		int		currentGrade		= 1;
+		Double	lastAverage			= 0D;
+		Double	currentAverage		= 0D;
+		int		duplicateCount		= 0;
+		boolean	isDuplicate			= false;
 		for (int i = 0; i < finalData.size(); i++) {
-			finalData.get(i).put("grade", i + 1);
+			lastAverage		= currentAverage;
+			currentAverage	= finalData.getMData(i).getDouble("average");
+			if(lastAverage.compareTo(currentAverage) == 0 && i!= 0) {
+				duplicateCount++;
+				isDuplicate	= true;
+				lastGrade	= currentGrade;
+				finalData.get(i).put("grade", (lastGrade-1));
+			}else {
+				if(isDuplicate) {
+					currentGrade += duplicateCount;
+					finalData.get(i).put("grade", currentGrade);
+				}else {
+					finalData.get(i).put("grade", currentGrade);
+				}
+				currentGrade ++;
+				isDuplicate = false;
+			}
 		}
 		return finalData;
 	}

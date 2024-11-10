@@ -1,8 +1,5 @@
 package com.iti.thesis.helicopter.thesis.service.impl;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,12 +10,12 @@ import com.iti.thesis.helicopter.thesis.constant.UserStatusCode;
 import com.iti.thesis.helicopter.thesis.constant.YnTypeCode;
 import com.iti.thesis.helicopter.thesis.context.builder.SessionDataBuilder;
 import com.iti.thesis.helicopter.thesis.context.parameter.MContextParameter;
-import com.iti.thesis.helicopter.thesis.context.util.MHttpRequestUtil;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
 import com.iti.thesis.helicopter.thesis.core.exception.MNotFoundException;
+import com.iti.thesis.helicopter.thesis.security.jwt.JwtUtil;
 import com.iti.thesis.helicopter.thesis.service.UserAuthenticationService;
 import com.iti.thesis.helicopter.thesis.service.UserInfoService;
 import com.iti.thesis.helicopter.thesis.util.MDateUtil;
@@ -31,6 +28,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
 	@Autowired
 	private UserInfoService		userInfoService;
+	@Autowired
+	private JwtUtil jwtUtil;
 	@Value("${max.password.error}")
 	int pwdMaxError;
 	@Value("${user.lock.time}")
@@ -90,15 +89,21 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				}
 				throw new MBizException(ErrorCode.INCORRECT_PASSWORD.getValue(), ErrorCode.INCORRECT_PASSWORD.getDescription());
 			} else {
+				MData payloadClaim = new MData();
+				payloadClaim.setString("userID", userInfo.getString("userID"));
+				payloadClaim.setString("userRoleID", userInfo.getString("roleID"));
+				String token = jwtUtil.generateToken(userInfo.getString("userID"), payloadClaim);
+				response.setString("token", token);
+				
 				// Change Context data
 				MData sessionData = SessionDataBuilder.create()
 						.loginUserId(userInfo.getString("userID"))
 						.userRoleID(userInfo.getString("roleID"))
 						.build();
+				
 				// Update session data
 				MContextParameter.setSessionContext(sessionData);
 				SessionUtil.updateSession(sessionData);
-				MHttpRequestUtil.setSessionAttribute(sessionData);
 				response.appendFrom(userInfo);
 			}
 			return response;
@@ -147,11 +152,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
 	@Override
 	public MData userLogout(MData param) throws MException {
-		HttpServletRequest request = MHttpRequestUtil.getCurrentRequest();
-		HttpSession session = request.getSession(false);
-		if (session != null) {
-			session.invalidate();
-		}
 		return param;
 	}
 

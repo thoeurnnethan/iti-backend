@@ -1,8 +1,9 @@
 *.class
 .classpath
 .factorypath
-target/
 .vscode
+target/**
+target/classes/*
 
 #common ignores
 *.log
@@ -12,3 +13,4 @@ target/
 .DS_Store
 .idea/
 *.iml
+

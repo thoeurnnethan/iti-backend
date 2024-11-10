@@ -1,6 +1,6 @@
 package com.iti.thesis.helicopter.thesis.context.constant;
 
-public class AdminUriAccessConst {
+public class UriConst {
 	public static final String	USER_LIST				= "/api/user/list";
 	public static final String	USER_DOWNLOAD			= "/api/user/list/download";
 	public static final String	USER_DETAIL				= "/api/user/detail";
@@ -8,12 +8,17 @@ public class AdminUriAccessConst {
 	public static final String	USER_UPDATE				= "/api/user/update";
 	public static final String	USER_CHANGE_PASSWORD	= "/api/user/change-password";
 	public static final String	USER_LOGIN				= "/api/user/login";
+	public static final String	USER_LOGOUT				= "/api/user/logout";
 	public static final String	USER_RESET_PASSWORD		= "/api/user/reset-password";
 	
 	public static final String	DEPARTMENT_LIST			= "/api/department/list";
 	public static final String	DEPARTMENT_DOWNLOAD		= "/api/department/list/download";
 	public static final String	DEPARTMENT_REGISTER		= "/api/department/register";
 	public static final String	DEPARTMENT_UDPATE		= "/api/department/update";
+
+	public static final String	TEACHER_MAP_LIST		= "/api/department-mngt/list";
+	public static final String	TEACHER_MAP_REGISTER	= "/api/department-mngt/register";
+	public static final String	TEACHER_MAP_UDPATE		= "/api/department-mngt/update";
 	
 	public static final String	CLASS_LIST				= "/api/class-info/list";
 	public static final String	CLASS_DOWNLOAD			= "/api/class-info/list/download";
@@ -39,10 +44,8 @@ public class AdminUriAccessConst {
 	
 	public static final String	SCHEDULE_LIST			= "/api/schedule/list";
 	public static final String	SCHEDULE_REGISTER		= "/api/schedule/register";
-	
-	public static final String	TEACHER_MAP_LIST		= "/api/department-mgt/list";
-	public static final String	TEACHER_MAP_REGISTER	= "/api/department-mgt/register";
-	public static final String	TEACHER_MAP_UDPATE		= "/api/department-mgt/update";
+	public static final String	SCHEDULE_VALIDATE		= "/api/schedule/register/validate";
+	public static final String	SCHEDULE_DELETE			= "/api/schedule/register/delete";
 	
 	
 }

@@ -23,7 +23,7 @@ public class MStringUtil extends org.springframework.util.StringUtils{
 	public final String	TRUE_STRING					= "true";
 	public final String	FALSE_STRING				= "false";
 	public final String	ZERO						= "0";
-	public static final String	EMPTY						= "";
+	public static final String	EMPTY				= "";
 	public final String	SPACE						= " ";
 	
 	/**

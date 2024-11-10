@@ -11,17 +11,17 @@ import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MBizException;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
-import com.iti.thesis.helicopter.thesis.service.StudentDetailService;;
+import com.iti.thesis.helicopter.thesis.service.ScheduleInformationService;;
 
 @RestController
-@RequestMapping("/api/student")
-public class StudentDetailRegister extends BaseTemplate{
+@RequestMapping("/api/schedule")
+public class ScheduleInformationUpdate extends BaseTemplate {
 	
 	@Autowired
-	private StudentDetailService studentDetailService;
-	
+	private ScheduleInformationService		scheduleInformationService;
+
 	@Override
-	@PostMapping("/register")
+	@PostMapping("/delete")
 	public JsonNode onRequest(@RequestBody MData message) throws MException {
 		try {
 			return super.onProcess(message);
@@ -34,15 +34,13 @@ public class StudentDetailRegister extends BaseTemplate{
 	
 	@Override
 	public MData onExecute(MData param) throws MException {
-		MData response = new MData();
 		try {
-			response = studentDetailService.registerStudentDetail(param);
+			return scheduleInformationService.scheduleInformationUpdate(param);
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
 			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
 		}
-		return response;
 	}
 
 }

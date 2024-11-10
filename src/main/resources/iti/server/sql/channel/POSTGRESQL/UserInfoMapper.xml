@@ -88,6 +88,7 @@
 		    OR PHONE ILIKE '%' || COALESCE(#{searchKey}, '') || '%')
 		   AND ('' = COALESCE(#{roleID}, '') OR ROLE_ID = #{roleID}) 
 		   AND ('' = COALESCE(#{statusCode}, '') OR STCD = #{statusCode})
+		   AND ('' = COALESCE(#{userID}, '') OR SPEC_ID = #{userID})
 		   AND STCD <> '02'
 		 ORDER BY (FRST_REG_DT,FRST_REG_TIME) DESC
 		        , ROLE_ID DESC
@@ -146,7 +147,7 @@
 		     , POB = COALESCE(#{placeOfBirth}, POB)
 		     , ADDR = COALESCE(#{address}, ADDR)
 		     , PHONE = COALESCE(#{phone}, PHONE)
-		     , EMAIL = COALESCE(#{address}, EMAIL)
+		     , EMAIL = COALESCE(#{email}, EMAIL)
 		     , STCD = COALESCE(#{statusCode}, STCD)
 		     , LAST_CHNG_DT = COALESCE(#{lastChangeDate}, LAST_CHNG_DT)
 		     , LAST_CHNG_TIME  = COALESCE(#{lastChangeTime}, LAST_CHNG_TIME)

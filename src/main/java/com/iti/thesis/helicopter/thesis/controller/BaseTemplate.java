@@ -12,11 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iti.thesis.helicopter.thesis.common.SessionUtil;
 import com.iti.thesis.helicopter.thesis.context.MContextHolder;
 import com.iti.thesis.helicopter.thesis.context.parameter.MContextParameter;
-import com.iti.thesis.helicopter.thesis.context.util.MHttpRequestUtil;
+import com.iti.thesis.helicopter.thesis.context.util.MContextUtil;
 import com.iti.thesis.helicopter.thesis.core.Json.JsonAdaptorObject;
 import com.iti.thesis.helicopter.thesis.core.collection.MData;
 import com.iti.thesis.helicopter.thesis.core.constant.CommonErrorCode;
 import com.iti.thesis.helicopter.thesis.core.exception.MException;
+import com.iti.thesis.helicopter.thesis.security.jwt.JwtCustomRequestFilter;
 import com.iti.thesis.helicopter.thesis.util.MCryptoUtil;
 import com.iti.thesis.helicopter.thesis.util.MGUIDUtil;
 import com.iti.thesis.helicopter.thesis.util.MStringUtil;
@@ -43,7 +44,7 @@ public abstract class BaseTemplate {
 		//======================================================
 		JsonAdaptorObject obj = new JsonAdaptorObject();
 		try {
-			obj = MHttpRequestUtil.createSession(param);
+			obj = JwtCustomRequestFilter.validateRequest(param);
 		} catch (MException e) {
 			MContextHolder.clear();
 			return makeFailResponse(param, e.getMCode(), e.getMMessage());
@@ -79,11 +80,8 @@ public abstract class BaseTemplate {
 			MContextParameter.setSessionContext(convertPojoToMData(metaNode));
 		}
 		try {
-			MData requestInfo = objectMapper.convertValue(metaNode, MData.class);
-			String url = requestInfo.getString("requestUri");
-			if(!url.contains("/login")) {
-//				MHttpRequestUtil.checkAuthorization(responseBody);
-			}
+			// Check role base authorization
+			JwtCustomRequestFilter.checkAuthorization(param);
 			
 			responseBody = onExecute(requestBody);
 			JsonNode response = prepareResponse(requestMessage, responseBody);
@@ -134,7 +132,7 @@ public abstract class BaseTemplate {
 		MData	resObj		= new MData();
 		MData	reqHeader	= requestMessage.getMData("header");
 		if (SessionUtil.isLoggedin()) {
-			reqHeader.setString("login_session_id", SessionUtil.getSessionId());
+			reqHeader.setString("login_session_id", MContextUtil.getHeaderLoginSessionId());
 		}
 		reqHeader.setBoolean("result", true);
 		resObj.setMData("header", reqHeader);

@@ -20,7 +20,7 @@ public enum ErrorCode {
 	ONLY_ADMIN_CAN_UPDATE					("ER009", "Only Admin user can reset password but not for other Admin"),
 	CANNOT_RESET_ADMIN_PASS					("ER010", "Cannot reset password for Admin user"),
 	INVALID_ACCESS							("ER011", "Invalid Access"),
-	NEED_PERMISSION							("ER012", "You don't have enough permission for this request!"),
+	NEED_PERMISSION							("ER012", "You don't have permission for this request!"),
 	DUPLICATE_TEACHER_ID					("ER013", "You have added duplicate Teacher"),
 	ALREADY_ADDED_TEACHER					("ER014", "Teacher Already added to Department"),
 	DUPLICATE_MANAGER_ID					("ER015", "You have added duplicate Manager"),
@@ -32,7 +32,14 @@ public enum ErrorCode {
 	ALREADY_LOGIN							("ER021", "Already Login and Change password"),
 	OLD_PASSWORD_NOT_MATCH					("ER022", "Old Password not match"),
 	DUPLICATE_TEACHER						("ER023", "Duplicate Teacher to register schedule"),
-	DUPLICATE_TIME							("ER024", "Duplicate Time to register schedule");
+	DUPLICATE_TIME							("ER024", "Duplicate Time to register schedule"),
+	SCHEDULE_DETAIL_NOT_FOUND				("ER025", "Schedule detail not found !"),
+	
+	// Http Custom error
+	UNCAUGHT								("ER400","Uncauge Error while authorize request, Please contact your Administrator!"),
+	UNAUTHORIZE								("ER401","Unauthorized Request!"),
+	JWT_UNCAUGHT_ERROR						("ER402","Uncauge Error while authorize request (JWT)!"),
+	BAD_CREDENTIALS							("ER403","Bad Credential to Authorize Request!");
 	
 	private String value;
 	private String description;

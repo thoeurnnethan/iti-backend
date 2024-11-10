@@ -50,7 +50,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public MMultiData retrieveUserInfoList(MData param) throws MException {
 		try {
-			
 			MMultiData userList = userInfoMapper.retrieveUserInfoList(param);
 			MMultiData filterList = userList.toListMData().stream()
 					.map(data ->{
@@ -85,7 +84,17 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public MMultiData retrieveUserInfoListForDownload(MData param) throws MException {
 		try {
-			return userInfoMapper.retrieveUserInfoListForDownload(param);
+			MMultiData userList		= userInfoMapper.retrieveUserInfoListForDownload(param);
+			MMultiData filterList	= userList.toListMData().stream()
+					.map(data ->{
+						MData user = data;
+						String loginYn = data.getString("loginByUserYn");
+						if(!MStringUtil.isEmpty(loginYn) && YnTypeCode.YES.getValue().equalsIgnoreCase(loginYn)) {
+							user.setString("passwd", MStringUtil.EMPTY);
+						}
+						return user;
+					}).collect(Collectors.toCollection(MMultiData::new));
+			return filterList;
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
@@ -102,6 +111,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 			
 			/* Retrieve Valid User for Login */
 			MData	userInfo = userInfoMapper.retrieveUserInfoDetail(param);
+			String	loginByUserYn = userInfo.getString("loginByUserYn");
+			if(!MStringUtil.isEmpty(loginByUserYn) && YnTypeCode.YES.getValue().equalsIgnoreCase(loginByUserYn)) {
+				userInfo.setString("passwd", MStringUtil.EMPTY);
+			}
 			response = userInfo;
 			
 			String userRoleCode = userInfo.getString("roleID");
@@ -194,6 +207,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public int updateUserLoginInfo(MData param) throws MException {
 		String subTransactionName = "TX_SUB_updateLoginErr_"+ MGUIDUtil.generateGUID();
@@ -367,6 +381,40 @@ public class UserInfoServiceImpl implements UserInfoService {
 			param.setString("newPasswd", encPasswd);
 			userInfoMapper.updateUserPassword(param);
 			return param;
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			log.error(e.getLocalizedMessage());
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription());
+		}
+	}
+
+	@Override
+	public MData registerUserDefault(MData param) throws MException {
+		try {
+			param.setString("userID", "Admin");
+			boolean isExist = this.isValidUserID(param);
+			if(!isExist) {
+				return param;
+			}else {
+				MData inputParam = new MData();
+				inputParam.setString("userID", "Admin");
+				inputParam.setString("passwd", "Admin");
+				inputParam.setString("firstName", "Admin");
+				inputParam.setString("lastName", "Admin");
+				inputParam.setString("roleID", UserRoleCode.ADMIN.getValue());
+				inputParam.setString("statusCode", StatusCode.ACTIVE.getValue());
+				inputParam.setString("loginByUserYn", YnTypeCode.NO.getValue());
+				inputParam.setString("gender", "M");
+				inputParam.setString("address", "NA");
+				inputParam.setString("phone", "NA");
+				inputParam.setString("email", "admin123@gmail.com");
+				inputParam.setMMultiData("qualificationList", new MMultiData());
+				MData adminInfo = teacherDetailService.registerTeacherDetail(inputParam);
+				inputParam.setString("specificID", adminInfo.getString("teacherID"));
+				userInfoMapper.registerUserInfoDetail(inputParam);
+				return inputParam;
+			}
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){

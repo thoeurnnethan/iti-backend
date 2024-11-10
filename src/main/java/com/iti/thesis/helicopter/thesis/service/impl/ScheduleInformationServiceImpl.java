@@ -131,11 +131,15 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 			if(!isAlreadyRegister) {
 				scheduleInformationMapper.registerScheduleInformation(scheduleInfoParam);
 			}
-			
 			for(MData data : validateDate.getMMultiData("scheduleList").toListMData()) {
 				data.setString("scheduleDay", data.getString("schDay"));
 				boolean isExist = this.isScheduleDetailExist(data);
 				if(isExist) {
+//					boolean isDuplicateTime = this.checkDuplicateTime(data);
+//					if(isDuplicateTime) {
+//						throw new MException(ErrorCode.DUPLICATE_TIME.getValue(), ErrorCode.DUPLICATE_TIME.getDescription());
+//					}
+					data.setString("statusCode", StatusCode.ACTIVE.getValue());
 					scheduleDetailMapper.updateScheduleDetail(data);
 				}else {
 					if(YnTypeCode.YES.getValue().equalsIgnoreCase(data.getString("duplicateTimeYn"))) {
@@ -254,7 +258,8 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 			for(MData teacher : teacherList.toListMData()) {
 				if(teacherInfo.getString("teacherID").equals(teacher.getString("teacherID"))) {
 					if(teacherInfo.getString("schDay").equals(teacher.getString("scheduleDay"))) {
-						if(teacherInfo.getString("startTime").equals(teacher.getString("startTime")) || teacherInfo.getString("endTime").equals(teacher.getString("endTime"))) {
+						if(teacherInfo.getString("startTime").equals(teacher.getString("startTime")) ||
+								teacherInfo.getString("endTime").equals(teacher.getString("endTime"))) {
 							duplicate = true;
 						}
 					}
@@ -313,6 +318,23 @@ public class ScheduleInformationServiceImpl implements ScheduleInformationServic
 	public MData validateScheduleInformation(MData param) throws MException {
 		try {
 			return this.validateAndPrepareScheduleData(param);
+		} catch (MException e) {
+			throw e;
+		} catch (Exception e){
+			throw new MBizException(CommonErrorCode.UNCAUGHT.getCode(), CommonErrorCode.UNCAUGHT.getDescription(), e);
+		}
+	}
+
+	@Override
+	public MData scheduleInformationUpdate(MData param) throws MException {
+		try {
+			MValidatorUtil.validate(param, "scheduleID","scheduleDay","seqNo");
+			MData scheduleInfo = scheduleDetailMapper.retrieveScheduleDetail(param);
+			scheduleInfo.setString("statusCode", StatusCode.DELETE.getValue());
+			scheduleDetailMapper.updateScheduleDetail(scheduleInfo);
+			return scheduleInfo;
+		} catch (MNotFoundException e) {
+			return new MData();
 		} catch (MException e) {
 			throw e;
 		} catch (Exception e){
